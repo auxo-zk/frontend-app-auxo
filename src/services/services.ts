@@ -16,3 +16,9 @@ export async function getListCommittees() {
         };
     });
 }
+
+export async function postCreateCommittee(data: { name: string; creator: string; network: string }) {
+    const response = await axios.post(apiUrl.createCommittee, data);
+    console.log('post new committee', response.data);
+    return response.data;
+}

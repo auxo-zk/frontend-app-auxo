@@ -1,8 +1,13 @@
-import { RemoveCircleRounded } from '@mui/icons-material';
+import { RemoveCircleOutlineRounded, RemoveCircleRounded } from '@mui/icons-material';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { postCreateCommittee } from 'src/services/services';
+import { useCommitteeContract } from 'src/states/contracts/committee';
 import { useWalletData } from 'src/states/wallet';
 import { v4 as uuidv4 } from 'uuid';
+import { Field, PublicKey } from 'o1js';
+import { IPFSHash } from '@auxo-dev/auxo-libs';
 
 export type TDataPost = {
     name: string;
@@ -15,7 +20,8 @@ export type TDataPost = {
 
 export default function ModalCreateCommittee() {
     const { userAddress } = useWalletData();
-    const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: '', t: 0, n: 1, members: [], name: '' });
+    const { committee } = useCommitteeContract();
+    const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: '', t: 0, n: 1, members: [{ id: uuidv4(), address: '' }], name: '' });
 
     function changeDataPost(dataPost: Partial<TDataPost>) {
         return setDataPost((prev) => {
@@ -41,28 +47,77 @@ export default function ModalCreateCommittee() {
     }
     function addMemberAddress() {
         setDataPost((prev) => {
-            if (prev.members.length < prev.n) {
-                const member = [...prev.members];
-                member.push({ address: '', id: uuidv4() });
-                return {
-                    ...prev,
-                    t: member.length,
-                    members: member,
-                };
-            }
-            return prev;
+            const member = [...prev.members];
+            member.push({ address: '', id: uuidv4() });
+            return {
+                ...prev,
+                n: member.length,
+                members: member,
+            };
         });
     }
     function removeMember(index: number) {
         setDataPost((prev) => {
             const member = [...prev.members];
             member.splice(index, 1);
+            const t = prev.t > member.length ? member.length : prev.t;
             return {
                 ...prev,
-                t: member.length,
+                n: member.length,
+                t: t,
                 members: member,
             };
         });
+    }
+
+    function changeT(value: string) {
+        const valueToNumber = Number(value);
+        if (isNaN(valueToNumber)) return;
+
+        setDataPost((prev) => {
+            if (valueToNumber > prev.n) return prev;
+            return {
+                ...prev,
+                t: valueToNumber,
+            };
+        });
+    }
+
+    function checkValid() {
+        if (!dataPost.name) {
+            toast('Name is required!', { type: 'error', position: 'top-center' });
+            return false;
+        }
+        if (!dataPost.creator) {
+            toast('Creator is required! Connect your wallet first!', { type: 'error', position: 'top-center' });
+            return false;
+        }
+        if (!dataPost.network) {
+            toast('Select network is required!', { type: 'error', position: 'top-center' });
+            return false;
+        }
+        if (!dataPost.members.every((member) => member.address != '')) {
+            toast('Member address should not be empty!', { type: 'error', position: 'top-center' });
+            return false;
+        }
+
+        return true;
+    }
+
+    async function createCommitee() {
+        if (checkValid()) {
+            try {
+                const response = await postCreateCommittee({ name: dataPost.name, creator: dataPost.creator, network: dataPost.network });
+                const ipfsHash = response.Hash;
+                committee?.createCommittee({
+                    addresses: dataPost.members.map((member) => PublicKey.fromBase58(member.address)),
+                    threshold: new Field(dataPost.t),
+                    ipfsHash: IPFSHash.fromString(ipfsHash),
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
     }
 
     return (
@@ -85,8 +140,8 @@ export default function ModalCreateCommittee() {
 
             <Box mt={3}>
                 <Typography mb={2}>{'Usage Threshold (T out of N)'}</Typography>
-                <TextField value={dataPost.t} variant="outlined" label="T" type="text" name="t_committee" sx={{ width: '150px', mr: 3 }} />
-                <TextField value={dataPost.n} onChange={(e) => changeDataPost({ n: Number(e.target.value) })} variant="outlined" label="N" type="text" name="n_committee" sx={{ width: '150px' }} />
+                <TextField value={dataPost.t} onChange={(e) => changeT(e.target.value)} variant="outlined" label="T" type="text" name="t_committee" sx={{ width: '150px', mr: 3 }} />
+                <TextField value={dataPost.n} InputProps={{ readOnly: true }} variant="outlined" label="N" type="text" name="n_committee" sx={{ width: '150px' }} />
             </Box>
 
             <Box mt={3}>
@@ -105,7 +160,7 @@ export default function ModalCreateCommittee() {
                                 name="address_member_committee"
                                 sx={{ mb: 1 }}
                             />
-                            <RemoveCircleRounded sx={{ fontSize: '25px' }} onClick={() => removeMember(index)} />
+                            <RemoveCircleOutlineRounded sx={{ fontSize: '25px', display: dataPost.members.length == 1 ? 'none' : 'block', opacity: 0.66 }} onClick={() => removeMember(index)} />
                         </Box>
                     );
                 })}
@@ -116,8 +171,22 @@ export default function ModalCreateCommittee() {
             </Box>
 
             <Box mt={5} textAlign={'right'}>
-                <Button variant="contained">Create</Button>
+                <ButtonCreate onClick={createCommitee} />
             </Box>
         </Box>
+    );
+}
+
+function ButtonCreate({ onClick }: { onClick: () => Promise<void> }) {
+    const [loading, setLoading] = useState<boolean>(false);
+    async function _onClick() {
+        setLoading(true);
+        await onClick();
+        setLoading(false);
+    }
+    return (
+        <Button variant="contained" onClick={_onClick}>
+            {loading ? 'Loading...' : 'Create'}
+        </Button>
     );
 }

@@ -66,18 +66,18 @@ export default function Committee() {
     }
 
     useEffect(() => {
-        (async () => {
-            await Add.compile();
-            const zkappPublicKey = PublicKey.fromBase58('B62qn5Tmm1x2nC8UEnSMdEcMQW3KZEk1e7Pc4JyPmYy1nbQ9MoB9Gyd');
-            const _zkapp = new Add!(zkappPublicKey);
-            setApp(_zkapp);
-            setZkAppPubkey(zkappPublicKey);
-            setConpiling(false);
-        })();
+        // (async () => {
+        //     await Add.compile();
+        //     const zkappPublicKey = PublicKey.fromBase58('B62qn5Tmm1x2nC8UEnSMdEcMQW3KZEk1e7Pc4JyPmYy1nbQ9MoB9Gyd');
+        //     const _zkapp = new Add!(zkappPublicKey);
+        //     setApp(_zkapp);
+        //     setZkAppPubkey(zkappPublicKey);
+        //     setConpiling(false);
+        // })();
     }, []);
     return (
         <Container>
-            {compiling ? (
+            {/* {compiling ? (
                 <Typography textAlign={'center'}>Compiling contract Add......</Typography>
             ) : (
                 <>
@@ -96,12 +96,12 @@ export default function Committee() {
                         | {num}
                     </Box>
                 </>
-            )}
+            )} */}
 
             <br />
             <br />
             <br />
-            <Test />
+            {/* <Test /> */}
         </Container>
     );
 }
