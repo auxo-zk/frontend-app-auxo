@@ -6,9 +6,10 @@ import { postCreateCommittee } from 'src/services/services';
 import { useCommitteeContract } from 'src/states/contracts/committee';
 import { useWalletData } from 'src/states/wallet';
 import { v4 as uuidv4 } from 'uuid';
-import { Field, PublicKey } from 'o1js';
+import { Field, PublicKey, fetchAccount, Mina } from 'o1js';
 import { IPFSHash } from '@auxo-dev/auxo-libs';
-
+// import { MemberArray } from '@auxo-dev/dkg/build/types/src/contracts/Committee';
+import { ZkApp } from '@auxo-dev/dkg';
 export type TDataPost = {
     name: string;
     creator: string;
@@ -19,9 +20,9 @@ export type TDataPost = {
 };
 
 export default function ModalCreateCommittee() {
-    const { userAddress } = useWalletData();
+    const { userAddress, userPubKey } = useWalletData();
     const { committee } = useCommitteeContract();
-    const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: '', t: 0, n: 1, members: [{ id: uuidv4(), address: '' }], name: '' });
+    const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: 'Berkery', t: 1, n: 1, members: [{ id: uuidv4(), address: '' }], name: '' });
 
     function changeDataPost(dataPost: Partial<TDataPost>) {
         return setDataPost((prev) => {
@@ -106,16 +107,40 @@ export default function ModalCreateCommittee() {
 
     async function createCommitee() {
         if (checkValid()) {
+            if (userPubKey == null) throw new Error('You have not connected to your wallet yet!');
             try {
                 const response = await postCreateCommittee({ name: dataPost.name, creator: dataPost.creator, network: dataPost.network });
                 const ipfsHash = response.Hash;
-                committee?.createCommittee({
-                    addresses: dataPost.members.map((member) => PublicKey.fromBase58(member.address)),
-                    threshold: new Field(dataPost.t),
-                    ipfsHash: IPFSHash.fromString(ipfsHash),
+                await fetchAccount({ publicKey: userPubKey });
+                const tx = await Mina.transaction(userPubKey, () => {
+                    committee?.createCommittee({
+                        addresses: ZkApp.Committee.MemberArray.from(dataPost.members.map((member) => PublicKey.fromBase58(member.address))),
+                        threshold: new Field(dataPost.t),
+                        ipfsHash: IPFSHash.fromString(ipfsHash),
+                    });
                 });
+                toast('Create transaction and proving...', { type: 'info', position: 'top-center' });
+                await tx.prove();
+
+                const transactionJSON = tx.toJSON();
+                console.log(transactionJSON);
+
+                let transactionFee = 0.1;
+                toast('Prove tx success! Sending transaction...', { type: 'info', position: 'top-center' });
+
+                const { hash } = await window.mina!.sendTransaction({
+                    transaction: transactionJSON,
+                    feePayer: {
+                        fee: transactionFee,
+                        memo: '',
+                    },
+                });
+                const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
+                console.log(transactionLink);
+                toast('Send transaction successful!', { type: 'success', position: 'top-center' });
             } catch (error) {
                 console.log(error);
+                toast((error as Error).message, { type: 'error', position: 'top-center' });
             }
         }
     }
@@ -126,7 +151,15 @@ export default function ModalCreateCommittee() {
             <br />
             <br />
             <Box sx={{ display: 'flex', placeItems: 'center' }}>
-                <TextField variant="outlined" label="Creator" type="text" name="creator_committee" sx={{ mr: 5 }} value={dataPost.creator} />
+                <TextField
+                    variant="outlined"
+                    label="Creator"
+                    type="text"
+                    name="creator_committee"
+                    sx={{ mr: 5 }}
+                    value={dataPost.creator}
+                    onChange={(e) => changeDataPost({ creator: e.target.value })}
+                />
 
                 <FormControl sx={{ minWidth: 120 }} size="small">
                     <InputLabel id="create-committee-label">Network</InputLabel>

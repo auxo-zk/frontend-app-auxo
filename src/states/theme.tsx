@@ -109,11 +109,6 @@ export function getThemeConfig(mode: THEME_MODE): ThemeOptions {
                 primary: '#043E35',
                 secondary: '#666D6C',
             },
-            action: {
-                selected: getColor('#021C39', '#6cb7d42b'),
-                hover: getColor('#FFFFFF0F', '#0000000F'),
-                hoverOpacity: 0.06,
-            },
         },
         typography: {
             // fontFamily: "'Open Sans', sans-serif",
@@ -174,6 +169,13 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                                 background: '#d3d3d3',
                             },
                         },
+                    },
+                },
+            },
+            MuiFormControl: {
+                styleOverrides: {
+                    root: {
+                        fieldset: { borderColor: theme.palette.primary.light },
                     },
                 },
             },
@@ -312,7 +314,7 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                         fontSize: pxToRem(16),
                     },
                     fontSizeLarge: {
-                        fontSize: pxToRem(24),
+                        fontSize: pxToRem(25),
                     },
                 },
             },

@@ -1,7 +1,28 @@
-import { Box, Grid, Typography } from '@mui/material';
-import React from 'react';
+import { Box, Button, Grid, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { TCommitteeData, getListCommittees } from 'src/services/services';
+import { useModalFunction } from 'src/states/modal';
+import { formatAddress } from 'src/utils/format';
+import ModalViewDetailCommitee from './ModalViewDetailCommitee';
 
 export default function TableCommittee() {
+    const [dataList, setDataList] = useState<TCommitteeData[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    async function getDataListCommittee() {
+        setLoading(true);
+        try {
+            const response = await getListCommittees();
+            setDataList(response);
+        } catch (err) {
+            console.log(err);
+            setDataList([]);
+        }
+        setLoading(false);
+    }
+    useEffect(() => {
+        getDataListCommittee();
+    }, []);
     return (
         <Box sx={{ border: '1px solid #37A9A2', borderRadius: '12px' }}>
             <Box sx={{ bgcolor: 'background.table', py: 2, borderRadius: '12px 12px 0px 0px', px: 1 }}>
@@ -48,28 +69,47 @@ export default function TableCommittee() {
                     </Grid>
                 </Grid>
             </Box>
-            <TableRow />
-            <TableRow />
-            <TableRow />
+            {loading ? (
+                <Typography textAlign={'center'} my={4} fontWeight={600}>
+                    Fetching data...
+                </Typography>
+            ) : (
+                <>
+                    {dataList.length === 0 ? (
+                        <Typography textAlign={'center'} my={4} fontWeight={600}>
+                            No data found!
+                        </Typography>
+                    ) : (
+                        <>
+                            {dataList.map((committee, index) => {
+                                return <TableRow key={'committe' + committee.id + index} data={committee} />;
+                            })}
+                        </>
+                    )}
+                </>
+            )}
         </Box>
     );
 }
 
-function TableRow() {
+function TableRow({ data }: { data: TCommitteeData }) {
+    const { openModal } = useModalFunction();
     return (
         <Box sx={{ py: 1.5, px: 1 }}>
             <Grid container columnSpacing={2}>
                 <Grid item xs={1.5}>
-                    <Typography fontWeight={600}>1</Typography>
+                    <Typography fontWeight={600}>{data.idCommittee}</Typography>
                 </Grid>
                 <Grid item xs={2.5}>
-                    <Typography>{"Auxo's public committee"}</Typography>
+                    <Typography>{data.name}</Typography>
                 </Grid>
                 <Grid item xs={1.2}>
-                    <Typography>Pending</Typography>
+                    <Typography>{data.status}</Typography>
                 </Grid>
                 <Grid item xs={1.2}>
-                    <Typography>6 out of 9</Typography>
+                    <Typography>
+                        {data.threshold} out of {data.numberOfMembers}
+                    </Typography>
                 </Grid>
                 <Grid item xs={1}>
                     <Typography>0</Typography>
@@ -78,10 +118,10 @@ function TableRow() {
                     <Typography>0</Typography>
                 </Grid>
                 <Grid item xs={2}>
-                    <Typography>B62q...1z2Z3JFurd</Typography>
+                    <Typography>{formatAddress(data.creator)}</Typography>
                 </Grid>
                 <Grid item xs={1.6}>
-                    <Typography>#</Typography>
+                    <Button onClick={() => openModal({ title: 'Committee Members', content: <ModalViewDetailCommitee data={data.members} /> })}>View Members</Button>
                 </Grid>
             </Grid>
         </Box>

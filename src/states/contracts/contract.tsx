@@ -32,8 +32,12 @@ export function InitContracts() {
                 }}
             >
                 <Typography variant="h5">Loading client...</Typography>
-                <Typography mt={2}>{isFetching ? 'Fetching cache...' : ''}</Typography>
-                <Typography mt={2}>{isLoading ? 'Compiling contract...' : ''}</Typography>
+                <Typography mt={2} fontWeight={600}>
+                    {isFetching ? 'Fetching cache...' : ''}
+                </Typography>
+                <Typography mt={2} fontWeight={600}>
+                    {isLoading ? 'Compiling contract...' : ''}
+                </Typography>
             </Box>
         );
     }
