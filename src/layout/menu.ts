@@ -4,25 +4,25 @@ export const menu = [
     {
         icon: IconUser,
         title: 'Builders',
-        url: '/builders',
+        url: '/#',
         children: [],
     },
     {
         icon: IconInvestor,
         title: 'Investors',
-        url: '/investors',
+        url: '/#',
         children: [],
     },
     {
         icon: IconOrganizer,
         title: 'Organizers',
-        url: '/organizers',
+        url: '/#',
         children: [],
     },
     {
         icon: IconCommittee,
         title: 'Committee',
-        url: '/committee',
+        url: '/committee/dashboard',
         children: [
             { title: 'Dashboard', url: '/committee/dashboard' },
             { title: 'Contribution', url: '/committee/contribution' },
