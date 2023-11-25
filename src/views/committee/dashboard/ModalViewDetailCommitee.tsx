@@ -37,7 +37,7 @@ export default function ModalViewDetailCommitee({ data }: { data: TCommitteeData
                     <>
                         {data.map((mem, i) => {
                             return (
-                                <Grid container spacing={2} pt={2}>
+                                <Grid key={mem.publicKey + i} container spacing={2} pt={2}>
                                     <Grid item xs={1}>
                                         <Typography>{i + 1}</Typography>
                                     </Grid>
