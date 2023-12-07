@@ -21,7 +21,7 @@ export type TDataPost = {
 
 export default function ModalCreateCommittee() {
     const { userAddress, userPubKey } = useWalletData();
-    const { committee } = useCommitteeContract();
+    const { workerClient } = useCommitteeContract();
     const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: 'Berkery', t: 1, n: 1, members: [{ id: uuidv4(), address: '' }], name: '' });
 
     function changeDataPost(dataPost: Partial<TDataPost>) {
@@ -111,18 +111,17 @@ export default function ModalCreateCommittee() {
             try {
                 const response = await postCreateCommittee({ name: dataPost.name, creator: dataPost.creator, network: dataPost.network });
                 const ipfsHash = response.Hash;
-                await fetchAccount({ publicKey: userPubKey });
-                const tx = await Mina.transaction(userPubKey, () => {
-                    committee?.createCommittee({
-                        addresses: ZkApp.Committee.MemberArray.from(dataPost.members.map((member) => PublicKey.fromBase58(member.address))),
-                        threshold: new Field(dataPost.t),
-                        ipfsHash: IPFSHash.fromString(ipfsHash),
-                    });
+
+                await workerClient?.fetchAccount(userAddress);
+                await workerClient?.createCommittee(userPubKey, {
+                    addresses: ZkApp.Committee.MemberArray.from(dataPost.members.map((member) => PublicKey.fromBase58(member.address))),
+                    threshold: new Field(dataPost.t),
+                    ipfsHash: IPFSHash.fromString(ipfsHash),
                 });
                 toast('Create transaction and proving...', { type: 'info', position: 'top-center' });
-                await tx.prove();
+                await workerClient?.proveTransaction();
 
-                const transactionJSON = tx.toJSON();
+                const transactionJSON = await workerClient?.getTransactionJSON();
                 console.log(transactionJSON);
 
                 let transactionFee = 0.1;

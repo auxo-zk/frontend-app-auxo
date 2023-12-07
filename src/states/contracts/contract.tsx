@@ -2,17 +2,21 @@ import { useEffect } from 'react';
 import { useCacheContractData } from '../cache';
 import { useCommitteeContract, useCommitteeContractFunction } from './committee';
 import { Box, Typography } from '@mui/material';
+import { IconSpinLoading } from 'src/assets/svg/icon';
 
 export function InitContracts() {
     const { isFetching, filesCache } = useCacheContractData();
-    const { isLoading } = useCommitteeContract();
-    const { complie } = useCommitteeContractFunction();
+    const { isInitWorker, workerClient } = useCommitteeContract();
+    const { complie, initClient } = useCommitteeContractFunction();
+    useEffect(() => {
+        initClient();
+    }, []);
     useEffect(() => {
         if (!isFetching && filesCache) {
             complie(filesCache);
         }
-    }, [isFetching, filesCache]);
-    if (isFetching || isLoading) {
+    }, [isFetching, filesCache, workerClient]);
+    if (isFetching || isInitWorker) {
         return (
             <Box
                 sx={{
@@ -32,11 +36,12 @@ export function InitContracts() {
                 }}
             >
                 <Typography variant="h5">Loading client...</Typography>
+                <IconSpinLoading sx={{ fontSize: '120px' }} />
                 <Typography mt={2} fontWeight={600}>
                     {isFetching ? 'Fetching cache...' : ''}
                 </Typography>
                 <Typography mt={2} fontWeight={600}>
-                    {isLoading ? 'Compiling contract...' : ''}
+                    {isInitWorker ? 'Loading web worker...' : ''}
                 </Typography>
             </Box>
         );
