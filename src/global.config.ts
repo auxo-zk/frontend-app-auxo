@@ -10,7 +10,7 @@ declare global {
 }
 
 export type AnchorElType = null | Element | ((_element: Element) => Element);
-
+export type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any ? A : never;
 export interface FormatNumberOptions {
     /**
      * Number of digits after the decimal point. Must be in the range 0 - 20, inclusive.

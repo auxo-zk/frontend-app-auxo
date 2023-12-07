@@ -1,12 +1,13 @@
-import { ZkApp } from '@auxo-dev/dkg';
-import { CommitteeContract } from '@auxo-dev/dkg/build/types/src/contracts/Committee';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { FileSystem } from '../cache';
 import { PublicKey } from 'o1js';
 import { sleep } from 'src/utils/format';
+import ZkAppWorkerClient from 'src/libs/AppWorker/zkWorkerClient';
+import { toast } from 'react-toastify';
 
 export type TContractData = {
-    committee: CommitteeContract | null;
+    workerClient: ZkAppWorkerClient | null;
+    isInitWorker: boolean;
     isLoading: boolean;
     address: string;
     publicKey: PublicKey;
@@ -14,7 +15,8 @@ export type TContractData = {
 
 const initData: TContractData = {
     address: 'B62qmGae1WGtFY2rGBsP9nj4KuqY1nWqptYX5yu3dqvfu39kugHnyRh',
-    committee: null,
+    workerClient: null,
+    isInitWorker: true,
     isLoading: false,
     publicKey: PublicKey.fromBase58('B62qmGae1WGtFY2rGBsP9nj4KuqY1nWqptYX5yu3dqvfu39kugHnyRh'),
 };
@@ -34,25 +36,42 @@ export const useCommitteeContractFunction = () => {
             };
         });
     }
-    async function complie(cacheFiles: any) {
-        setCommitteeContractData({ isLoading: true });
+    async function initClient() {
+        setCommitteeContractData({ isInitWorker: true });
         try {
-            const _zkapp = new ZkApp.Committee.CommitteeContract!(committee.publicKey);
-            console.log('complie Create Committee....');
-            await ZkApp.Committee.CreateCommittee.compile({ cache: FileSystem(cacheFiles) });
-            console.log('complie Create Committee done');
-            await ZkApp.Committee.CommitteeContract.compile({ cache: FileSystem(cacheFiles) });
-            console.log('complie Committee Contract done');
-
+            console.log('Loading web worker...');
+            const _zkapp = new ZkAppWorkerClient();
+            await _zkapp.loadWorker();
+            console.log('Done loading web worker');
             setCommitteeContractData({
-                isLoading: false,
-                committee: _zkapp,
+                isInitWorker: false,
+                workerClient: _zkapp,
             });
         } catch (err) {
             console.log(err);
             setCommitteeContractData({
+                isInitWorker: false,
+                workerClient: null,
+            });
+        }
+    }
+    async function complie(cacheFiles: any) {
+        setCommitteeContractData({ isLoading: true });
+        try {
+            if (committee.workerClient) {
+                await committee.workerClient.setActiveInstanceToBerkeley();
+                await committee.workerClient.loadContract();
+                await committee.workerClient.compileContract(cacheFiles);
+                await committee.workerClient.initZkappInstance('B62qmGae1WGtFY2rGBsP9nj4KuqY1nWqptYX5yu3dqvfu39kugHnyRh');
+                setCommitteeContractData({
+                    isLoading: false,
+                });
+                toast('Compiled contract successfully!', { position: 'bottom-left', type: 'success' });
+            }
+        } catch (err) {
+            console.log(err);
+            setCommitteeContractData({
                 isLoading: false,
-                committee: null,
             });
         }
     }
@@ -60,5 +79,6 @@ export const useCommitteeContractFunction = () => {
     return {
         setCommitteeContractData,
         complie,
+        initClient,
     };
 };
