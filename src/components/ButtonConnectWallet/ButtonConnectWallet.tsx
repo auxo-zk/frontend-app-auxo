@@ -18,7 +18,7 @@ export default function ButtonConnectWallet() {
                     {userAddress ? (
                         <Button variant="contained">{formatAddress(userAddress)}</Button>
                     ) : (
-                        <Button variant="outlined" onClick={connectWallet}>
+                        <Button variant="contained" onClick={connectWallet}>
                             Connect wallet
                         </Button>
                     )}

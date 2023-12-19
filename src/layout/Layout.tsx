@@ -9,8 +9,8 @@ import { getThemeConfig, getThemedComponent, useThemeData } from 'src/states/the
 import { deepmerge } from '@mui/utils';
 import ModalCustom from 'src/components/ModalCustom/ModalCustom';
 
-export const sibarWidth = '260px';
-export const headerHeight = '68px';
+export const sibarWidth = '202px';
+export const headerHeight = '65px';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const { mode } = useThemeData();

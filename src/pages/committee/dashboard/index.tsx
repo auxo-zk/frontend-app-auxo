@@ -9,7 +9,7 @@ export default function Dashboard() {
     return (
         <Container sx={{ pt: 2 }}>
             <Box sx={{ display: 'flex', placeItems: 'center', mb: 3 }}>
-                <Typography variant="h4">Explore Committees</Typography>
+                <Typography variant="h1">Explore Committees</Typography>
                 <Button variant="contained" startIcon={'+'} sx={{ ml: 'auto' }} onClick={() => openModal({ title: 'Create Committee', content: <ModalCreateCommittee /> })}>
                     Committee
                 </Button>

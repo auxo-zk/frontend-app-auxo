@@ -40,7 +40,7 @@ export const zkFunctions = {
     },
     initZkappInstance: async (args: { publicKey58: string }) => {
         const publicKey = PublicKey.fromBase58(args.publicKey58);
-        state.CommitteeContract = new state.TypeZkApp!.Committee.CommitteeContract!(publicKey);
+        state.CommitteeContract = new state.TypeZkApp!.Committee.CommitteeContract!(publicKey as any);
     },
 
     createCommittee: async (args: { sender: PublicKey; action: ZkApp.Committee.CommitteeAction }) => {

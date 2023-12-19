@@ -1,15 +1,15 @@
-import { IconCommittee, IconInvestor, IconOrganizer, IconUser } from 'src/assets/svg/icon';
+import { IconCommittee, IconInvestor, IconMenuExplorer, IconOrganizer, IconUser } from 'src/assets/svg/icon';
 
 export const menu = [
     {
-        icon: IconUser,
-        title: 'Builders',
+        icon: IconMenuExplorer,
+        title: 'Explorer',
         url: '/#',
         children: [],
     },
     {
-        icon: IconInvestor,
-        title: 'Investors',
+        icon: IconUser,
+        title: 'Profile',
         url: '/#',
         children: [],
     },
