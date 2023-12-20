@@ -7,6 +7,44 @@ export default function Home() {
         <Container>
             <Typography variant="h1">Hello world</Typography>
             <Typography>Theme: {mode}</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
+            <Typography variant="h1">Hello world</Typography>
         </Container>
     );
 }

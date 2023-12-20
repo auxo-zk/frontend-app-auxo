@@ -8,7 +8,7 @@ import { useCommitteeContract } from 'src/states/contracts/committee';
 export default function Header() {
     const { isLoading } = useCommitteeContract();
     return (
-        <Box sx={{ position: 'sticky', top: 0, left: 0, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', width: '100%', height: headerHeight, position: 'sticky', top: '0', left: '0', zIndex: '900' }}>
             <Container sx={{ height: headerHeight, display: 'flex', placeItems: 'center', gap: 1 }}>
                 {isLoading ? (
                     <Box mr={'auto'} display={'flex'} gap={1}>

@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: false,
+    images: {
+        domains: ['trunganhmedia.com', 'www.aipromptsgalaxy.com'],
+    },
     webpack(config) {
         config.resolve.alias = {
             ...config.resolve.alias,
