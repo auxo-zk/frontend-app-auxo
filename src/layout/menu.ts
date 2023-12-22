@@ -5,13 +5,13 @@ export const menu = [
     {
         icon: Dashboard,
         title: 'Dashboard',
-        url: '/',
+        url: '/dashboard',
         children: [] as { title: string; url: string }[],
     },
     {
         icon: IconCommittee,
         title: 'Contribution',
-        url: '/#',
+        url: '/contribution',
         children: [] as { title: string; url: string }[],
     },
 ];

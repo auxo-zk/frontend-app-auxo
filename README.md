@@ -3,7 +3,7 @@
 For UI template
 
 ```bash
-yarn add @mui/material @emotion/react @emotion/styled jotai react-toastify @mui/icons-material
+yarn add @mui/material @emotion/react @emotion/styled jotai react-toastify @mui/icons-material @mui/utils sharp axios uuid bignumber.js
 ```
 
 For base blockchain app use

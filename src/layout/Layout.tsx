@@ -1,17 +1,18 @@
-import { Box } from '@mui/material';
-import Head from 'next/head';
-import React from 'react';
-import ToastNotifier from 'src/components/ToastNotifier/ToastNotifier';
-import Sidebar from './sidebar/Sidebar';
-import Header from './header/Header';
-import InitStateAll from 'src/states';
-import ModalCustom from 'src/components/ModalCustom/ModalCustom';
-import ThemeProviderCustom from 'src/components/ThemeProviderCustom/ThemeProviderCustom';
+import React, { ReactNode } from "react";
+import { Provider as JotaiProvider } from "jotai";
+import { FontInter } from "src/assets/fonts";
+import { Box } from "@mui/material";
+import Head from "next/head";
+import InitStateAll from "src/states";
+import ThemeProviderCustom from "src/components/ThemeProviderCustom/ThemeProviderCustom";
+import ToastNotifier from "src/components/ToastNotifier/ToastNotifier";
+import ModalCustom from "src/components/ModalCustom/ModalCustom";
+import Sidebar from "./Sidebar/Sidebar";
+import Header from "./Header/Header";
 
-export const sibarWidth = '202px';
-export const headerHeight = '65px';
-
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: ReactNode }) {
+    const sidebarWidth = "230px";
+    const headerHeight = "66px";
     return (
         <>
             <Head>
@@ -20,30 +21,41 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <InitStateAll />
-            <ThemeProviderCustom>
-                <Box sx={{ overflow: 'hidden', position: 'relative' }}>
-                    <Sidebar />
-                    <Box
-                        sx={{
-                            ml: { xs: 0, lg: sibarWidth },
-                            position: 'relative',
-                            zIndex: 1,
-                            height: '100svh',
-                            overflow: 'auto',
-                            backgroundImage: `url(/images/bgheader1.png)`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'top center',
-                            backgroundSize: '975px auto',
-                        }}
-                    >
-                        <Header />
-                        <Box sx={{ minHeight: `calc(100svh - ${headerHeight})` }}>{children}</Box>
+            <JotaiProvider>
+                <style jsx global>{`
+                    html {
+                        font-family: ${FontInter.style.fontFamily};
+                    }
+                `}</style>
+                <InitStateAll />
+                <ThemeProviderCustom>
+                    <Box sx={{ position: "relative" }}>
+                        <Sidebar sidebarWidth={sidebarWidth} headerHeight={headerHeight} />
+                        <Box
+                            sx={{
+                                position: "relative",
+                                zIndex: 1,
+                                ml: { xs: 0, lg: sidebarWidth },
+                                backgroundImage: `url(/images/bgheader1.png)`,
+                                backgroundRepeat: "no-repeat",
+                                backgroundPosition: "top center",
+                                backgroundSize: "975px auto",
+                            }}
+                        >
+                            <Header headerHeight={headerHeight}></Header>
+                            <Box
+                                sx={{
+                                    minHeight: `calc(100svh - ${headerHeight})`,
+                                }}
+                            >
+                                {children}
+                            </Box>
+                        </Box>
                     </Box>
                     <ToastNotifier />
                     <ModalCustom />
-                </Box>
-            </ThemeProviderCustom>
+                </ThemeProviderCustom>
+            </JotaiProvider>
         </>
     );
 }
