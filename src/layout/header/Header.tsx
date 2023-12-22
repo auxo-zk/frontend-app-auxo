@@ -4,6 +4,7 @@ import { headerHeight } from '../Layout';
 import ButtonConnectWallet from 'src/components/ButtonConnectWallet/ButtonConnectWallet';
 import { IconSpinLoading } from 'src/assets/svg/icon';
 import { useCommitteeContract } from 'src/states/contracts/committee';
+import { Menu } from '@mui/icons-material';
 
 export default function Header() {
     const { isLoading } = useCommitteeContract();
@@ -18,6 +19,9 @@ export default function Header() {
                 ) : (
                     <></>
                 )}
+                <Box component={'label'} htmlFor="control-sidebar" sx={{ display: { xs: 'flex', lg: 'none' }, cursor: 'pointer', ml: 1 }}>
+                    <Menu sx={{ fontSize: '28px' }} />
+                </Box>
                 <ButtonConnectWallet />
             </Container>
         </Box>

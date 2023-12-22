@@ -18,7 +18,7 @@ export async function getListCommittees(): Promise<TCommitteeData[]> {
     return response.data.map((item: any) => {
         return {
             id: item['_id'],
-            idCommittee: item.committeeIndex || '---',
+            idCommittee: (item.committeeId + '').padStart(2, '0') || '---',
             name: item.ipfsData?.name || 'Unknown',
             status: item.active ? 'Active' : 'Pending',
             threshold: item.threshold || 0,

@@ -1,4 +1,4 @@
-import { PaletteOptions, Theme, ThemeOptions, darken } from '@mui/material';
+import { PaletteOptions, Theme, ThemeOptions, darken, lighten, outlinedInputClasses } from '@mui/material';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { FontInter, FontRaleway } from 'src/assets/fonts';
 
@@ -89,7 +89,7 @@ export function getThemeConfig(mode: THEME_MODE): ThemeOptions {
         mode,
         divider: '#D3E8E7',
         background: {
-            paper: '#F1F6F5',
+            paper: '#FFFFFF',
             default: '#FFFFFF', // ? body background
             primary: '#CFE9E4',
             secondary: '#F1F6F5',
@@ -116,11 +116,11 @@ export function getThemeConfig(mode: THEME_MODE): ThemeOptions {
             values: { xs: 0, xsm: 600, sm: 760, md: 960, lg: 1280, xl: 1440, xxl: 1800 },
         },
         shadows: [
-            'none',
-            '0px 4px 8px 0px rgba(4, 62, 53, 0.25)',
-            '0px 4px 8px 0px rgba(44, 151, 143, 0.48)',
-            '1px 1px 3px 0px rgba(0, 0, 0, 0.20)',
-            '',
+            'none', // 0
+            '0px 4px 8px 0px rgba(4, 62, 53, 0.25)', // 1
+            '0px 4px 8px 0px rgba(44, 151, 143, 0.48)', // 2
+            '1px 1px 3px 0px rgba(0, 0, 0, 0.20)', // 3
+            '0px 2px 6px 0px rgba(0, 0, 0, 0.20)', // 4
             '',
             '',
             '',
@@ -224,38 +224,51 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                 styleOverrides: {
                     root: {
                         '& .MuiTypography-root': {
-                            color: 'white',
-                            fontWeight: 600,
+                            // color: 'white',
+                            // fontWeight: 600,
                         },
                     },
                 },
             },
             MuiTextField: {
+                defaultProps: { size: 'small' },
+                styleOverrides: {},
+            },
+            MuiInputLabel: {
+                //* title of text field outline
+                defaultProps: {},
                 styleOverrides: {
                     root: {
-                        borderRadius: '16px 3px 16px 3px',
-                        height: '46px',
-                        '.MuiInputBase-root.MuiOutlinedInput-root': {
-                            borderRadius: '12px!important',
-                            height: '46px',
-                            paddingRight: '12px',
-                            '.MuiInputBase-input': {
-                                padding: '13px 12px',
-                                '&.Mui-disabled': {
-                                    WebkitTextFillColor: '#7B7B7B',
-                                    opacity: 0.4,
-                                },
+                        marginLeft: '6px',
+                    },
+                },
+            },
+            MuiInputBase: {
+                //* input of text field
+                styleOverrides: {
+                    root: {
+                        paddingRight: '6px',
+                        paddingLeft: '6px',
+                    },
+                },
+            },
+            MuiOutlinedInput: {
+                styleOverrides: {
+                    root: {
+                        borderRadius: '8px',
+                        //* border of text fields
+                        [`.${outlinedInputClasses.notchedOutline}`]: {
+                            //* background of text title of text field
+                            ['& > legend']: {
+                                marginLeft: '6px',
                             },
-                            '.MuiOutlinedInput-notchedOutline': {
-                                borderRadius: '12px!important',
-                                borderColor: theme.palette.primary.light,
-                                // border: 'none',
-                                // outline: 'none',
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                border: '2px solid',
-                                borderColor: theme.palette.primary.main + '!important',
-                            },
+                            borderColor: theme.palette.background.primary,
+                        },
+                        [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
+                            borderColor: theme.palette.primary.light,
+                        },
+                        [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
+                            borderColor: theme.palette.primary.light,
                         },
                     },
                 },
@@ -266,9 +279,7 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                     root: {
                         textTransform: 'capitalize',
                         borderRadius: '12px',
-                        // font: 'normal normal normal 14px/19px Open Sans',
                         height: '44px',
-                        // fontWeight: 'bold',
                         boxShadow: 'none',
                     },
                     sizeMedium: {
@@ -284,15 +295,8 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                         minWidth: '55px',
                         height: '30px',
                     },
-                    containedSecondary: {
-                        backgroundColor: theme.palette.secondary.dark,
-                        color: '#FFFFFF',
-                        '&:hover, &.Mui-focusVisible': {
-                            backgroundColor: darken(theme.palette.secondary.dark, 0.2),
-                        },
-                    },
+
                     containedPrimary: {
-                        fontWeight: 'bold',
                         backgroundColor: theme.palette.primary.main,
                         color: '#FFFFFF',
                         '&:hover, &.Mui-focusVisible': {
@@ -300,12 +304,18 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                             boxShadow: ' 0px 2px 5px 0px ' + theme.palette.primary.main,
                         },
                     },
+                    containedSecondary: {
+                        backgroundColor: theme.palette.secondary.light,
+                        color: '#FFFFFF',
+                        '&:hover, &.Mui-focusVisible': {
+                            backgroundColor: darken(theme.palette.secondary.dark, 0.2),
+                        },
+                    },
                     outlinedPrimary: {
-                        fontWeight: 'bold',
-                        borderColor: theme.palette.primary.main,
+                        borderColor: theme.palette.primary.light,
                         color: theme.palette.primary.main,
                         '&:hover, &.Mui-focusVisible': {
-                            boxShadow: ' 0px 2px 5px 0px ' + theme.palette.primary.main,
+                            boxShadow: ' 0px 2px 5px 0px ' + theme.palette.primary.light,
                         },
                     },
                     textSecondary: {
@@ -313,7 +323,7 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                     },
                     textPrimary: {
                         '&:hover': {
-                            backgroundColor: darken(theme.palette.primary.light, 0.5),
+                            backgroundColor: lighten(theme.palette.primary.main, 0.85),
                         },
                     },
                 },
@@ -354,11 +364,12 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
             },
             MuiPaper: {
                 defaultProps: {
-                    elevation: 0,
+                    elevation: 2,
                 },
                 styleOverrides: {
                     root: {
-                        borderRadius: '12px',
+                        borderRadius: '8px',
+                        boxShadow: theme.shadows[4],
                     },
                 },
             },
@@ -375,6 +386,7 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                     root: {
                         paddingTop: theme.spacing(2.5),
                         // paddingTop: `${theme.spacing(2.5)} !important`, // prevent override
+                        backgroundColor: '#ffffff',
                     },
                 },
             },
@@ -382,7 +394,7 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                 styleOverrides: {
                     root: {
                         padding: theme.spacing(2, 2.5),
-                        backgroundColor: theme.palette.mode === 'dark' ? '#585F5A' : '#EDEDED',
+                        backgroundColor: '#ffffff',
                         '&.MuiDialogTitle-root+.MuiDialogContent-root': {
                             paddingTop: theme.spacing(2.5),
                         },
@@ -417,28 +429,7 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                     },
                 },
             },
-            MuiOutlinedInput: {
-                styleOverrides: {
-                    root: {
-                        borderRadius: 10,
-                        '&:not(.Mui-focused):hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: theme.palette.secondary.dark,
-                            borderWidth: 2,
-                        },
-                    },
-                    focused: {
-                        '& .MuiOutlinedInput-notchedOutline, &:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: theme.palette.primary.main,
-                        },
-                    },
-                    input: {
-                        // padding: theme.spacing(1.5, 2),
-                    },
-                    notchedOutline: {
-                        borderColor: theme.palette.secondary.dark,
-                    },
-                },
-            },
+
             MuiAccordion: {
                 styleOverrides: {
                     root: {

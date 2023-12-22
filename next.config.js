@@ -2,7 +2,8 @@
 const nextConfig = {
     reactStrictMode: false,
     images: {
-        domains: ['trunganhmedia.com', 'www.aipromptsgalaxy.com'],
+        remotePatterns: [{ hostname: 'trunganhmedia.com' }, { hostname: 'www.aipromptsgalaxy.com' }],
+        // domains: ['trunganhmedia.com', 'www.aipromptsgalaxy.com'],
     },
     webpack(config) {
         config.resolve.alias = {

@@ -9,25 +9,64 @@ import Link from 'next/link';
 
 export default function Sidebar() {
     return (
-        <Box sx={{ position: 'fixed', top: 0, left: 0, zIndex: 999 }}>
-            <Box className="sidebar_bg" sx={{ position: 'absolute', top: 0, left: 0 }}></Box>
-            <Box
-                className="sidebar_main"
-                sx={{
-                    width: sibarWidth,
-                    height: '100svh',
-                    overflow: 'auto',
-                    bgcolor: '#F1F6F5',
-                }}
-            >
-                <Box sx={{ height: headerHeight, display: 'flex', pl: 3, placeItems: 'center' }}>
-                    <Image src={imagePath.LOGO_FULLLL_GREEN} alt="logo auxo" style={{ width: '90px', height: 'auto' }} />
-                </Box>
+        <Box
+            sx={(theme) => ({
+                [theme.breakpoints.down('lg')]: {
+                    '#sidebar': {
+                        transform: 'translateX(-100%)',
+                        '& > #bgsidebar': {
+                            opacity: 0,
+                            transition: 'opacity 0.3s',
+                        },
+                        '& > #mainsidebar': {
+                            transform: 'translateX(-100%)',
+                            transition: 'transform 0.3s',
+                        },
+                    },
+                    '#control-sidebar': {
+                        '&:checked': {
+                            '& + #sidebar': {
+                                transform: 'translateX(0)',
+                                '& > #bgsidebar': {
+                                    opacity: 0.8,
+                                },
+                                '& > #mainsidebar': {
+                                    transform: 'translateX(0)',
+                                },
+                            },
+                        },
+                    },
+                },
+            })}
+        >
+            <input id="control-sidebar" type="checkbox" style={{ display: 'none' }} />
+            <Box id="sidebar" sx={{ position: 'fixed', height: '100svh', width: '100%', top: 0, left: 0, maxWidth: { xs: '100%', lg: sibarWidth }, zIndex: 1000 }}>
+                <Box
+                    id="bgsidebar"
+                    component={'label'}
+                    htmlFor="control-sidebar"
+                    sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', bgcolor: '#1e3732a8', opacity: 0.8, zIndex: 0 }}
+                ></Box>
+                <Box
+                    id="mainsidebar"
+                    sx={{
+                        width: sibarWidth,
+                        height: '100svh',
+                        overflow: 'auto',
+                        bgcolor: '#F1F6F5',
+                        position: 'relative',
+                        zIndex: 1,
+                    }}
+                >
+                    <Box sx={{ height: headerHeight, display: 'flex', pl: 3, placeItems: 'center' }}>
+                        <Image src={imagePath.LOGO_FULLLL_GREEN} alt="logo auxo" style={{ width: '90px', height: 'auto' }} />
+                    </Box>
 
-                <Box className="menu" mt={1} px={1}>
-                    {menu.map((item, index) => {
-                        return <MenuItem index={index} key={'menu' + item.title + index}></MenuItem>;
-                    })}
+                    <Box className="menu" mt={1} px={1}>
+                        {menu.map((item, index) => {
+                            return <MenuItem index={index} key={'menu' + item.title + index}></MenuItem>;
+                        })}
+                    </Box>
                 </Box>
             </Box>
         </Box>

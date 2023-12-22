@@ -38,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         }}
                     >
                         <Header />
-                        {children}
+                        <Box sx={{ minHeight: `calc(100svh - ${headerHeight})` }}>{children}</Box>
                     </Box>
                     <ToastNotifier />
                     <ModalCustom />

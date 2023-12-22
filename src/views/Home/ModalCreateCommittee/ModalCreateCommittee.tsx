@@ -86,7 +86,7 @@ export default function ModalCreateCommittee() {
 
     function checkValid() {
         if (!dataPost.name) {
-            toast('Name is required!', { type: 'error', position: 'top-center' });
+            toast('Name of committee is required!', { type: 'error', position: 'top-center' });
             return false;
         }
         if (!dataPost.creator) {
@@ -146,21 +146,11 @@ export default function ModalCreateCommittee() {
 
     return (
         <Box>
-            <TextField variant="outlined" label="Name" type="text" name="name_committee" value={dataPost.name} onChange={(e) => changeDataPost({ name: e.target.value })} />
-            <br />
-            <br />
-            <Box sx={{ display: 'flex', placeItems: 'center' }}>
-                <TextField
-                    variant="outlined"
-                    label="Creator"
-                    type="text"
-                    name="creator_committee"
-                    sx={{ mr: 5 }}
-                    value={dataPost.creator}
-                    onChange={(e) => changeDataPost({ creator: e.target.value })}
-                />
+            <TextField sx={{ mb: 2 }} label="Committee Name" fullWidth type="text" name="name_committee" value={dataPost.name} onChange={(e) => changeDataPost({ name: e.target.value })} />
+            <Box sx={{ display: 'flex', placeItems: 'center', gap: 3 }}>
+                <TextField fullWidth label="Creator Address" type="text" name="creator_committee" value={dataPost.creator} onChange={(e) => changeDataPost({ creator: e.target.value })} />
 
-                <FormControl sx={{ minWidth: 120 }} size="small">
+                <FormControl sx={{ minWidth: 120 }} fullWidth size="small">
                     <InputLabel id="create-committee-label">Network</InputLabel>
                     <Select labelId="create-committee-label" label="Network" value={dataPost.network} onChange={(e) => changeDataPost({ network: e.target.value as string })}>
                         <MenuItem value={'Berkery'}>Berkery</MenuItem>
@@ -173,15 +163,18 @@ export default function ModalCreateCommittee() {
             <Box mt={3}>
                 <Typography mb={2}>{'Usage Threshold (T out of N)'}</Typography>
                 <TextField value={dataPost.t} onChange={(e) => changeT(e.target.value)} variant="outlined" label="T" type="text" name="t_committee" sx={{ width: '150px', mr: 3 }} />
-                <TextField value={dataPost.n} InputProps={{ readOnly: true }} variant="outlined" label="N" type="text" name="n_committee" sx={{ width: '150px' }} />
+                {/* <TextField value={dataPost.n} InputProps={{ readOnly: true }} variant="outlined" label="N" type="text" name="n_committee" sx={{ width: '150px' }} /> */}
             </Box>
 
             <Box mt={3}>
-                <Typography mb={2}>{'Committee Members (Mina Address)'}</Typography>
+                <Box sx={{ display: 'flex' }} mb={2}>
+                    <Typography>{'Committee Members (Mina Address)'}</Typography>
+                    <Typography ml={'auto'}>N = {dataPost.n}</Typography>
+                </Box>
 
                 {dataPost.members.map((member, index) => {
                     return (
-                        <Box key={member.id} sx={{ display: 'flex', gap: 2, placeItems: 'center', cursor: 'pointer' }}>
+                        <Box key={member.id} sx={{ display: 'flex', gap: 2, placeItems: 'center', cursor: 'pointer', mb: 1 }}>
                             <TextField
                                 value={dataPost.members[index].address}
                                 onChange={(e) => changeAddressMember(index, e.target.value)}
@@ -190,7 +183,6 @@ export default function ModalCreateCommittee() {
                                 label={`#${(index + 1).toString().padStart(2, '0')}`}
                                 type="text"
                                 name="address_member_committee"
-                                sx={{ mb: 1 }}
                             />
                             <RemoveCircleOutlineRounded sx={{ fontSize: '25px', display: dataPost.members.length == 1 ? 'none' : 'block', opacity: 0.66 }} onClick={() => removeMember(index)} />
                         </Box>

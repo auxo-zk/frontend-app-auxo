@@ -1,7 +1,8 @@
 import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { Mina, PublicKey, fetchAccount } from 'o1js';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { toast } from 'react-toastify';
+import { LocalStorageKey, LocalStorageValue } from 'src/constants';
 
 export type TWalletData = {
     userAddress: string;
@@ -45,6 +46,7 @@ export const useWalletFunction = () => {
             const accountExists = res.error == null;
 
             setWalletData({ userAddress: address, userPubKey: publicKey, accountExists: accountExists, isConnecting: false });
+            localStorage.setItem(LocalStorageKey.IsConnected, LocalStorageValue.IsConnectedYes);
         } catch (err) {
             console.log(err);
             toast((err as Error).message, { type: 'error', position: 'top-center', theme: 'dark' });
@@ -55,15 +57,28 @@ export const useWalletFunction = () => {
                 accountExists: false,
                 isConnecting: false,
             });
+            localStorage.setItem(LocalStorageKey.IsConnected, LocalStorageValue.IsConnectedNo);
         }
+    }
+
+    async function disconnectWallet() {
+        localStorage.setItem(LocalStorageKey.IsConnected, LocalStorageValue.IsConnectedNo);
+        window.location.reload();
     }
 
     return {
         setWalletData,
         connectWallet,
+        disconnectWallet,
     };
 };
 
 export function InitWalletData() {
+    const { connectWallet } = useWalletFunction();
+    useLayoutEffect(() => {
+        if (localStorage.getItem(LocalStorageKey.IsConnected) == LocalStorageValue.IsConnectedYes) {
+            connectWallet();
+        }
+    }, []);
     return null;
 }

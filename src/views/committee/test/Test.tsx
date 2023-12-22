@@ -88,45 +88,5 @@ const FileSystem = (files: any): Cache => ({
 });
 
 export default function Test() {
-    const [compiling, setCompiling] = useState<boolean>(true);
-    const [zkAppPubkey, setZkAppPubkey] = useState<PublicKey | null>(null);
-    const [zkApp, setApp] = useState<CommitteeContract | null>(null);
-    const [error, setError] = useState<Error | null>(null);
-    useEffect(() => {
-        (async () => {
-            setCompiling(true);
-
-            try {
-                await sleep(3000);
-                const { ZkApp } = await import('@auxo-dev/dkg');
-                console.log('load import zkApp done....');
-                const zkappPublicKey = PublicKey.fromBase58('B62qmGae1WGtFY2rGBsP9nj4KuqY1nWqptYX5yu3dqvfu39kugHnyRh');
-                const _zkapp = new ZkApp.Committee.CommitteeContract!(zkappPublicKey);
-                console.log('new CommitteeContract....', zkappPublicKey);
-
-                const cacheFiles = await fetchFiles(createCommittee);
-                console.log('Load cacheFile done', cacheFiles);
-                await ZkApp.Committee.CreateCommittee.compile({ cache: FileSystem(cacheFiles) });
-                console.log('await CreateCommittee done');
-                await ZkApp.Committee.CommitteeContract.compile({ cache: FileSystem(cacheFiles) });
-                console.log('await CommitteeContract done done');
-                setApp(_zkapp);
-                setZkAppPubkey(zkappPublicKey);
-            } catch (err) {
-                console.log(err);
-                setError(err as Error);
-            }
-
-            setCompiling(false);
-        })();
-    }, []);
-    return (
-        <Box>
-            {compiling ? (
-                <Typography textAlign={'center'}>Compiling contract CommitteeContract......</Typography>
-            ) : (
-                <>{error ? <Typography>{error.message}</Typography> : <Typography textAlign={'center'}>Done</Typography>}</>
-            )}
-        </Box>
-    );
+    return <Box></Box>;
 }
