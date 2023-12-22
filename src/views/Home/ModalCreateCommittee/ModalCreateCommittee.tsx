@@ -1,4 +1,4 @@
-import { RemoveCircleOutlineRounded, RemoveCircleRounded } from '@mui/icons-material';
+import { Add, RemoveCircleOutlineRounded, RemoveCircleRounded } from '@mui/icons-material';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -189,7 +189,7 @@ export default function ModalCreateCommittee() {
                     );
                 })}
 
-                <Button variant="outlined" fullWidth sx={{ mt: 3 }} onClick={addMemberAddress}>
+                <Button variant="outlined" startIcon={<Add />}  sx={{ mt: 3, mx:"auto" }} onClick={addMemberAddress}>
                     {"Add member's address"}
                 </Button>
             </Box>

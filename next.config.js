@@ -3,7 +3,15 @@ const nextConfig = {
     reactStrictMode: false,
     images: {
         remotePatterns: [{ hostname: 'trunganhmedia.com' }, { hostname: 'www.aipromptsgalaxy.com' }],
-        // domains: ['trunganhmedia.com', 'www.aipromptsgalaxy.com'],
+    },
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/dashboard',
+                permanent: true, // save cached redirect
+            },
+        ];
     },
     webpack(config) {
         config.resolve.alias = {

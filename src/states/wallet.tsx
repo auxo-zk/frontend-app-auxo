@@ -1,6 +1,6 @@
 import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { Mina, PublicKey, fetchAccount } from 'o1js';
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { LocalStorageKey, LocalStorageValue } from 'src/constants';
 
@@ -75,7 +75,7 @@ export const useWalletFunction = () => {
 
 export function InitWalletData() {
     const { connectWallet } = useWalletFunction();
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (localStorage.getItem(LocalStorageKey.IsConnected) == LocalStorageValue.IsConnectedYes) {
             connectWallet();
         }

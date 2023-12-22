@@ -1,3 +1,4 @@
+import { ExpandMore } from '@mui/icons-material';
 import { PaletteOptions, Theme, ThemeOptions, darken, lighten, outlinedInputClasses } from '@mui/material';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { FontInter, FontRaleway } from 'src/assets/fonts';
@@ -269,6 +270,18 @@ export function getThemedComponent(theme: Theme): ThemeOptions {
                         },
                         [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
                             borderColor: theme.palette.primary.light,
+                        },
+                    },
+                },
+            },
+            MuiAutocomplete: {
+                defaultProps: {
+                    popupIcon: <ExpandMore />,
+                },
+                styleOverrides: {
+                    root: {
+                        '& > .MuiFormControl-root > .MuiOutlinedInput-root': {
+                            paddingLeft: '12px',
                         },
                     },
                 },
