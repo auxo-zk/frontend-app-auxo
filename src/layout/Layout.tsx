@@ -1,44 +1,49 @@
-import { Box, CssBaseline, Theme, ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material';
+import { Box } from '@mui/material';
 import Head from 'next/head';
-import React, { useMemo } from 'react';
+import React from 'react';
 import ToastNotifier from 'src/components/ToastNotifier/ToastNotifier';
 import Sidebar from './sidebar/Sidebar';
 import Header from './header/Header';
 import InitStateAll from 'src/states';
-import { getThemeConfig, getThemedComponent, useThemeData } from 'src/states/theme';
-import { deepmerge } from '@mui/utils';
 import ModalCustom from 'src/components/ModalCustom/ModalCustom';
+import ThemeProviderCustom from 'src/components/ThemeProviderCustom/ThemeProviderCustom';
 
-export const sibarWidth = '260px';
-export const headerHeight = '68px';
+export const sibarWidth = '202px';
+export const headerHeight = '65px';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const { mode } = useThemeData();
-    const theme = useMemo<Theme>(() => {
-        const _t = createTheme(getThemeConfig(mode));
-        return responsiveFontSizes(deepmerge(_t, getThemedComponent(_t)));
-    }, [mode]);
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <InitStateAll />
-
+        <>
             <Head>
                 <title>Auxo App</title>
                 <meta name="description" content="auxo app" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-
-            <Box sx={{ overflow: 'hidden', position: 'relative' }}>
-                <Sidebar />
-                <Box sx={{ ml: sibarWidth, position: 'relative' }}>
-                    <Header />
-                    {children}
+            <InitStateAll />
+            <ThemeProviderCustom>
+                <Box sx={{ overflow: 'hidden', position: 'relative' }}>
+                    <Sidebar />
+                    <Box
+                        sx={{
+                            ml: { xs: 0, lg: sibarWidth },
+                            position: 'relative',
+                            zIndex: 1,
+                            height: '100svh',
+                            overflow: 'auto',
+                            backgroundImage: `url(/images/bgheader1.png)`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'top center',
+                            backgroundSize: '975px auto',
+                        }}
+                    >
+                        <Header />
+                        <Box sx={{ minHeight: `calc(100svh - ${headerHeight})` }}>{children}</Box>
+                    </Box>
+                    <ToastNotifier />
+                    <ModalCustom />
                 </Box>
-                <ToastNotifier />
-                <ModalCustom />
-            </Box>
-        </ThemeProvider>
+            </ThemeProviderCustom>
+        </>
     );
 }

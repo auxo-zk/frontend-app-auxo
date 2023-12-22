@@ -10,7 +10,13 @@ export default function ModalCustom() {
         <Dialog fullWidth maxWidth={modal.modalProps?.maxWidth || 'xsm'} open={modal.open} {...modal.modalProps}>
             <DialogTitle>
                 <Box sx={{ display: 'flex' }}>
-                    {typeof modal.title == 'string' ? <Typography variant="h5">{modal.title}</Typography> : modal.title}
+                    {typeof modal.title == 'string' ? (
+                        <Typography variant="h6" color={'primary.main'}>
+                            {modal.title}
+                        </Typography>
+                    ) : (
+                        modal.title
+                    )}
                     <ClearRounded sx={{ ml: 'auto', cursor: 'pointer', fontSize: '25px' }} onClick={closeModal} />
                 </Box>
             </DialogTitle>

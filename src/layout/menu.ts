@@ -1,31 +1,17 @@
-import { IconCommittee, IconInvestor, IconOrganizer, IconUser } from 'src/assets/svg/icon';
+import { Dashboard } from '@mui/icons-material';
+import { IconCommittee, IconInvestor, IconMenuExplorer, IconOrganizer, IconUser } from 'src/assets/svg/icon';
 
 export const menu = [
     {
-        icon: IconUser,
-        title: 'Builders',
-        url: '/#',
-        children: [],
-    },
-    {
-        icon: IconInvestor,
-        title: 'Investors',
-        url: '/#',
-        children: [],
-    },
-    {
-        icon: IconOrganizer,
-        title: 'Organizers',
-        url: '/#',
-        children: [],
+        icon: Dashboard,
+        title: 'Dashboard',
+        url: '/',
+        children: [] as { title: string; url: string }[],
     },
     {
         icon: IconCommittee,
-        title: 'Committee',
-        url: '/committee/dashboard',
-        children: [
-            { title: 'Dashboard', url: '/committee/dashboard' },
-            { title: 'Contribution', url: '/committee/contribution' },
-        ],
+        title: 'Contribution',
+        url: '/#',
+        children: [] as { title: string; url: string }[],
     },
 ];

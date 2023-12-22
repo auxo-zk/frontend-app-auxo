@@ -114,7 +114,7 @@ export default function ModalCreateCommittee() {
 
                 await workerClient?.fetchAccount(userAddress);
                 await workerClient?.createCommittee(userPubKey, {
-                    addresses: ZkApp.Committee.MemberArray.from(dataPost.members.map((member) => PublicKey.fromBase58(member.address))),
+                    addresses: ZkApp.Committee.CheckMemberInput.from(dataPost.members.map((member) => PublicKey.fromBase58(member.address))),
                     threshold: new Field(dataPost.t),
                     ipfsHash: IPFSHash.fromString(ipfsHash),
                 });

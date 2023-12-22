@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: false,
+    images: {
+        remotePatterns: [{ hostname: 'trunganhmedia.com' }, { hostname: 'www.aipromptsgalaxy.com' }],
+        // domains: ['trunganhmedia.com', 'www.aipromptsgalaxy.com'],
+    },
     webpack(config) {
         config.resolve.alias = {
             ...config.resolve.alias,
