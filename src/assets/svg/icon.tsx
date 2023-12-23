@@ -75,14 +75,7 @@ export const IconCommittee: SvgComponent = (props) => {
 
 export const IconSpinLoading: SvgComponent = (props) => {
     return (
-        <MuiSvgIcon
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-            sx={{ mx: 'auto', display: 'block', shapeRendering: 'auto', color: 'primary.main', ...props.sx }}
-            viewBox="0 0 100 100"
-            preserveAspectRatio="xMidYMid"
-        >
+        <MuiSvgIcon {...props} sx={{ mx: 'auto', display: 'block', shapeRendering: 'auto', color: 'primary.light', ...props.sx }} viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
             <g transform="rotate(0 50 50)">
                 <rect x="45" y="8.5" rx="5" ry="5.5" width="10" height="11">
                     <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s" repeatCount="indefinite" />

@@ -189,7 +189,7 @@ export default function ModalCreateCommittee() {
                     );
                 })}
 
-                <Button variant="outlined" startIcon={<Add />}  sx={{ mt: 3, mx:"auto" }} onClick={addMemberAddress}>
+                <Button variant="outlined" startIcon={<Add />} sx={{ mt: 3, mx: 'auto' }} onClick={addMemberAddress}>
                     {"Add member's address"}
                 </Button>
             </Box>
