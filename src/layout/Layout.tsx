@@ -11,8 +11,8 @@ import Sidebar from './sidebar/Sidebar';
 import Header from './header/Header';
 
 export default function Layout({ children }: { children: ReactNode }) {
-    const sidebarWidth = '230px';
-    const headerHeight = '66px';
+    const sidebarWidth = '202px';
+    const headerHeight = '64px';
     return (
         <>
             <Head>
