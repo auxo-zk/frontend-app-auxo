@@ -16,13 +16,13 @@ export type TDataPost = {
     network: string;
     t: number;
     n: number;
-    members: { address: string; id: string }[];
+    members: { name: string; address: string; id: string }[];
 };
 
 export default function ModalCreateCommittee() {
     const { userAddress, userPubKey } = useWalletData();
     const { workerClient } = useCommitteeContract();
-    const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: 'Berkery', t: 1, n: 1, members: [{ id: uuidv4(), address: '' }], name: '' });
+    const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: 'Berkery', t: 1, n: 1, members: [{ id: uuidv4(), address: '', name: '' }], name: '' });
 
     function changeDataPost(dataPost: Partial<TDataPost>) {
         return setDataPost((prev) => {
@@ -33,13 +33,13 @@ export default function ModalCreateCommittee() {
         });
     }
 
-    function changeAddressMember(index: number, value: string) {
+    function changeMemberData(index: number, data: Partial<TDataPost['members'][0]>) {
         setDataPost((prev) => {
             return {
                 ...prev,
                 members: prev.members.map((item, i) => {
                     if (index == i) {
-                        return { ...item, address: value };
+                        return { ...item, ...data };
                     }
                     return item;
                 }),
@@ -49,7 +49,7 @@ export default function ModalCreateCommittee() {
     function addMemberAddress() {
         setDataPost((prev) => {
             const member = [...prev.members];
-            member.push({ address: '', id: uuidv4() });
+            member.push({ address: '', name: '', id: uuidv4() });
             return {
                 ...prev,
                 n: member.length,
@@ -150,48 +150,74 @@ export default function ModalCreateCommittee() {
             <Box sx={{ display: 'flex', placeItems: 'center', gap: 3 }}>
                 <TextField fullWidth label="Creator Address" type="text" name="creator_committee" value={dataPost.creator} onChange={(e) => changeDataPost({ creator: e.target.value })} />
 
-                <FormControl sx={{ minWidth: 120 }} fullWidth size="small">
+                {/* <FormControl sx={{ minWidth: 120 }} fullWidth size="small">
                     <InputLabel id="create-committee-label">Network</InputLabel>
                     <Select labelId="create-committee-label" label="Network" value={dataPost.network} onChange={(e) => changeDataPost({ network: e.target.value as string })}>
                         <MenuItem value={'Berkery'}>Berkery</MenuItem>
                         <MenuItem value={'Devnet'}>Devnet</MenuItem>
                         <MenuItem value={'Mainnet'}>Mainnet</MenuItem>
                     </Select>
-                </FormControl>
+                </FormControl> */}
             </Box>
 
             <Box mt={3}>
-                <Typography mb={2}>{'Usage Threshold (T out of N)'}</Typography>
-                <TextField value={dataPost.t} onChange={(e) => changeT(e.target.value)} variant="outlined" label="T" type="text" name="t_committee" sx={{ width: '150px', mr: 3 }} />
+                {/* <Typography mb={2}>{'Usage Threshold'}</Typography> */}
+                <TextField
+                    fullWidth
+                    value={dataPost.t}
+                    helperText={`T out of N. Number of Committee member. N = ${dataPost.n}`}
+                    onChange={(e) => changeT(e.target.value)}
+                    variant="outlined"
+                    label="Usage Threshold T"
+                    type="text"
+                    name="t_committee"
+                />
                 {/* <TextField value={dataPost.n} InputProps={{ readOnly: true }} variant="outlined" label="N" type="text" name="n_committee" sx={{ width: '150px' }} /> */}
             </Box>
 
             <Box mt={3}>
                 <Box sx={{ display: 'flex' }} mb={2}>
-                    <Typography>{'Committee Members (Mina Address)'}</Typography>
-                    <Typography ml={'auto'}>N = {dataPost.n}</Typography>
+                    <Typography color={'primary.main'} fontWeight={600}>
+                        Committee Members
+                    </Typography>
+                    <Button variant="outlined" sx={{ ml: 'auto' }} onClick={addMemberAddress} size="small">
+                        Add
+                    </Button>
+                    {/* <Typography ml={'auto'}>N = {dataPost.n}</Typography> */}
                 </Box>
 
                 {dataPost.members.map((member, index) => {
                     return (
                         <Box key={member.id} sx={{ display: 'flex', gap: 2, placeItems: 'center', cursor: 'pointer', mb: 1 }}>
+                            <Typography variant="body2" fontWeight={600} color={'primary.main'}>
+                                #{(index + 1).toString().padStart(2, '0')}
+                            </Typography>
                             <TextField
-                                value={dataPost.members[index].address}
-                                onChange={(e) => changeAddressMember(index, e.target.value)}
+                                value={dataPost.members[index].name}
+                                onChange={(e) => changeMemberData(index, { name: e.target.value })}
                                 fullWidth
                                 variant="outlined"
-                                label={`#${(index + 1).toString().padStart(2, '0')}`}
+                                label={`Alias (optional)`}
+                                type="text"
+                                name="name_member_committee"
+                            />
+                            <TextField
+                                value={dataPost.members[index].address}
+                                onChange={(e) => changeMemberData(index, { address: e.target.value })}
+                                fullWidth
+                                variant="outlined"
+                                label={`Address`}
                                 type="text"
                                 name="address_member_committee"
                             />
-                            <RemoveCircleOutlineRounded sx={{ fontSize: '25px', display: dataPost.members.length == 1 ? 'none' : 'block', opacity: 0.66 }} onClick={() => removeMember(index)} />
+
+                            <RemoveCircleOutlineRounded
+                                sx={{ fontSize: '25px', display: dataPost.members.length == 1 ? 'none' : 'block', opacity: 0.66, color: 'primary.light' }}
+                                onClick={() => removeMember(index)}
+                            />
                         </Box>
                     );
                 })}
-
-                <Button variant="outlined" startIcon={<Add />} sx={{ mt: 3, mx: 'auto' }} onClick={addMemberAddress}>
-                    {"Add member's address"}
-                </Button>
             </Box>
 
             <Box mt={5} textAlign={'right'}>

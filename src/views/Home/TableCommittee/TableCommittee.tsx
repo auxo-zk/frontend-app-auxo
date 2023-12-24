@@ -92,10 +92,12 @@ export default function TableCommittee() {
                                         return (
                                             <TableRow key={'commiite' + data.id + index} activeHover>
                                                 <TableCell xs={tableCellRatio[0]}>
-                                                    <Typography fontWeight={600}>{data.idCommittee}</Typography>
+                                                    <Typography fontWeight={600} color={'primary.main'}>
+                                                        {data.idCommittee}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell xs={tableCellRatio[1]}>
-                                                    <Typography>{data.name}</Typography>
+                                                    <Typography color={'primary.main'}>{data.name}</Typography>
                                                 </TableCell>
                                                 <TableCell xs={tableCellRatio[2]}>
                                                     <Typography>{data.status}</Typography>
