@@ -6,6 +6,7 @@ import BG_Header_1 from 'public/images/bgheader1.png';
 import THUMBNAIL1 from 'public/images/auxo-thumbnail1.png';
 import THUMBNAIL2 from 'public/images/auxo-thumbnail2.png';
 import THUMBNAIL3 from 'public/images/auxo-thumbnail3.png';
+import THUMBNAIL4 from 'public/images/auxo-thumbnail4.png';
 
 export const imagePath = {
     LOGO_FULLLL_GREEN,
@@ -17,4 +18,5 @@ export const imagePath = {
     THUMBNAIL1,
     THUMBNAIL2,
     THUMBNAIL3,
+    THUMBNAIL4,
 };

@@ -146,7 +146,7 @@ export default function ModalCreateCommittee() {
 
     return (
         <Box>
-            <TextField sx={{ mb: 2 }} label="Committee Name" fullWidth type="text" name="name_committee" value={dataPost.name} onChange={(e) => changeDataPost({ name: e.target.value })} />
+            <TextField sx={{ mb: 3 }} label="Committee Name" fullWidth type="text" name="name_committee" value={dataPost.name} onChange={(e) => changeDataPost({ name: e.target.value })} />
             <Box sx={{ display: 'flex', placeItems: 'center', gap: 3 }}>
                 <TextField fullWidth label="Creator Address" type="text" name="creator_committee" value={dataPost.creator} onChange={(e) => changeDataPost({ creator: e.target.value })} />
 
