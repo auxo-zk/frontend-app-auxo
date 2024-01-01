@@ -1,13 +1,10 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
-import TableRow from 'src/components/Table/TableRow';
 import TableWrapper from 'src/components/Table/TableWrapper';
 import { TCommitteeData, getListCommittees } from 'src/services/services';
 import { useModalFunction } from 'src/states/modal';
-import { formatAddress } from 'src/utils/format';
-import ModalViewDetailCommitee from '../ModalViewDetailCommittee/ModalViewDetailCommittee';
 import RowTableView from './RowTableView';
 
 const tableCellRatio = [1.2, 2.5, 1.35, 1.65, 1.35, 1.35, 2.1, 0.5];

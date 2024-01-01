@@ -1,6 +1,6 @@
 import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { Mina, PublicKey, fetchAccount } from 'o1js';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { toast } from 'react-toastify';
 import { LocalStorageKey, LocalStorageValue } from 'src/constants';
 
@@ -15,7 +15,7 @@ const initData: TWalletData = {
     userAddress: '',
     userPubKey: null,
     accountExists: false,
-    isConnecting: false,
+    isConnecting: true,
     loadingZkClient: true,
 };
 
@@ -73,11 +73,13 @@ export const useWalletFunction = () => {
     };
 };
 
-export function InitWalletData() {
-    const { connectWallet } = useWalletFunction();
+export default function InitWalletData() {
+    const { connectWallet, setWalletData } = useWalletFunction();
     useEffect(() => {
         if (localStorage.getItem(LocalStorageKey.IsConnected) == LocalStorageValue.IsConnectedYes) {
             connectWallet();
+        } else {
+            setWalletData({ isConnecting: false });
         }
     }, []);
     return null;

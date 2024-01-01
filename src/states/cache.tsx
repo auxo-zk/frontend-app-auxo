@@ -163,7 +163,7 @@ export const useCacheContractFunction = () => {
     };
 };
 
-export function InitCache() {
+export default function InitCache() {
     const { fetchFileCache } = useCacheContractFunction();
     useEffect(() => {
         fetchFileCache();

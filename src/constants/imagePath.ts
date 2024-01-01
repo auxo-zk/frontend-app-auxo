@@ -1,6 +1,7 @@
 import LOGO_FULLLL_GREEN from 'public/images/Auxo-logo-green.png';
 import LOGO_FULLLL_WHITE from 'public/images/Auxo-logo-white.png';
 import LOGO_3D from 'public/images/logo-3d.png';
+import LOGO_ICON_2D from 'public/images/auxo-logo-icon.png';
 
 import BG_Header_1 from 'public/images/bgheader1.png';
 import THUMBNAIL1 from 'public/images/auxo-thumbnail1.png';
@@ -12,6 +13,7 @@ export const imagePath = {
     LOGO_FULLLL_GREEN,
     LOGO_FULLLL_WHITE,
     LOGO_3D,
+    LOGO_ICON_2D,
 
     BG_Header_1,
 
