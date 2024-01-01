@@ -16,7 +16,7 @@ export default function AutocompleteSearchCommittee() {
             groupBy={(option) => option.firstLetter}
             getOptionLabel={(option) => option.title}
             sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Search committee" />}
+            renderInput={(params) => <TextField type="text" name="auto_complete_search_committe" {...params} label="Search committee" />}
         />
     );
 }

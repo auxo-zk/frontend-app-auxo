@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@auxo-dev/auxo-libs": "^0.3.5",
-    "@auxo-dev/dkg": "^0.2.8",
+    "@auxo-dev/dkg": "^0.2.9",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.18",
@@ -22,6 +22,7 @@
     "date-fns": "^3.0.6",
     "jotai": "^2.5.1",
     "next": "14.0.2",
+    "nextjs-progressbar": "^0.0.16",
     "o1js": "^0.15.1",
     "react": "^18",
     "react-dom": "^18",

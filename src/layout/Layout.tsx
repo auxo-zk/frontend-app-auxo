@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                             sx={{
                                 position: 'relative',
                                 zIndex: 1,
-                                ml: { xs: 0, lg: sidebarWidth },
+                                ml: { xs: 0, md: sidebarWidth },
                                 backgroundImage: `url(/images/bgheader1.png)`,
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'top center',

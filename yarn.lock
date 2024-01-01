@@ -14,10 +14,10 @@
   dependencies:
     o1js "0.15.1"
 
-"@auxo-dev/dkg@^0.2.8":
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/@auxo-dev/dkg/-/dkg-0.2.8.tgz#d5da78251bcc9a8eefa8a30b59686d3614602902"
-  integrity sha512-d+ufZwD9rNwZ+pSayMPobtqiOHkLxtnKv0MJzWUjnbksfhJoEdN+NTlixcLJjDCudWxjondSbf7QFfScXjmQ7A==
+"@auxo-dev/dkg@^0.2.9":
+  version "0.2.9"
+  resolved "https://registry.yarnpkg.com/@auxo-dev/dkg/-/dkg-0.2.9.tgz#9f526466ac8640e467edff8154304a2b55a6bd23"
+  integrity sha512-xy7i5Bfg9qbCnCvrM+GFA3K8uwqDo29/FKILZ7OR1qeTx1nMsc2IOziUgwQS0xD3Nh7eZp7ja3cvle/gLsdgmQ==
   dependencies:
     "@auxo-dev/auxo-libs" "^0.3.5"
     o1js "0.15.1"
@@ -574,6 +574,11 @@
   integrity sha512-nNPsNE65wjMxEKI93yOP+NPGGBJz/PoN3kZsVLee0XMiJolxSekEVD8wRwBUBqkwc7UWop0edW50yrCQW4CyRw==
   dependencies:
     undici-types "~5.26.4"
+
+"@types/nprogress@^0.2.0":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@types/nprogress/-/nprogress-0.2.3.tgz#b2150b054a13622fabcba12cf6f0b54c48b14287"
+  integrity sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==
 
 "@types/parse-json@^4.0.0":
   version "4.0.2"
@@ -2178,12 +2183,26 @@ next@14.0.2:
     "@next/swc-win32-ia32-msvc" "14.0.2"
     "@next/swc-win32-x64-msvc" "14.0.2"
 
+nextjs-progressbar@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/nextjs-progressbar/-/nextjs-progressbar-0.0.16.tgz#d2c1e54ffc2c6d52b64282c0d764a44241fbc36e"
+  integrity sha512-GV0fD38EMD3vSDCmkq+tObmoup6QA91a6a9MxGuhJZuRk/9TNsrHGnIQQQ/sggkMkXuT4fBgF6jRjFwScDT3zA==
+  dependencies:
+    "@types/nprogress" "^0.2.0"
+    nprogress "^0.2.0"
+    prop-types "^15.8.1"
+
 node-fetch@^2.6.1:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.7.0.tgz#d0f0fa6e3e2dc1d27efcd8ad99d550bda94d187d"
   integrity sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==
   dependencies:
     whatwg-url "^5.0.0"
+
+nprogress@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/nprogress/-/nprogress-0.2.0.tgz#cb8f34c53213d895723fcbab907e9422adbcafb1"
+  integrity sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==
 
 o1js@0.15.1, o1js@^0.15.1:
   version "0.15.1"

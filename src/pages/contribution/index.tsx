@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React from 'react';
 import { imagePath } from 'src/constants/imagePath';
 import AutocompleteSearchCommittee from 'src/views/contribution/AutocompleteSearchCommittee/AutocompleteSearchCommittee';
+import TableKeyContribution from 'src/views/contribution/TableKeyContribution/TableKeyContribution';
 
 export default function Contribution() {
     return (
@@ -20,6 +21,8 @@ export default function Contribution() {
             </Box>
             <Box>
                 <AutocompleteSearchCommittee />
+
+                <TableKeyContribution />
             </Box>
         </Container>
     );
