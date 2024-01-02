@@ -55,10 +55,28 @@ export const useCommitteeContractFunction = () => {
             });
         }
     }
+    async function check(id: any) {
+        const percent = await committee.workerClient?.getPercentageComplieDone();
+        // console.log('Call check', percent);
+        if (Number(percent) < 100) {
+            toast.update(id, { render: `Compiling contracts...! ${percent}%` });
+        } else {
+            toast.update(id, { render: `Compiled contract successfully!`, isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
+            return true;
+        }
+        return false;
+    }
     async function complie(cacheFiles: any) {
         setCommitteeContractData({ isLoading: true });
+
         try {
             if (committee.workerClient) {
+                const idtoast = toast.loading('Compiling contracts...', { position: 'bottom-left' });
+                const checkComplie = setInterval(async () => {
+                    if (await check(idtoast)) {
+                        clearInterval(checkComplie);
+                    }
+                }, 2000);
                 await committee.workerClient.setActiveInstanceToBerkeley();
                 await committee.workerClient.loadContract();
                 await committee.workerClient.compileContract(cacheFiles);
@@ -66,7 +84,7 @@ export const useCommitteeContractFunction = () => {
                 setCommitteeContractData({
                     isLoading: false,
                 });
-                toast('Compiled contract successfully!', { position: 'bottom-left', type: 'success' });
+                // toast('Compiled contract successfully!', { position: 'bottom-left', type: 'success' });
             }
         } catch (err) {
             console.log(err);
