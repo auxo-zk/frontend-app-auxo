@@ -6,6 +6,7 @@ export const FileSystem = (files: any): Cache => ({
     read({ persistentId, uniqueId, dataType }: any) {
         // read current uniqueId, return data if it matches
         if (!files[persistentId]) {
+            console.log('=========================================================================');
             console.log('read null file persistentId =>', { persistentId, uniqueId, dataType });
             return undefined;
         }
@@ -13,12 +14,13 @@ export const FileSystem = (files: any): Cache => ({
         const currentId = files[persistentId].header;
 
         if (currentId !== uniqueId) {
+            console.log('=========================================================================');
             console.log('current id did not match persistent id =>', currentId);
             return undefined;
         }
 
         if (dataType === 'string') {
-            console.log('found in cache', { persistentId, uniqueId, dataType });
+            // console.log('found in cache', { persistentId, uniqueId, dataType });
             return new TextEncoder().encode(files[persistentId].data);
         }
         // else {
@@ -161,7 +163,7 @@ export const useCacheContractFunction = () => {
     };
 };
 
-export function InitCache() {
+export default function InitCache() {
     const { fetchFileCache } = useCacheContractFunction();
     useEffect(() => {
         fetchFileCache();

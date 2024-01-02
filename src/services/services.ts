@@ -11,8 +11,8 @@ export type TCommitteeData = {
     creator: string;
     members: { publicKey: string; alias: string; lastActive: string }[];
 };
-export async function getListCommittees(): Promise<TCommitteeData[]> {
-    const response = await axios.get(apiUrl.listCommittee);
+export async function getListCommittees(userAddress?: string): Promise<TCommitteeData[]> {
+    const response = await axios.get(`${apiUrl.listCommittee}?member=${userAddress || ''}`);
     console.log('List committee', response.data);
 
     return response.data.map((item: any) => {

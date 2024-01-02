@@ -4,7 +4,7 @@ import { useCommitteeContract, useCommitteeContractFunction } from './committee'
 import { Box, Typography } from '@mui/material';
 import { IconSpinLoading } from 'src/assets/svg/icon';
 
-export function InitContracts() {
+export default function InitContracts() {
     const { isFetching, filesCache } = useCacheContractData();
     const { isInitWorker, workerClient } = useCommitteeContract();
     const { complie, initClient } = useCommitteeContractFunction();

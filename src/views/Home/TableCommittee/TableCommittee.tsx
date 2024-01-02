@@ -1,15 +1,13 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
-import TableRow from 'src/components/Table/TableRow';
 import TableWrapper from 'src/components/Table/TableWrapper';
 import { TCommitteeData, getListCommittees } from 'src/services/services';
 import { useModalFunction } from 'src/states/modal';
-import { formatAddress } from 'src/utils/format';
-import ModalViewDetailCommitee from '../ModalViewDetailCommittee/ModalViewDetailCommittee';
+import RowTableView from './RowTableView';
 
-const tableCellRatio = [1.5, 2.5, 1.2, 1.2, 1, 1, 2, 1.6];
+const tableCellRatio = [1.2, 2.5, 1.35, 1.65, 1.35, 1.35, 2.1, 0.5];
 
 export default function TableCommittee() {
     const { openModal } = useModalFunction();
@@ -35,44 +33,42 @@ export default function TableCommittee() {
             <TableWrapper>
                 <TableHeader>
                     <TableCell xs={tableCellRatio[0]}>
-                        <Typography variant="body2" fontWeight={600}>
-                            Commitee ID
+                        <Typography variant="body2" color={'text.secondary'}>
+                            ID
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[1]}>
-                        <Typography variant="body2" fontWeight={600}>
+                        <Typography variant="body2" color={'text.secondary'}>
                             Name
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[2]}>
-                        <Typography variant="body2" fontWeight={600}>
+                        <Typography variant="body2" color={'text.secondary'}>
                             Status
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[3]}>
-                        <Typography variant="body2" fontWeight={600}>
+                        <Typography variant="body2" color={'text.secondary'}>
                             Threshold
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[4]}>
-                        <Typography variant="body2" fontWeight={600}>
+                        <Typography variant="body2" color={'text.secondary'}>
                             Keys
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[5]}>
-                        <Typography variant="body2" fontWeight={600}>
+                        <Typography variant="body2" color={'text.secondary'}>
                             Requests
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[6]}>
-                        <Typography variant="body2" fontWeight={600}>
+                        <Typography variant="body2" color={'text.secondary'}>
                             Creator
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[7]}>
-                        <Typography variant="body2" fontWeight={600}>
-                            #
-                        </Typography>
+                        <Typography variant="body2" color={'text.secondary'}></Typography>
                     </TableCell>
                 </TableHeader>
                 <Box sx={{}}>
@@ -89,36 +85,7 @@ export default function TableCommittee() {
                             ) : (
                                 <>
                                     {dataList.map((data, index) => {
-                                        return (
-                                            <TableRow key={'commiite' + data.id + index} activeHover>
-                                                <TableCell xs={tableCellRatio[0]}>
-                                                    <Typography fontWeight={600}>{data.idCommittee}</Typography>
-                                                </TableCell>
-                                                <TableCell xs={tableCellRatio[1]}>
-                                                    <Typography>{data.name}</Typography>
-                                                </TableCell>
-                                                <TableCell xs={tableCellRatio[2]}>
-                                                    <Typography>{data.status}</Typography>
-                                                </TableCell>
-                                                <TableCell xs={tableCellRatio[3]}>
-                                                    <Typography>
-                                                        {data.threshold} out of {data.numberOfMembers}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell xs={tableCellRatio[4]}>
-                                                    <Typography>0</Typography>
-                                                </TableCell>
-                                                <TableCell xs={tableCellRatio[5]}>
-                                                    <Typography>0</Typography>
-                                                </TableCell>
-                                                <TableCell xs={tableCellRatio[6]}>
-                                                    <Typography>{formatAddress(data.creator)}</Typography>
-                                                </TableCell>
-                                                <TableCell xs={tableCellRatio[7]}>
-                                                    <Button onClick={() => openModal({ title: 'Committee Members', content: <ModalViewDetailCommitee data={data.members} /> })}>View Members</Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
+                                        return <RowTableView key={'commiite' + data.id + index} data={data} tableCellRatio={tableCellRatio} />;
                                     })}
                                 </>
                             )}

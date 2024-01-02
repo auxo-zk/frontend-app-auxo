@@ -1,5 +1,5 @@
 import { Dashboard } from '@mui/icons-material';
-import { IconCommittee, IconInvestor, IconMenuExplorer, IconOrganizer, IconUser } from 'src/assets/svg/icon';
+import { IconCommittee, IconContribution, IconInvestor, IconMenuExplorer, IconOrganizer, IconUser } from 'src/assets/svg/icon';
 
 export const menu = [
     {
@@ -9,7 +9,7 @@ export const menu = [
         children: [] as { title: string; url: string }[],
     },
     {
-        icon: IconCommittee,
+        icon: IconContribution,
         title: 'Contribution',
         url: '/contribution',
         children: [] as { title: string; url: string }[],

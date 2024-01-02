@@ -1,5 +1,6 @@
 import { FormatNumberOptions } from 'src/global.config';
 import { isNumeric } from '.';
+import { format as fd } from 'date-fns';
 
 /**
  *
@@ -54,3 +55,13 @@ export function numberWithCommas(x: number | string, delimiter = ','): string {
 }
 
 export const sleep = (milisecond: number) => new Promise((resolve) => setTimeout(resolve, milisecond));
+
+export type TDateFormat = 'MMM dd, h:mm a' | 'MMM dd yyyy, h:mm a' | 'MMMM dd, YYY' | 'dd MMM yyyy';
+export const formatDate = (date: Date | string | number, type: TDateFormat) => {
+    try {
+        return fd(date, type);
+    } catch (err) {
+        console.log(`date = ${date} ==>`, err);
+        return 'Invalid Date';
+    }
+};
