@@ -28,14 +28,31 @@ export const zkFunctions = {
     },
     compileContract: async (args: { fileCache: any }) => {
         await state.TypeZkApp!.DKG.UpdateKey.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie DKG UpdateKey done');
+
         await state.TypeZkApp!.Round1.ReduceRound1.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie ReduceRound1 done');
+
         await state.TypeZkApp!.Round1.FinalizeRound1.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie FinalizeRound1 done');
+
         await state.TypeZkApp!.Round2.ReduceRound2.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie ReduceRound2 done');
+
         await state.TypeZkApp!.Encryption.BatchEncryption.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie BatchEncryption done');
+
         await state.TypeZkApp!.Round2.FinalizeRound2.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie FinalizeRound2 done');
+
         await state.TypeZkApp!.Response.ReduceResponse.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie ReduceResponse done');
+
         await state.TypeZkApp!.Encryption.BatchDecryption.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie BatchDecryption done');
+
         await state.TypeZkApp!.Response.CompleteResponse.compile({ cache: FileSystem(args.fileCache) });
+        console.log('complie CompleteResponse done');
 
         await state.TypeZkApp!.Committee.CreateCommittee.compile({ cache: FileSystem(args.fileCache) });
         console.log('complie Create Committee done');
