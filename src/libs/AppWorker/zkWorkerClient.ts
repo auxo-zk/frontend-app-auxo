@@ -60,4 +60,7 @@ export default class ZkAppWorkerClient {
     getTransactionJSON() {
         return this._call('getTransactionJSON', {});
     }
+    getPercentageComplieDone() {
+        return this._call('getPercentageComplieDone', {});
+    }
 }
