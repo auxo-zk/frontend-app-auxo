@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from './url';
+import { KeyStatus } from '@auxo-dev/dkg';
 
 export type TCommitteeData = {
     id: string;
@@ -29,8 +30,30 @@ export async function getListCommittees(userAddress?: string): Promise<TCommitte
     });
 }
 
-export async function postCreateCommittee(data: { name: string; creator: string; network: string }) {
+//TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+export type TPostCreateCommittee = {
+    name: string;
+    creator: string;
+    threshold: number;
+    members: {
+        memberId: number;
+        alias: string;
+        publicKey: string;
+    }[];
+};
+export async function postCreateCommittee(data: TPostCreateCommittee) {
     const response = await axios.post(apiUrl.createCommittee, data);
     console.log('post new committee', response.data);
     return response.data;
+}
+
+//TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+export type TCommitteeKey = {
+    keyId: string;
+    status: KeyStatus;
+};
+export async function getCommitteeKeys(committeeId: string) {
+    const response = await axios.get(apiUrl.committeeKeys(committeeId));
+    console.log('get Committee Keys', response.data);
+    return {};
 }
