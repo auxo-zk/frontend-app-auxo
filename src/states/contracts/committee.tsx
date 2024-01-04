@@ -10,7 +10,6 @@ export type TContractData = {
     isInitWorker: boolean;
     isLoading: boolean;
     address: string;
-    publicKey: PublicKey;
 };
 
 const initData: TContractData = {
@@ -18,7 +17,6 @@ const initData: TContractData = {
     workerClient: null,
     isInitWorker: true,
     isLoading: false,
-    publicKey: PublicKey.fromBase58('B62qmGae1WGtFY2rGBsP9nj4KuqY1nWqptYX5yu3dqvfu39kugHnyRh'),
 };
 
 const committeeContract = atom<TContractData>(initData);
@@ -80,7 +78,14 @@ export const useCommitteeContractFunction = () => {
                 await committee.workerClient.setActiveInstanceToBerkeley();
                 await committee.workerClient.loadContract();
                 await committee.workerClient.compileContract(cacheFiles);
-                await committee.workerClient.initZkappInstance('B62qmGae1WGtFY2rGBsP9nj4KuqY1nWqptYX5yu3dqvfu39kugHnyRh');
+                await committee.workerClient.initZkappInstance({
+                    committeeContract: 'B62qoThuNontzdjMNABcYPcNh9PBsDayqmf8eoX2KPbwu7e5iG9NLWb',
+                    dkgContract: 'B62qjYTkFZHdTQQb8sGsx2JHcLebGFfi5aDD6Kbdu5uRbWKFfT3V9kV',
+                    responseContract: 'B62qnESJmcYus2nTHA7zKmrCWRVTEwxcCqNg2QJZsL6XvJe9Rz5TB1o',
+                    round1Contract: 'B62qoEmjGL5T72rfKqh6S9fo8F71zbFwRjeWrkWSz2Crk8Jk6KrsPRt',
+                    round2Contract: 'B62qnTmPcsukJe2oJhyDYWGo7xTUaBKa6GFAi2536V9HsfBxEqNmGxC',
+                    requestContract: 'B62qqvGzbL8mfQEL4GnXt2v7JqGMrnh3qUgMRWbvibarStSJ2RXw9uA',
+                });
                 setCommitteeContractData({
                     isLoading: false,
                 });

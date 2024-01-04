@@ -1,16 +1,22 @@
-import { Mina, PublicKey, fetchAccount } from 'o1js';
+import { Field, Mina, PublicKey, fetchAccount } from 'o1js';
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import type { ZkApp } from '@auxo-dev/dkg';
+import { Libs, type ZkApp } from '@auxo-dev/dkg';
 import { ArgumentTypes } from 'src/global.config';
 import { FileSystem } from 'src/states/cache';
+import { IPFSHash } from '@auxo-dev/auxo-libs';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
     CommitteeContract: null as null | ZkApp.Committee.CommitteeContract,
+    DKGContract: null as null | ZkApp.DKG.DKGContract,
+    Round1Contract: null as null | ZkApp.Round1.Round1Contract,
+    Round2Contract: null as null | ZkApp.Round2.Round2Contract,
+    ResponseContract: null as null | ZkApp.Response.ResponseContract,
+    RequestContract: null as null | ZkApp.Request.RequestContract,
     transaction: null as null | Transaction,
     complieDone: 0 as number,
 };
@@ -103,15 +109,33 @@ export const zkFunctions = {
         const publicKey = PublicKey.fromBase58(args.publicKey58);
         return await fetchAccount({ publicKey });
     },
-    initZkappInstance: async (args: { publicKey58: string }) => {
-        const publicKey = PublicKey.fromBase58(args.publicKey58);
-        state.CommitteeContract = new state.TypeZkApp!.Committee.CommitteeContract!(publicKey as any);
+    initZkappInstance: async (args: { committeeContract: string; dkgContract: string; round1Contract: string; round2Contract: string; responseContract: string; requestContract: string }) => {
+        const committeeContractPub = PublicKey.fromBase58(args.committeeContract);
+        state.CommitteeContract = new state.TypeZkApp!.Committee.CommitteeContract!(committeeContractPub as any);
+
+        const dkgContractPub = PublicKey.fromBase58(args.dkgContract);
+        state.DKGContract = new state.TypeZkApp!.DKG.DKGContract!(dkgContractPub as any);
+
+        const round1ContractPub = PublicKey.fromBase58(args.round1Contract);
+        state.Round1Contract = new state.TypeZkApp!.Round1.Round1Contract!(round1ContractPub as any);
+
+        const round2ContractPub = PublicKey.fromBase58(args.round2Contract);
+        state.Round2Contract = new state.TypeZkApp!.Round2.Round2Contract!(round2ContractPub as any);
+
+        const responseContractPub = PublicKey.fromBase58(args.responseContract);
+        state.ResponseContract = new state.TypeZkApp!.Response.ResponseContract!(responseContractPub as any);
+
+        const requestContractPub = PublicKey.fromBase58(args.requestContract);
+        state.RequestContract = new state.TypeZkApp!.Request.RequestContract!(requestContractPub);
     },
 
-    createCommittee: async (args: { sender: PublicKey; action: ZkApp.Committee.CommitteeAction }) => {
-        const transaction = await Mina.transaction(args.sender, () => {
+    createCommittee: async (args: { sender: string; action: { addresses: string[]; threshold: number; ipfsHash: string } }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+        const transaction = await Mina.transaction(sender, () => {
             state.CommitteeContract!.createCommittee({
-                ...args.action,
+                addresses: Libs.Committee.MemberArray.from(args.action.addresses.map((member) => PublicKey.fromBase58(member))),
+                threshold: new Field(args.action.threshold),
+                ipfsHash: IPFSHash.fromString(args.action.ipfsHash),
             });
         });
         state.transaction = transaction;

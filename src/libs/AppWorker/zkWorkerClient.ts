@@ -47,12 +47,12 @@ export default class ZkAppWorkerClient {
     fetchAccount(publicKey58: string) {
         return this._call('fetchAccount', { publicKey58 });
     }
-    initZkappInstance(publicKey58: string) {
-        return this._call('initZkappInstance', { publicKey58 });
+    initZkappInstance(args: ArgumentZkFuction<'initZkappInstance'>) {
+        return this._call('initZkappInstance', args);
     }
 
-    createCommittee(sender: PublicKey, action: CommitteeAction) {
-        return this._call('createCommittee', { sender, action });
+    createCommittee(args: ArgumentZkFuction<'createCommittee'>) {
+        return this._call('createCommittee', args);
     }
     proveTransaction() {
         return this._call('proveTransaction', {});

@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Field, PublicKey, fetchAccount, Mina } from 'o1js';
 import { IPFSHash } from '@auxo-dev/auxo-libs';
 // import { MemberArray } from '@auxo-dev/dkg/build/types/src/contracts/Committee';
-import { ZkApp } from '@auxo-dev/dkg';
+import { ZkApp, Libs } from '@auxo-dev/dkg';
 export type TDataPost = {
     name: string;
     creator: string;
@@ -109,15 +109,31 @@ export default function ModalCreateCommittee() {
         if (checkValid()) {
             if (userPubKey == null) throw new Error('You have not connected to your wallet yet!');
             try {
-                const response = await postCreateCommittee({ name: dataPost.name, creator: dataPost.creator, network: dataPost.network });
-                const ipfsHash = response.Hash;
-
-                await workerClient?.fetchAccount(userAddress);
-                await workerClient?.createCommittee(userPubKey, {
-                    addresses: ZkApp.Committee.CheckMemberInput.from(dataPost.members.map((member) => PublicKey.fromBase58(member.address))),
-                    threshold: new Field(dataPost.t),
-                    ipfsHash: IPFSHash.fromString(ipfsHash),
+                const response = await postCreateCommittee({
+                    name: dataPost.name,
+                    creator: dataPost.creator,
+                    members: dataPost.members.map((item, index) => {
+                        return {
+                            alias: item.name,
+                            memberId: index,
+                            publicKey: item.address,
+                        };
+                    }),
+                    threshold: dataPost.t,
                 });
+                const ipfsHash = response.Hash;
+                console.log(ipfsHash);
+                await workerClient?.fetchAccount(userAddress);
+
+                await workerClient?.createCommittee({
+                    sender: userAddress,
+                    action: {
+                        addresses: dataPost.members.map((member) => member.address),
+                        threshold: dataPost.t,
+                        ipfsHash: ipfsHash,
+                    },
+                });
+
                 toast('Create transaction and proving...', { type: 'info', position: 'top-center' });
                 await workerClient?.proveTransaction();
 
