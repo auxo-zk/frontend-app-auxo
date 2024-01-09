@@ -1,5 +1,6 @@
 export enum LocalStorageKey {
     'IsConnected' = 'isConnected',
+    'secretRound1Contribution' = 'secretRound1Contribution',
 }
 
 export enum LocalStorageValue {

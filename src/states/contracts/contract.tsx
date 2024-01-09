@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useCacheContractData } from '../cache';
-import { useCommitteeContract, useCommitteeContractFunction } from './committee';
+import { useContractData, useContractFunction } from './committee';
 import { Box, Typography } from '@mui/material';
 import { IconSpinLoading } from 'src/assets/svg/icon';
 
 export default function InitContracts() {
     const { isFetching, filesCache } = useCacheContractData();
-    const { isInitWorker, workerClient } = useCommitteeContract();
-    const { complie, initClient } = useCommitteeContractFunction();
+    const { isInitWorker, workerClient } = useContractData();
+    const { complie, initClient } = useContractFunction();
     useEffect(() => {
         initClient();
     }, []);

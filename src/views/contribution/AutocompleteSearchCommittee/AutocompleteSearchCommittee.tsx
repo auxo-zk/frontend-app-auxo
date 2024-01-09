@@ -18,15 +18,15 @@ export default function AutocompleteSearchCommittee() {
         <Autocomplete
             // value={value}
             onChange={(e, value) => {
-                console.log(value);
-                setContributionPageData({ selectedCommittee: value ? value.id : null });
+                // console.log(value);
+                setContributionPageData({ selectedCommittee: value ? value : null });
             }}
             options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
             groupBy={(option) => option.firstLetter}
             getOptionLabel={(option) => option.name}
-            popupIcon={<ExpandMoreRounded sx={{ color: 'primary.light' }} />}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField type="text" name="auto_complete_search_committe" {...params} label="Search committee" />}
+            popupIcon={<ExpandMoreRounded sx={{ color: 'secondary.main' }} />}
+            sx={{ width: 300, mt: 2.5 }}
+            renderInput={(params) => <TextField type="text" name="auto_complete_search_committe" {...params} label="Search committee" color="secondary" />}
         />
     );
 }

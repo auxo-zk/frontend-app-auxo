@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
@@ -6,6 +6,7 @@ import TableWrapper from 'src/components/Table/TableWrapper';
 import { TCommitteeData, getListCommittees } from 'src/services/services';
 import { useModalFunction } from 'src/states/modal';
 import RowTableView from './RowTableView';
+import { RefreshRounded } from '@mui/icons-material';
 
 const tableCellRatio = [1.2, 2.5, 1.35, 1.65, 1.35, 1.35, 2.1, 0.5];
 
@@ -68,7 +69,9 @@ export default function TableCommittee() {
                         </Typography>
                     </TableCell>
                     <TableCell xs={tableCellRatio[7]}>
-                        <Typography variant="body2" color={'text.secondary'}></Typography>
+                        <IconButton color="primary" onClick={getDataListCommittee} title="Refresh Data">
+                            <RefreshRounded />
+                        </IconButton>
                     </TableCell>
                 </TableHeader>
                 <Box sx={{}}>

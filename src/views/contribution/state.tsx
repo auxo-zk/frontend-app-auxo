@@ -7,7 +7,7 @@ import { useWalletData } from 'src/states/wallet';
 export type TContributionPageData = {
     status: FetchStatus;
     listCommittee: TCommitteeData[];
-    selectedCommittee: string | null;
+    selectedCommittee: TCommitteeData | null;
 };
 
 const initData: TContributionPageData = {

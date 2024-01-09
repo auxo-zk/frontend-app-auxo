@@ -155,3 +155,18 @@ export const IconFolder: SvgComponent = (props) => {
         </MuiSvgIcon>
     );
 };
+
+export const IconDownload: SvgComponent = (props) => {
+    return (
+        <MuiSvgIcon {...props} viewBox="0 0 12 12" fill="none">
+            <path
+                d="M11.5 7.83203V10.276C11.5 10.6001 11.3713 10.9109 11.1421 11.1401C10.9129 11.3693 10.6021 11.498 10.278 11.498H1.722C1.56152 11.498 1.40262 11.4664 1.25436 11.405C1.1061 11.3436 0.971389 11.2536 0.857915 11.1401C0.744442 11.0266 0.65443 10.8919 0.593019 10.7437C0.531608 10.5954 0.5 10.4365 0.5 10.276V7.83203"
+                stroke="#043E35"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path d="M9.055 4.77603L6 7.83203L2.944 4.77603" stroke="#043E35" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M6 7.83203V0.499031" stroke="#043E35" strokeLinecap="round" strokeLinejoin="round" />
+        </MuiSvgIcon>
+    );
+};

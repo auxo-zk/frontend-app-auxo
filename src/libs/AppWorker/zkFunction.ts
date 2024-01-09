@@ -4,7 +4,7 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import { Libs, type ZkApp } from '@auxo-dev/dkg';
+import { Libs, Storage, ZkApp } from '@auxo-dev/dkg';
 import { ArgumentTypes } from 'src/global.config';
 import { FileSystem } from 'src/states/cache';
 import { IPFSHash } from '@auxo-dev/auxo-libs';
@@ -140,6 +140,25 @@ export const zkFunctions = {
         });
         state.transaction = transaction;
     },
+
+    genNewKeyContributions: async (args: { sender: string; memberId: string; committee: { committeeId: string; witness: any }; memberWitness: { level1: any; level2: any } }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+        const transaction = await Mina.transaction(sender, () => {
+            state.DKGContract?.committeeAction(
+                new Field(args.committee.committeeId),
+                new Field(-1),
+                new Field(args.memberId),
+                new Field(ZkApp.DKG.ActionEnum.GENERATE_KEY),
+                Storage.SharedStorage.ZkAppRef.fromJSON({ address: state.CommitteeContract!.address.toBase58(), witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness) }),
+                Storage.CommitteeStorage.FullMTWitness.fromJSON({
+                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
+                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
+                })
+            );
+        });
+        state.transaction = transaction;
+    },
+
     proveTransaction: async (args: {}) => {
         await state.transaction!.prove();
     },

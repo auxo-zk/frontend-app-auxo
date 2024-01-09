@@ -1,7 +1,4 @@
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { FileSystem } from '../cache';
-import { PublicKey } from 'o1js';
-import { sleep } from 'src/utils/format';
+import { atom, useAtom, useAtomValue } from 'jotai';
 import ZkAppWorkerClient from 'src/libs/AppWorker/zkWorkerClient';
 import { toast } from 'react-toastify';
 
@@ -9,11 +6,9 @@ export type TContractData = {
     workerClient: ZkAppWorkerClient | null;
     isInitWorker: boolean;
     isLoading: boolean;
-    address: string;
 };
 
 const initData: TContractData = {
-    address: 'B62qmGae1WGtFY2rGBsP9nj4KuqY1nWqptYX5yu3dqvfu39kugHnyRh',
     workerClient: null,
     isInitWorker: true,
     isLoading: false,
@@ -21,9 +16,9 @@ const initData: TContractData = {
 
 const committeeContract = atom<TContractData>(initData);
 
-export const useCommitteeContract = () => useAtomValue(committeeContract);
+export const useContractData = () => useAtomValue(committeeContract);
 
-export const useCommitteeContractFunction = () => {
+export const useContractFunction = () => {
     const [committee, _setCommitteeContractData] = useAtom(committeeContract);
 
     function setCommitteeContractData(data: Partial<TContractData>) {
@@ -79,12 +74,12 @@ export const useCommitteeContractFunction = () => {
                 await committee.workerClient.loadContract();
                 await committee.workerClient.compileContract(cacheFiles);
                 await committee.workerClient.initZkappInstance({
-                    committeeContract: 'B62qoThuNontzdjMNABcYPcNh9PBsDayqmf8eoX2KPbwu7e5iG9NLWb',
-                    dkgContract: 'B62qjYTkFZHdTQQb8sGsx2JHcLebGFfi5aDD6Kbdu5uRbWKFfT3V9kV',
-                    responseContract: 'B62qnESJmcYus2nTHA7zKmrCWRVTEwxcCqNg2QJZsL6XvJe9Rz5TB1o',
-                    round1Contract: 'B62qoEmjGL5T72rfKqh6S9fo8F71zbFwRjeWrkWSz2Crk8Jk6KrsPRt',
-                    round2Contract: 'B62qnTmPcsukJe2oJhyDYWGo7xTUaBKa6GFAi2536V9HsfBxEqNmGxC',
-                    requestContract: 'B62qqvGzbL8mfQEL4GnXt2v7JqGMrnh3qUgMRWbvibarStSJ2RXw9uA',
+                    committeeContract: 'B62qiYCgNQhu1KddDQZs7HL8cLqRd683YufYX1BNceZ6BHnC1qfEcJ9',
+                    dkgContract: 'B62qr8z7cT4D5Qq2aH7SabUDbpXEb8EXMCUin26xmcJNQtVu616CNFC',
+                    responseContract: 'B62qoFQQosbN2JfquHyzePdyEN71cbCWf2Jb6am9RR65KVHy1s9kh67',
+                    round1Contract: 'B62qmj3E8uH1gqtzvywLvP3aaTSaxby9z8LyvBcK7nNQJ67NQMXRXz8',
+                    round2Contract: 'B62qmZrJai7AG7pffzP4MdufR9ejPesn9ZdZkvJQXisMDUSTJZ846LE',
+                    requestContract: 'B62qjidL7d5rEjkoNqSJRZxdv84ZXrAFpADiaaEyL3pbb9TYcAfMCgy',
                 });
                 setCommitteeContractData({
                     isLoading: false,
