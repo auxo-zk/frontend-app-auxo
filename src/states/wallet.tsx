@@ -74,6 +74,7 @@ export const useWalletFunction = () => {
 };
 
 export default function InitWalletData() {
+    const { userAddress } = useWalletData();
     const { connectWallet, setWalletData } = useWalletFunction();
     useEffect(() => {
         if (localStorage.getItem(LocalStorageKey.IsConnected) == LocalStorageValue.IsConnectedYes) {
@@ -82,5 +83,18 @@ export default function InitWalletData() {
             setWalletData({ isConnecting: false });
         }
     }, []);
+
+    useEffect(() => {
+        if (userAddress) {
+            window.mina?.on('accountsChanged', (accounts: string[]) => {
+                connectWallet();
+            });
+
+            return () => {
+                window.mina?.on('accountsChanged', (accounts: string[]) => {});
+            };
+        }
+    }, [userAddress]);
+
     return null;
 }

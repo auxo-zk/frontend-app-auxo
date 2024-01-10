@@ -4,10 +4,11 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import { Libs, type ZkApp } from '@auxo-dev/dkg';
+import { Libs, Storage, ZkApp } from '@auxo-dev/dkg';
 import { ArgumentTypes } from 'src/global.config';
 import { FileSystem } from 'src/states/cache';
 import { IPFSHash } from '@auxo-dev/auxo-libs';
+import { TWitness } from 'src/services/services';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
@@ -140,6 +141,50 @@ export const zkFunctions = {
         });
         state.transaction = transaction;
     },
+
+    genNewKeyContributions: async (args: { sender: string; memberId: string; committee: { committeeId: string; witness: TWitness }; memberWitness: { level1: TWitness; level2: TWitness } }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+
+        await fetchAccount({ publicKey: sender });
+        await fetchAccount({ publicKey: state.DKGContract!.address });
+        await fetchAccount({ publicKey: state.CommitteeContract!.address });
+
+        const transaction = await Mina.transaction(sender, () => {
+            state.DKGContract!.committeeAction(
+                new Field(args.committee.committeeId),
+                new Field(-1),
+                new Field(args.memberId),
+                new Field(0),
+                Storage.SharedStorage.ZkAppRef.fromJSON({
+                    address: state.CommitteeContract!.address.toBase58(),
+                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness),
+                }),
+                Storage.CommitteeStorage.FullMTWitness.fromJSON({
+                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
+                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
+                })
+            );
+        });
+        state.transaction = transaction;
+    },
+
+    submitContributionRound1: async (args: { sender: string; keyId: string; committee: { committeeId: string; witness: TWitness }; memberWitness: { level1: TWitness; level2: TWitness } }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+        const transaction = await Mina.transaction(sender, () => {
+            state.Round1Contract!.contribute(
+                new Field(args.committee.committeeId),
+                new Field(args.keyId),
+                new Libs.Committee.CArray([]),
+                Storage.SharedStorage.ZkAppRef.fromJSON({ address: state.CommitteeContract!.address.toBase58(), witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness) }),
+                Storage.CommitteeStorage.FullMTWitness.fromJSON({
+                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
+                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
+                })
+            );
+        });
+        state.transaction = transaction;
+    },
+
     proveTransaction: async (args: {}) => {
         await state.transaction!.prove();
     },

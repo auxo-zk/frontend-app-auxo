@@ -3,13 +3,14 @@ import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typo
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { postCreateCommittee } from 'src/services/services';
-import { useCommitteeContract } from 'src/states/contracts/committee';
+import { useContractData } from 'src/states/contracts/committee';
 import { useWalletData } from 'src/states/wallet';
 import { v4 as uuidv4 } from 'uuid';
 import { Field, PublicKey, fetchAccount, Mina } from 'o1js';
 import { IPFSHash } from '@auxo-dev/auxo-libs';
 // import { MemberArray } from '@auxo-dev/dkg/build/types/src/contracts/Committee';
 import { ZkApp, Libs } from '@auxo-dev/dkg';
+import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
 export type TDataPost = {
     name: string;
     creator: string;
@@ -21,7 +22,7 @@ export type TDataPost = {
 
 export default function ModalCreateCommittee() {
     const { userAddress, userPubKey } = useWalletData();
-    const { workerClient } = useCommitteeContract();
+    const { workerClient } = useContractData();
     const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: 'Berkery', t: 1, n: 1, members: [{ id: uuidv4(), address: '', name: '' }], name: '' });
 
     function changeDataPost(dataPost: Partial<TDataPost>) {
@@ -107,8 +108,9 @@ export default function ModalCreateCommittee() {
 
     async function createCommitee() {
         if (checkValid()) {
-            if (userPubKey == null) throw new Error('You have not connected to your wallet yet!');
             try {
+                if (userAddress == null) throw new Error('You have not connected to your wallet yet!');
+                if (workerClient == null) throw new Error('Worker client failed!');
                 const response = await postCreateCommittee({
                     name: dataPost.name,
                     creator: dataPost.creator,
@@ -137,21 +139,11 @@ export default function ModalCreateCommittee() {
                 toast('Create transaction and proving...', { type: 'info', position: 'top-center' });
                 await workerClient?.proveTransaction();
 
-                const transactionJSON = await workerClient?.getTransactionJSON();
+                const transactionJSON = await workerClient.getTransactionJSON();
                 console.log(transactionJSON);
-
-                let transactionFee = 0.1;
-                toast('Prove tx success! Sending transaction...', { type: 'info', position: 'top-center' });
-
-                const { hash } = await window.mina!.sendTransaction({
-                    transaction: transactionJSON,
-                    feePayer: {
-                        fee: transactionFee,
-                        memo: '',
-                    },
-                });
-                const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
+                const { transactionLink } = await workerClient.sendTransaction(transactionJSON);
                 console.log(transactionLink);
+
                 toast('Send transaction successful!', { type: 'success', position: 'top-center' });
             } catch (error) {
                 console.log(error);
@@ -162,22 +154,18 @@ export default function ModalCreateCommittee() {
 
     return (
         <Box>
+            <Typography variant="body2" fontWeight={600}>
+                Creator Address:
+            </Typography>
+            <Typography mb={3} variant="body2" fontWeight={500}>
+                {dataPost.creator}
+            </Typography>
             <TextField sx={{ mb: 3 }} label="Committee Name" fullWidth type="text" name="name_committee" value={dataPost.name} onChange={(e) => changeDataPost({ name: e.target.value })} />
-            <Box sx={{ display: 'flex', placeItems: 'center', gap: 3 }}>
+            {/* <Box sx={{ display: 'flex', placeItems: 'center', gap: 3 }}>
                 <TextField fullWidth label="Creator Address" type="text" name="creator_committee" value={dataPost.creator} onChange={(e) => changeDataPost({ creator: e.target.value })} />
+            </Box> */}
 
-                {/* <FormControl sx={{ minWidth: 120 }} fullWidth size="small">
-                    <InputLabel id="create-committee-label">Network</InputLabel>
-                    <Select labelId="create-committee-label" label="Network" value={dataPost.network} onChange={(e) => changeDataPost({ network: e.target.value as string })}>
-                        <MenuItem value={'Berkery'}>Berkery</MenuItem>
-                        <MenuItem value={'Devnet'}>Devnet</MenuItem>
-                        <MenuItem value={'Mainnet'}>Mainnet</MenuItem>
-                    </Select>
-                </FormControl> */}
-            </Box>
-
-            <Box mt={3}>
-                {/* <Typography mb={2}>{'Usage Threshold'}</Typography> */}
+            <Box>
                 <TextField
                     fullWidth
                     value={dataPost.t}
@@ -188,7 +176,6 @@ export default function ModalCreateCommittee() {
                     type="text"
                     name="t_committee"
                 />
-                {/* <TextField value={dataPost.n} InputProps={{ readOnly: true }} variant="outlined" label="N" type="text" name="n_committee" sx={{ width: '150px' }} /> */}
             </Box>
 
             <Box mt={3}>
@@ -199,7 +186,6 @@ export default function ModalCreateCommittee() {
                     <Button variant="outlined" sx={{ ml: 'auto' }} onClick={addMemberAddress} size="small">
                         Add
                     </Button>
-                    {/* <Typography ml={'auto'}>N = {dataPost.n}</Typography> */}
                 </Box>
 
                 {dataPost.members.map((member, index) => {
@@ -251,8 +237,8 @@ function ButtonCreate({ onClick }: { onClick: () => Promise<void> }) {
         setLoading(false);
     }
     return (
-        <Button variant="contained" onClick={_onClick}>
-            {loading ? 'Loading...' : 'Create'}
-        </Button>
+        <ButtonLoading muiProps={{ variant: 'contained', onClick: () => _onClick() }} isLoading={loading}>
+            Create
+        </ButtonLoading>
     );
 }

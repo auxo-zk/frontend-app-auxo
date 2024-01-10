@@ -6,9 +6,10 @@ import BoxPrivateData from 'src/components/BoxPrivateData/BoxPrivateData';
 import { imagePath } from 'src/constants/imagePath';
 import AutocompleteSearchCommittee from 'src/views/contribution/AutocompleteSearchCommittee/AutocompleteSearchCommittee';
 import TableKeyContribution from 'src/views/contribution/TableKeyContribution/TableKeyContribution';
-import InitStateDistributionPage from 'src/views/contribution/state';
+import InitStateDistributionPage, { useContributionPageData } from 'src/views/contribution/state';
 
 export default function Contribution() {
+    const { selectedCommittee } = useContributionPageData();
     return (
         <Container sx={{ pt: 5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
@@ -16,6 +17,7 @@ export default function Contribution() {
                     <Typography variant="h1" textTransform={'uppercase'} maxWidth={'614px'}>
                         Contribution
                     </Typography>
+                    <AutocompleteSearchCommittee />
                 </Box>
 
                 <Box sx={{ display: { xs: 'none', xsm: 'block' } }}>
@@ -24,12 +26,17 @@ export default function Contribution() {
             </Box>
             <BoxPrivateData>
                 <InitStateDistributionPage />
-                <Typography variant="h6" mb={2.5}>
-                    Keys Contribution
-                </Typography>
-                <AutocompleteSearchCommittee />
-
-                <TableKeyContribution />
+                {selectedCommittee ? (
+                    <>
+                        <TableKeyContribution />
+                    </>
+                ) : (
+                    <Box>
+                        <Typography textAlign={'center'} variant="h5">
+                            Select a committee to continute!
+                        </Typography>
+                    </Box>
+                )}
             </BoxPrivateData>
         </Container>
     );

@@ -24,6 +24,18 @@ export default class ZkAppWorkerClient {
     async loadWorker(): Promise<void> {
         await sleep(5000);
     }
+    async sendTransaction(transactionJSON: string, memo?: string) {
+        const transactionFee = 0.1;
+        const { hash } = await window.mina!.sendTransaction({
+            transaction: transactionJSON,
+            feePayer: {
+                fee: transactionFee,
+                memo: memo || '',
+            },
+        });
+        const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
+        return { hash, transactionLink };
+    }
 
     _call<Key extends TZkFuction>(fn: Key, args: ArgumentZkFuction<Key>): ReturenValueZkFunction<Key> {
         return new Promise((resolve, reject) => {
@@ -53,6 +65,9 @@ export default class ZkAppWorkerClient {
 
     createCommittee(args: ArgumentZkFuction<'createCommittee'>) {
         return this._call('createCommittee', args);
+    }
+    genNewKeyContributions(args: ArgumentZkFuction<'genNewKeyContributions'>) {
+        return this._call('genNewKeyContributions', args);
     }
     proveTransaction() {
         return this._call('proveTransaction', {});
