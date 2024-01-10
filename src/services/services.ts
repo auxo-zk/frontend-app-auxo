@@ -15,7 +15,7 @@ export type TCommitteeData = {
     publicKeys: string[];
 };
 export async function getListCommittees(userAddress?: string): Promise<TCommitteeData[]> {
-    const response = await axios.get(`${apiUrl.listCommittee}?member=${userAddress || ''}`);
+    const response = await axios.get(`${apiUrl.listCommittee}${userAddress ? `?member=${userAddress}` : ''}`);
     console.log('List committee', response.data);
 
     return response.data.map((item: any) => {
@@ -91,8 +91,25 @@ export async function getCommitteeKeys(committeeId: string): Promise<TCommitteeK
 }
 
 //TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export async function getStorageDkgZApps() {
+export type TWitness = {
+    path: string[];
+    isLeft: boolean[];
+};
+
+export async function getStorageDkgZApps(): Promise<TWitness[]> {
     const response = await axios.get(apiUrl.getStorageDkgZkapp);
-    console.log('get dkg zkapp', response.data);
-    return null;
+    // console.log('get dkg zkapp', response.data);
+    return response.data || [];
+}
+
+export async function getCommitteeMemberLv1(): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getCommitteeMemberLv1);
+    // console.log('getCommitteeMemberLv1', response.data);
+    return response.data || [];
+}
+
+export async function getCommitteeMemberLv2(committeeId: string): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getCommitteeMemberLv2(committeeId));
+    // console.log('getCommitteeMemberLv2', response.data);
+    return response.data || [];
 }

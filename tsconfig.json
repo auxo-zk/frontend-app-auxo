@@ -13,7 +13,7 @@
         "module": "esnext",
         "moduleResolution": "Node",
         "resolveJsonModule": true,
-        "isolatedModules": false,
+        "isolatedModules": true,
         "noFallthroughCasesInSwitch": true,
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,

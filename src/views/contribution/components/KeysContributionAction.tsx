@@ -27,8 +27,8 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
 
         const secret = generateRandomPolynomial(T, N);
         const contribution = getRound1Contribution(secret);
-        console.log(contribution);
-        localStorage.setItem(LocalStorageKey.secretRound1Contribution, JSON.stringify(contribution));
+        console.log(secret);
+        localStorage.setItem(LocalStorageKey.secretRound1Contribution, JSON.stringify(secret));
     }
 
     function checkMemberIdInRound1(round1: TRound1Data[], memberId: string) {
@@ -50,7 +50,7 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
 }
 
 function KeysRound2Action({ dataKey, dataUserInCommittee }: Props) {
-    function checkMemberIdInRound1(round1: TRound2Data[], memberId: string) {
+    function checkMemberIdInRound2(round1: TRound2Data[], memberId: string) {
         if (memberId == '') return false;
         for (let i of round1) {
             if (i.memberId + '' == memberId) {
@@ -60,7 +60,7 @@ function KeysRound2Action({ dataKey, dataUserInCommittee }: Props) {
         return false;
     }
     return (
-        <Box sx={{ display: checkMemberIdInRound1(dataKey.round2, dataUserInCommittee?.memberId || '') ? 'flex' : 'none' }}>
+        <Box sx={{ display: checkMemberIdInRound2(dataKey.round2, dataUserInCommittee?.memberId || '') ? 'flex' : 'none' }}>
             <ButtonLoading muiProps={{ size: 'small' }} isLoading={false}>
                 Submit Contribution
             </ButtonLoading>

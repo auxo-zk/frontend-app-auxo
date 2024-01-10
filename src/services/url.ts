@@ -5,4 +5,6 @@ export const apiUrl = {
     createCommittee: `${BACKEND_BASE_URL}/committees`,
     committeeKeys: (committeeId: string) => `${BACKEND_BASE_URL}/committees/${committeeId}/keys`,
     getStorageDkgZkapp: `${BACKEND_BASE_URL}/storages/dkg/zkapps`,
+    getCommitteeMemberLv1: `${BACKEND_BASE_URL}/storages/committee/member/level1`,
+    getCommitteeMemberLv2: (committeeId: string) => `${BACKEND_BASE_URL}/storages/committee/member/level2/${committeeId}`,
 };
