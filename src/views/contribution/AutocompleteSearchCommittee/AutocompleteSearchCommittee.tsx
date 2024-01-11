@@ -4,25 +4,25 @@ import React, { useState } from 'react';
 import { useContributionPageData, useContributionPageFunction } from '../state';
 
 export default function AutocompleteSearchCommittee() {
-    const { listCommittee } = useContributionPageData();
+    const { listCommittee, selectedCommittee } = useContributionPageData();
     const { setContributionPageData } = useContributionPageFunction();
-    const options = listCommittee.map((option) => {
-        const firstLetter = option.name[0].toUpperCase();
-        return {
-            firstLetter: /[0-9]/.test(firstLetter) ? '0-9' : firstLetter,
-            ...option,
-        };
-    });
+    // const options = listCommittee.map((option) => {
+    //     const firstLetter = option.name[0].toUpperCase();
+    //     return {
+    //         firstLetter: /[0-9]/.test(firstLetter) ? '0-9' : firstLetter,
+    //         ...option,
+    //     };
+    // });
 
     return (
         <Autocomplete
-            // value={value}
+            value={selectedCommittee}
             onChange={(e, value) => {
                 // console.log(value);
                 setContributionPageData({ selectedCommittee: value ? value : null });
             }}
-            options={options.sort((a, b) => -b.firstLetter.localeCompare(a.firstLetter))}
-            groupBy={(option) => option.firstLetter}
+            options={listCommittee.sort((a, b) => -b.name.localeCompare(a.name))}
+            // groupBy={(option) => option.firstLetter}
             getOptionLabel={(option) => option.name}
             popupIcon={<ExpandMoreRounded sx={{ color: 'secondary.main' }} />}
             sx={{ width: 300, mt: 2.5 }}

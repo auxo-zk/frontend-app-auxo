@@ -78,4 +78,7 @@ export default class ZkAppWorkerClient {
     getPercentageComplieDone() {
         return this._call('getPercentageComplieDone', {});
     }
+    submitContributionRound1(args: ArgumentZkFuction<'submitContributionRound1'>) {
+        return this._call('submitContributionRound1', args);
+    }
 }

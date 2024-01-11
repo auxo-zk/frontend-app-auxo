@@ -66,6 +66,7 @@ export type TRound2Data = {
 };
 export type TCommitteeKey = {
     id: string;
+    committeeId: string;
     keyId: string;
     status: KeyStatus;
     publicKey: string | null;
@@ -80,7 +81,8 @@ export async function getCommitteeKeys(committeeId: string): Promise<TCommitteeK
     return response.data?.map((item: any) => {
         return {
             id: item['_id'] || '---',
-            keyId: item.committeeId + '' || '',
+            committeeId: item.committeeId + '',
+            keyId: item.keyId + '' || '',
             status: item.status as KeyStatus,
             round1: item.round1s || [],
             round2: item.round2s || [],
@@ -99,6 +101,11 @@ export type TWitness = {
 export async function getStorageDkgZApps(): Promise<TWitness[]> {
     const response = await axios.get(apiUrl.getStorageDkgZkapp);
     // console.log('get dkg zkapp', response.data);
+    return response.data || [];
+}
+
+export async function getStorageRound1Zkapp(): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getStorageRound1Zkapp);
     return response.data || [];
 }
 

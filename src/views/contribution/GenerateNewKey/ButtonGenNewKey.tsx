@@ -44,6 +44,8 @@ export default function ButtonGenNewKey({ dataUserInCommittee }: { dataUserInCom
                 console.log(transactionLink);
 
                 toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
+            } else {
+                throw Error('Selected committee or worker client or user address is invalid!');
             }
         } catch (err) {
             console.log(err);
