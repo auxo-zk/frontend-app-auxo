@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useMemo, useState } from 'react';
 import { IconDownload, IconFolder, IconSpinLoading } from 'src/assets/svg/icon';
 
@@ -14,8 +14,9 @@ import KeysContributionAction from '../components/KeysContributionAction';
 import { useWalletData } from 'src/states/wallet';
 import Test from './Test';
 import ButtonGenNewKey from '../GenerateNewKey/ButtonGenNewKey';
+import { RefreshRounded } from '@mui/icons-material';
 
-const tableCellRatio = [1, 2.5, 1.5, 1.5, 2.5, 3];
+const tableCellRatio = [1, 3, 1.25, 1.25, 2.5, 3];
 
 export default function TableKeyContribution() {
     const { userAddress } = useWalletData();
@@ -88,16 +89,21 @@ export default function TableKeyContribution() {
                     </TableCell>
                     <TableCell xs={tableCellRatio[4]}>
                         <Typography variant="body2" color={'text.secondary'}>
-                            Creator
+                            {/* Creator */}
                         </Typography>
                     </TableCell>
 
                     <TableCell xs={tableCellRatio[5]}>
-                        <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
-                            <Typography variant="body3" color={'primary.main'} mr={1}>
-                                Download All
-                            </Typography>
-                            <IconFolder fontSize="small" color={'primary'} />
+                        <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', gap: 1 }}>
+                            <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
+                                <Typography variant="body3" color={'primary.main'} mr={1}>
+                                    Download All
+                                </Typography>
+                                <IconFolder fontSize="small" color={'primary'} />
+                            </Box>
+                            <IconButton color="primary" onClick={getCommitteeKeysData} title="Refresh Data">
+                                <RefreshRounded />
+                            </IconButton>
                         </Box>
                     </TableCell>
                 </TableHeader>
@@ -138,7 +144,7 @@ export default function TableKeyContribution() {
                 )}
             </TableWrapper>
 
-            <Test />
+            {/* <Test /> */}
         </Box>
     );
 }

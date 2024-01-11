@@ -1,10 +1,15 @@
-import { generateRandomPolynomial, getRound1Contribution } from '@auxo-dev/dkg';
-import { Box, Button } from '@mui/material';
-import React from 'react';
+import { Constants, generateRandomPolynomial, getRound1Contribution } from '@auxo-dev/dkg';
+import { FileDownloadOutlined } from '@mui/icons-material';
+import { Box, Button, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
 import { LocalStorageKey } from 'src/constants';
 import { KeyStatus } from 'src/services/const';
-import { TCommitteeKey, TDataMemberInCommittee, TRound1Data, TRound2Data } from 'src/services/services';
+import { TCommitteeKey, TDataMemberInCommittee, TRound1Data, TRound2Data, getCommitteeMemberLv1, getCommitteeMemberLv2, getStorageDkgZApps, getStorageRound1Zkapp } from 'src/services/services';
+import { useContractData } from 'src/states/contracts/committee';
+import { useWalletData } from 'src/states/wallet';
+import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageKeySecretValue } from 'src/utils';
 
 type Props = { dataKey: TCommitteeKey; dataUserInCommittee: TDataMemberInCommittee | null | undefined; T: number; N: number };
 export default function KeysContributionAction(props: Props) {
@@ -21,14 +26,70 @@ export default function KeysContributionAction(props: Props) {
     return <div></div>;
 }
 
+// TODO: Action Round1 ================================================================================================================================
 function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
-    function generateContribution() {
-        if (T == 0 || N == 0) return;
+    const { userAddress } = useWalletData();
+    const { workerClient } = useContractData();
+    const [submiting, setSubmiting] = useState<boolean>(false);
 
-        const secret = generateRandomPolynomial(T, N);
-        const contribution = getRound1Contribution(secret);
-        console.log(secret);
-        localStorage.setItem(LocalStorageKey.secretRound1Contribution, JSON.stringify(secret));
+    async function generateContribution() {
+        setSubmiting(true);
+        const idtoast = toast.loading('Create transaction and proving...', { position: 'top-center', type: 'info' });
+        try {
+            if (T == 0 || N == 0) throw Error('Threshold or member list invalid!');
+            if (!userAddress) throw Error('Please connect your wallet first!');
+            if (!workerClient) throw Error('Worker client is dead, reload page again!');
+            const committeeId = dataKey.committeeId;
+            const memberId = dataUserInCommittee?.memberId + '' || '-1';
+            if (memberId == '-1') throw Error('You are not a member of this committee');
+
+            const witnessAll = await Promise.all([getStorageRound1Zkapp(), getCommitteeMemberLv1(), getCommitteeMemberLv2(committeeId)]);
+            // console.log({
+            //     N,
+            //     T,
+            //     keyId: dataKey.keyId,
+            //     committeeId: dataKey.committeeId,
+            //     witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
+            //     level1: witnessAll[1][Number(committeeId)],
+            //     level2: witnessAll[2][Number(memberId)],
+            // });
+            const secret = await workerClient.submitContributionRound1({
+                n: N,
+                t: T,
+                sender: userAddress,
+                keyId: dataKey.keyId,
+                committee: {
+                    committeeId: dataKey.committeeId,
+                    memberId: memberId,
+                    witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
+                },
+                memberWitness: {
+                    level1: witnessAll[1][Number(committeeId)],
+                    level2: witnessAll[2][Number(memberId)],
+                },
+            });
+            await workerClient.proveTransaction();
+
+            toast.update(idtoast, { render: 'Prove successfull! Sending the transaction...' });
+            const transactionJSON = await workerClient.getTransactionJSON();
+            console.log(transactionJSON);
+
+            const { transactionLink } = await workerClient.sendTransaction(transactionJSON);
+            console.log(transactionLink);
+
+            toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
+            localStorage.setItem(secret.key, secret.value);
+        } catch (err) {
+            console.log(err);
+            toast.update(idtoast, { render: (err as Error).message, type: 'error', position: 'top-center', isLoading: false, autoClose: 3000, hideProgressBar: false });
+        }
+
+        setSubmiting(false);
+    }
+
+    function downloadSecret() {
+        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley');
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley')}.txt`);
     }
 
     function checkMemberIdInRound1(round1: TRound1Data[], memberId: string) {
@@ -41,14 +102,23 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
         return false;
     }
     return (
-        <Box sx={{ display: checkMemberIdInRound1(dataKey.round1, dataUserInCommittee?.memberId || '') ? 'flex' : 'none' }}>
-            <ButtonLoading muiProps={{ size: 'small', onClick: () => generateContribution() }} isLoading={false}>
-                Submit Contribution
-            </ButtonLoading>
+        <Box sx={{ display: 'flex', justifyContent: 'end', placeItems: 'center', gap: 1 }}>
+            {checkMemberIdInRound1(dataKey.round1, dataUserInCommittee?.memberId + '' || '') ? (
+                <></>
+            ) : (
+                <ButtonLoading muiProps={{ variant: 'outlined', size: 'small', onClick: () => generateContribution() }} isLoading={submiting}>
+                    Submit Contribution
+                </ButtonLoading>
+            )}
+
+            <IconButton color="primary" onClick={downloadSecret}>
+                <FileDownloadOutlined />
+            </IconButton>
         </Box>
     );
 }
 
+// TODO: Action Round2 ================================================================================================================================
 function KeysRound2Action({ dataKey, dataUserInCommittee }: Props) {
     function checkMemberIdInRound2(round1: TRound2Data[], memberId: string) {
         if (memberId == '') return false;
@@ -59,15 +129,27 @@ function KeysRound2Action({ dataKey, dataUserInCommittee }: Props) {
         }
         return false;
     }
+    function downloadSecret() {
+        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley');
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley')}.txt`);
+    }
     return (
-        <Box sx={{ display: checkMemberIdInRound2(dataKey.round2, dataUserInCommittee?.memberId || '') ? 'flex' : 'none' }}>
-            <ButtonLoading muiProps={{ size: 'small' }} isLoading={false}>
-                Submit Contribution
-            </ButtonLoading>
+        <Box sx={{ display: 'flex', justifyContent: 'end', placeItems: 'center', gap: 1 }}>
+            {checkMemberIdInRound2(dataKey.round2, dataUserInCommittee?.memberId || '') ? (
+                <></>
+            ) : (
+                <ButtonLoading muiProps={{ variant: 'outlined', size: 'small' }} isLoading={false}>
+                    Submit Contribution
+                </ButtonLoading>
+            )}
+            <IconButton color="primary" onClick={downloadSecret}>
+                <FileDownloadOutlined />
+            </IconButton>
         </Box>
     );
 }
 
+// TODO: Action Active ================================================================================================================================
 function KeyActiveAction({ dataKey, dataUserInCommittee }: Props) {
     return (
         <Box sx={{ display: dataUserInCommittee?.publicKey ? 'flex' : 'none' }}>
