@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCacheContractData } from '../cache';
 import { useContractData, useContractFunction } from './committee';
 import { Box, Typography } from '@mui/material';
@@ -8,14 +8,30 @@ export default function InitContracts() {
     const { isFetching, filesCache } = useCacheContractData();
     const { isInitWorker, workerClient } = useContractData();
     const { complie, initClient } = useContractFunction();
+    const [isCanCallComplie, setCanCallComplie] = useState<boolean>(false);
     useEffect(() => {
         initClient();
     }, []);
+
     useEffect(() => {
-        if (!isFetching && filesCache) {
+        const interval = setInterval(async () => {
+            if (workerClient) {
+                await workerClient.setActiveInstanceToBerkeley();
+                setCanCallComplie(true);
+                clearInterval(interval);
+            }
+        }, 1500);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [workerClient]);
+
+    useEffect(() => {
+        if (!isFetching && filesCache && isCanCallComplie) {
             complie(filesCache);
         }
-    }, [isFetching, filesCache, workerClient]);
+    }, [isFetching, filesCache, isCanCallComplie]);
+
     if (isFetching || isInitWorker) {
         return (
             <Box

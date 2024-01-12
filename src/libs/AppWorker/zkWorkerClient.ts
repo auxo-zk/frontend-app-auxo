@@ -17,12 +17,17 @@ export default class ZkAppWorkerClient {
         this.nextId = 0;
 
         this.worker.onmessage = (event: MessageEvent<ZkappWorkerReponse>) => {
-            this.promises[event.data.id].resolve(event.data.data);
-            delete this.promises[event.data.id];
+            if (event.data.status == 'failed') {
+                this.promises[event.data.id].reject(event.data.error);
+                delete this.promises[event.data.id];
+            } else {
+                this.promises[event.data.id].resolve(event.data.data);
+                delete this.promises[event.data.id];
+            }
         };
     }
     async loadWorker(): Promise<void> {
-        await sleep(5000);
+        await sleep(4100);
     }
     async sendTransaction(transactionJSON: string, memo?: string) {
         const transactionFee = 0.1;
@@ -80,5 +85,8 @@ export default class ZkAppWorkerClient {
     }
     submitContributionRound1(args: ArgumentZkFuction<'submitContributionRound1'>) {
         return this._call('submitContributionRound1', args);
+    }
+    submitContributionRound2(args: ArgumentZkFuction<'submitContributionRound2'>) {
+        return this._call('submitContributionRound2', args);
     }
 }

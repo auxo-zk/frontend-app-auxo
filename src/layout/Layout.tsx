@@ -17,9 +17,25 @@ export default function Layout({ children }: { children: ReactNode }) {
         <>
             <Head>
                 <title>Auxo App</title>
-                <meta name="description" content="auxo app" />
+                <meta name="description" content="Auxo app" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
+                <meta name="language" content="English" />
+                <meta property="og:site_name" content="Auxo App" />
+                <meta property="og:image" content="/thumbnail.png" />
+                <meta property="og:image:type" content="image/png" />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta name="twitter:image" content="/thumbnail.png" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+                <meta name="revisit-after" content="0 days" />
+                <meta name="ROBOTS" content="index, follow, max-snippet:-1, max-image-preview:large" />
+                <meta name="googlebot" content="index,follow" />
+                <meta name="BingBOT" content="index,follow" />
+                <meta name="yahooBOT" content="index,follow" />
+                <meta name="slurp" content="index,follow" />
+                <meta name="msnbot" content="index,follow" />
             </Head>
             <JotaiProvider>
                 <style jsx global>
