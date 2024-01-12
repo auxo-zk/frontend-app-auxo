@@ -31,7 +31,7 @@ export default function RowTableView({ data, tableCellRatio }: { data: TCommitte
                     </Typography>
                 </TableCell>
                 <TableCell xs={tableCellRatio[4]}>
-                    <Typography>0</Typography>
+                    <Typography>{data.numOfkeys}</Typography>
                 </TableCell>
                 <TableCell xs={tableCellRatio[5]}>
                     <Typography>0</Typography>

@@ -13,6 +13,7 @@ export type TCommitteeData = {
     creator: string;
     members: TDataMemberInCommittee[];
     publicKeys: string[];
+    numOfkeys: number;
 };
 export async function getListCommittees(userAddress?: string): Promise<TCommitteeData[]> {
     const response = await axios.get(`${apiUrl.listCommittee}${userAddress ? `?member=${userAddress}` : ''}`);
@@ -29,6 +30,7 @@ export async function getListCommittees(userAddress?: string): Promise<TCommitte
             creator: item.ipfsData?.creator || 'Unknown',
             members: item.ipfsData?.members || [],
             publicKeys: item.publicKeys || [],
+            numOfkeys: item?.keys?.length || 0,
         };
     });
 }
@@ -109,6 +111,11 @@ export async function getStorageRound1Zkapp(): Promise<TWitness[]> {
     return response.data || [];
 }
 
+export async function getStorageRound2Zkapp(): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getStorageRound2Zkapp);
+    return response.data || [];
+}
+
 export async function getCommitteeMemberLv1(): Promise<TWitness[]> {
     const response = await axios.get(apiUrl.getCommitteeMemberLv1);
     // console.log('getCommitteeMemberLv1', response.data);
@@ -118,5 +125,10 @@ export async function getCommitteeMemberLv1(): Promise<TWitness[]> {
 export async function getCommitteeMemberLv2(committeeId: string): Promise<TWitness[]> {
     const response = await axios.get(apiUrl.getCommitteeMemberLv2(committeeId));
     // console.log('getCommitteeMemberLv2', response.data);
+    return response.data || [];
+}
+
+export async function getStorageRound1PubkeyLv1(): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getStorageRound1PubkeyLv1);
     return response.data || [];
 }

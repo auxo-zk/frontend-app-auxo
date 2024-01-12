@@ -70,7 +70,7 @@ export const useContractFunction = () => {
                         clearInterval(checkComplie);
                     }
                 }, 2000);
-                await committee.workerClient.setActiveInstanceToBerkeley();
+                // await committee.workerClient.setActiveInstanceToBerkeley();
                 await committee.workerClient.loadContract();
                 await committee.workerClient.compileContract(cacheFiles);
                 await committee.workerClient.initZkappInstance({
