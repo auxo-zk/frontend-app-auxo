@@ -6,6 +6,7 @@ import TableRow from 'src/components/Table/TableRow';
 import { TCommitteeData } from 'src/services/services';
 import { formatAddress } from 'src/utils/format';
 import TableMember from './TableMember';
+import StatusCommitteeText from '../components/StatusCommitteeText';
 
 export default function RowTableView({ data, tableCellRatio }: { data: TCommitteeData; tableCellRatio: number[] }) {
     const [openTableMember, setOpenTableMember] = useState<boolean>(false);
@@ -23,7 +24,7 @@ export default function RowTableView({ data, tableCellRatio }: { data: TCommitte
                     </Typography>
                 </TableCell>
                 <TableCell xs={tableCellRatio[2]}>
-                    <Typography>{data.status}</Typography>
+                    <StatusCommitteeText status={data.status} />
                 </TableCell>
                 <TableCell xs={tableCellRatio[3]}>
                     <Typography>

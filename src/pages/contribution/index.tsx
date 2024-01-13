@@ -5,6 +5,7 @@ import React from 'react';
 import BoxPrivateData from 'src/components/BoxPrivateData/BoxPrivateData';
 import { imagePath } from 'src/constants/imagePath';
 import AutocompleteSearchCommittee from 'src/views/contribution/AutocompleteSearchCommittee/AutocompleteSearchCommittee';
+import CommitteSelectedInfo from 'src/views/contribution/CommitteSelectedInfo/CommitteSelectedInfo';
 import TableKeyContribution from 'src/views/contribution/TableKeyContribution/TableKeyContribution';
 import InitStateDistributionPage, { useContributionPageData } from 'src/views/contribution/state';
 
@@ -28,7 +29,8 @@ export default function Contribution() {
                 <InitStateDistributionPage />
                 {selectedCommittee ? (
                     <>
-                        <TableKeyContribution />
+                        <CommitteSelectedInfo />
+                        {selectedCommittee.status == 'Active' ? <TableKeyContribution /> : <></>}
                     </>
                 ) : (
                     <Box>
