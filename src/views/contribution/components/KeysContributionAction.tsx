@@ -1,10 +1,9 @@
-import { Constants, generateRandomPolynomial, getRound1Contribution } from '@auxo-dev/dkg';
+import { Constants } from '@auxo-dev/dkg';
 import { FileDownloadOutlined } from '@mui/icons-material';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
-import { LocalStorageKey } from 'src/constants';
 import { KeyStatus } from 'src/services/const';
 import {
     TCommitteeKey,
@@ -13,12 +12,11 @@ import {
     TRound2Data,
     getCommitteeMemberLv1,
     getCommitteeMemberLv2,
-    getStorageDkgZApps,
     getStorageRound1PubkeyLv1,
     getStorageRound1Zkapp,
     getStorageRound2Zkapp,
 } from 'src/services/services';
-import { useContractData } from 'src/states/contracts/committee';
+import { useContractData } from 'src/states/contracts';
 import { useWalletData } from 'src/states/wallet';
 import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageKeySecretValue } from 'src/utils';
 

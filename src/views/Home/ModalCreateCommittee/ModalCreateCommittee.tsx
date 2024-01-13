@@ -1,15 +1,11 @@
-import { Add, RemoveCircleOutlineRounded, RemoveCircleRounded } from '@mui/icons-material';
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { RemoveCircleOutlineRounded } from '@mui/icons-material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { postCreateCommittee } from 'src/services/services';
-import { useContractData } from 'src/states/contracts/committee';
+import { useContractData } from 'src/states/contracts';
 import { useWalletData } from 'src/states/wallet';
 import { v4 as uuidv4 } from 'uuid';
-import { Field, PublicKey, fetchAccount, Mina } from 'o1js';
-import { IPFSHash } from '@auxo-dev/auxo-libs';
-// import { MemberArray } from '@auxo-dev/dkg/build/types/src/contracts/Committee';
-import { ZkApp, Libs } from '@auxo-dev/dkg';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
 export type TDataPost = {
     name: string;
