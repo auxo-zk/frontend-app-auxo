@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
 import { useContributionPageData } from '../state';
 import { TDataMemberInCommittee, getCommitteeMemberLv1, getCommitteeMemberLv2, getStorageDkgZApps } from 'src/services/services';
-import { useContractData } from 'src/states/contracts/committee';
+import { useContractData } from 'src/states/contracts';
 import { toast } from 'react-toastify';
 import { useWalletData } from 'src/states/wallet';
 import { Constants } from '@auxo-dev/dkg';

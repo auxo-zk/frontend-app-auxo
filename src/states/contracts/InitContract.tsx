@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useCacheContractData } from '../cache';
-import { useContractData, useContractFunction } from './committee';
+import { useContractData, useContractFunction } from '.';
 import { Box, Typography } from '@mui/material';
 import { IconSpinLoading } from 'src/assets/svg/icon';
 
