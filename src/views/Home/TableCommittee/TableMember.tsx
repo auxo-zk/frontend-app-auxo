@@ -26,7 +26,7 @@ export default function TableMember({ data }: { data: TCommitteeData['members'] 
                 </TableCell>
                 <TableCell item xs={tableCellRatio[2]}>
                     <Typography variant="body2" color={'text.secondary'}>
-                        Last Active
+                        {/* Last Active */}
                     </Typography>
                 </TableCell>
                 <TableCell item xs={tableCellRatio[3]}>
@@ -47,16 +47,14 @@ export default function TableMember({ data }: { data: TCommitteeData['members'] 
                         return (
                             <TableRow key={mem.publicKey + i}>
                                 <TableCell xs={tableCellRatio[0]}>
-                                    <Typography>{i + 1}</Typography>
+                                    <Typography>{mem.memberId}</Typography>
                                 </TableCell>
                                 <TableCell xs={tableCellRatio[1]}>
                                     <Typography color={'primary.main'} fontWeight={500} sx={{ textTransform: 'capitalize' }}>
                                         {mem.alias}
                                     </Typography>
                                 </TableCell>
-                                <TableCell xs={tableCellRatio[2]}>
-                                    <Typography>{new Date(mem.lastActive).toLocaleDateString()}</Typography>
-                                </TableCell>
+                                <TableCell xs={tableCellRatio[2]}>{/* <Typography>{new Date(mem.lastActive).toLocaleDateString()}</Typography> */}</TableCell>
                                 <TableCell xs={tableCellRatio[3]}>
                                     <Typography>{formatAddress(mem.publicKey)}</Typography>
                                 </TableCell>
