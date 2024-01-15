@@ -121,7 +121,7 @@ export default function ModalCreateCommittee() {
                 });
                 const ipfsHash = response.Hash;
                 console.log(ipfsHash);
-                await workerClient?.fetchAccount(userAddress);
+                // await workerClient?.fetchAccount(userAddress);
 
                 await workerClient?.createCommittee({
                     sender: userAddress,

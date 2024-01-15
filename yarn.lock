@@ -14,10 +14,10 @@
   dependencies:
     o1js "0.15.1"
 
-"@auxo-dev/dkg@^0.2.12":
-  version "0.2.12"
-  resolved "https://registry.yarnpkg.com/@auxo-dev/dkg/-/dkg-0.2.12.tgz#0c85c485ee88b88a52d4403c92f208e34a113106"
-  integrity sha512-xzVoU+pV8+VwCJoFGwjyj3fJGduuRNmrkDcwRz0fzW9HaNyjfRGCtb+mfdJMiPNWd5EBT9mkSVZNfb5AB8w4kA==
+"@auxo-dev/dkg@^0.2.13":
+  version "0.2.13"
+  resolved "https://registry.yarnpkg.com/@auxo-dev/dkg/-/dkg-0.2.13.tgz#5e78bd25520dfeb8802645d553fb0c0d502864cc"
+  integrity sha512-+xNpB5iHwS5neU1kAki5Z3oQoULuhFuAxj43dP2/OsT1Opw0RTbGqkpESyeZzmuXsoLuhs9Jo75bCwdn6jiw3A==
   dependencies:
     "@auxo-dev/auxo-libs" "^0.3.5"
     axios "^1.6.5"

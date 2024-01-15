@@ -133,6 +133,10 @@ export const zkFunctions = {
 
     createCommittee: async (args: { sender: string; action: { addresses: string[]; threshold: number; ipfsHash: string } }) => {
         const sender = PublicKey.fromBase58(args.sender);
+
+        await fetchAccount({ publicKey: sender });
+        await fetchAccount({ publicKey: state.CommitteeContract!.address });
+
         const transaction = await Mina.transaction(sender, () => {
             state.CommitteeContract!.createCommittee({
                 addresses: Libs.Committee.MemberArray.from(args.action.addresses.map((member) => PublicKey.fromBase58(member))),
