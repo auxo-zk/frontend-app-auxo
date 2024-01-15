@@ -73,17 +73,16 @@ export const useContractFunction = () => {
                 await zkapp.workerClient.loadContract();
                 await zkapp.workerClient.compileContract(cacheFiles);
                 await zkapp.workerClient.initZkappInstance({
-                    committeeContract: 'B62qmpvE5LFDgC5ocRiCMEFWhigtJ88FRniCpPPou2MMQqBLancqB7f',
-                    dkgContract: 'B62qqW6Zparz1cdzjTtwX6ytWtq58bbraBr15FLHGMTm6pGqtNHF6ZJ',
-                    responseContract: 'B62qn3hAqnsixpenxJfmz8zLpQA4pgLeWxsT4B9rzcZJAFnnKtSXbnJ',
-                    round1Contract: 'B62qnBrR7nnKt3rVLbBYKzseJNYvZzirqLKMgD4cTuNRqi86GccZKfV',
-                    round2Contract: 'B62qmHEtKzNY1Zf3WhmagCLBr6j6gr9VRoGbm5Vk8tuEUsMmHVDQKLi',
-                    requestContract: 'B62qmEJ65XKnAe5H4wb5NepcvtCDwCJKiquSUW3wK8N4R9kTXyA9cdh',
+                    committeeContract: 'B62qjDLMhAw54JMrJLNZsrBRcoSjbQHQwn4ryceizpsQi8rwHQLA6R1',
+                    dkgContract: 'B62qogHpAHHNP7PXAiRzHkpKnojERnjZq34GQ1PjjAv5wCLgtbYthAS',
+                    responseContract: 'B62qoGfSCnimss8Cnt56BMDGUFmiBW4oiD28WfgHG5TuEHjkyv8QAdU',
+                    round1Contract: 'B62qony53NMnmq49kxhtW1ttrQ8xvr58SNoX5jwgPY17pMChKLrjjWc',
+                    round2Contract: 'B62qpvKFv8ey9FhsGAdcXxkg8yg1vZJQGoB2EySqJDZdANwP6Mh8SZ7',
+                    requestContract: 'B62qnDCCc8iHuXu7systFTc2EuipJQQcbA5DwYGXkJgrviv7dkcSnPi',
                 });
                 setContractData({
                     isLoading: false,
                 });
-                // toast('Compiled contract successfully!', { position: 'bottom-left', type: 'success' });
             }
         } catch (err) {
             console.log(err);
