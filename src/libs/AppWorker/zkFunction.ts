@@ -4,12 +4,27 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
 // ---------------------------------------------------------------------------------------
 
-import { BatchEncryption, BatchEncryptionInput, Libs, PlainArray, RandomArray, Storage, ZkApp, generateRandomPolynomial, getRound1Contribution, getRound2Contribution } from '@auxo-dev/dkg';
+import {
+    BatchDecryption,
+    BatchDecryptionInput,
+    BatchEncryption,
+    BatchEncryptionInput,
+    Libs,
+    PlainArray,
+    RandomArray,
+    Storage,
+    ZkApp,
+    generateRandomPolynomial,
+    getResponseContribution,
+    getRound1Contribution,
+    getRound2Contribution,
+} from '@auxo-dev/dkg';
 import { ArgumentTypes } from 'src/global.config';
 import { FileSystem } from 'src/states/cache';
-import { CustomScalar, IPFSHash } from '@auxo-dev/auxo-libs';
+import { Bit255, CustomScalar, IPFSHash } from '@auxo-dev/auxo-libs';
 import { TRound1Data, TWitness } from 'src/services/services';
 import { getLocalStorageKeySecret } from 'src/utils';
+import { decrypt } from '@auxo-dev/dkg/build/esm/src/libs/Elgamal';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
@@ -320,6 +335,114 @@ export const zkFunctions = {
                 })
             );
         });
+        state.transaction = transaction;
+    },
+
+    submitContributionRequest: async (args: {
+        sender: string;
+        keyId: string;
+        requestId: string;
+        memberId: string;
+        secret: string;
+        committee: { committeeId: string; witness: TWitness };
+        memberWitness: { level1: TWitness; level2: TWitness };
+        round1Witness: TWitness;
+        round2Witness: TWitness;
+        fReceive: string[] | null;
+        round2Datas: { c: string; u: { x: string; y: string } }[];
+        R: { x: string; y: string }[];
+        publicKeysWitness: { level1: TWitness; level2: TWitness };
+        encryptionWitness: { level1: TWitness; level2: TWitness };
+    }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+        await fetchAccount({ publicKey: sender });
+        await fetchAccount({ publicKey: state.Round1Contract!.address });
+        await fetchAccount({ publicKey: state.Round2Contract!.address });
+        await fetchAccount({ publicKey: state.CommitteeContract!.address });
+        await fetchAccount({ publicKey: state.ResponseContract!.address });
+        await fetchAccount({ publicKey: state.DKGContract!.address });
+
+        const secretObj = JSON.parse(args.secret) as { C: { x: string; y: string }[]; a: string[]; f: string[] };
+        const secret: Libs.Committee.SecretPolynomial = {
+            a: secretObj.a.map((item) => Scalar.from(item)),
+            C: secretObj.C.map((item) => new Group(item)),
+            f: secretObj.f.map((item) => Scalar.from(item)),
+        };
+
+        const responseContribution = getResponseContribution(
+            secret,
+            Number(args.memberId),
+            args.round2Datas.map((item) => {
+                return {
+                    c: Bit255.fromBigInt(BigInt(item.c)),
+                    U: new Group({ x: item.u.x, y: item.u.y }),
+                };
+            }),
+            args.R.map((item) => {
+                return new Group({ x: item.x, y: item.y });
+            })
+        );
+
+        let fReceive: string[] =
+            args.fReceive == null
+                ? args.round2Datas.map((item, index) => {
+                      if (index == Number(args.memberId)) return secret.f[Number(args.memberId)].toJSON();
+                      const decryptData = decrypt(Bit255.fromBigInt(BigInt(item.c)), new Group({ x: item.u.x, y: item.u.y }), Scalar.from(secret.f[Number(args.memberId)]));
+                      return decryptData.m.toBigInt().toString();
+                  })
+                : args.fReceive;
+
+        const decryptionProof = await BatchDecryption.decrypt(
+            new BatchDecryptionInput({
+                c: new Libs.Committee.cArray(args.round2Datas.map((item) => Bit255.fromBigInt(BigInt(item.c)))),
+                memberId: new Field(args.memberId),
+                publicKey: secret.C[0],
+                U: new Libs.Committee.UArray(args.round2Datas.map((item) => new Group({ x: item.u.x, y: item.u.y }))),
+            }),
+            new PlainArray(fReceive.map((item) => CustomScalar.fromScalar(Scalar.from(BigInt(item))))),
+            secret.a[0]
+        );
+
+        const transaction = await Mina.transaction(sender, () => {
+            state.ResponseContract!.contribute(
+                new Field(args.committee.committeeId),
+                new Field(args.keyId),
+                new Field(args.requestId),
+                decryptionProof,
+                new Libs.Requestor.RArray(
+                    args.R.map((item) => {
+                        return new Group({ x: item.x, y: item.y });
+                    })
+                ),
+                responseContribution[1],
+                Storage.SharedStorage.ZkAppRef.fromJSON({
+                    address: state.CommitteeContract!.address.toBase58(),
+                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness),
+                }),
+                Storage.SharedStorage.ZkAppRef.fromJSON({
+                    address: state.Round1Contract!.address.toBase58(),
+                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.round1Witness),
+                }),
+                Storage.SharedStorage.ZkAppRef.fromJSON({
+                    address: state.Round2Contract!.address.toBase58(),
+                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.round2Witness),
+                }),
+                Storage.CommitteeStorage.FullMTWitness.fromJSON({
+                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
+                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
+                }),
+                Storage.DKGStorage.FullMTWitness.fromJSON({
+                    level1: Storage.DKGStorage.Level1Witness.fromJSON(args.publicKeysWitness.level1),
+                    level2: Storage.DKGStorage.Level2Witness.fromJSON(args.publicKeysWitness.level2),
+                }),
+                Storage.DKGStorage.FullMTWitness.fromJSON({
+                    level1: Storage.DKGStorage.Level1Witness.fromJSON(args.encryptionWitness.level1),
+                    level2: Storage.DKGStorage.Level2Witness.fromJSON(args.encryptionWitness.level2),
+                })
+            );
+        });
+        state.transaction = transaction;
+        return fReceive;
     },
 
     proveTransaction: async (args: {}) => {

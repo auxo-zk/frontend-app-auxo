@@ -7,6 +7,7 @@ import { imagePath } from 'src/constants/imagePath';
 import AutocompleteSearchCommittee from 'src/views/contribution/AutocompleteSearchCommittee/AutocompleteSearchCommittee';
 import CommitteSelectedInfo from 'src/views/contribution/CommitteSelectedInfo/CommitteSelectedInfo';
 import TableKeyContribution from 'src/views/contribution/TableKeyContribution/TableKeyContribution';
+import TableKeysUsage from 'src/views/contribution/TableKeysUsage/TableKeysUsage';
 import InitStateDistributionPage, { useContributionPageData } from 'src/views/contribution/state';
 
 export default function Contribution() {
@@ -30,7 +31,14 @@ export default function Contribution() {
                 {selectedCommittee ? (
                     <>
                         <CommitteSelectedInfo />
-                        {selectedCommittee.status == 'Active' ? <TableKeyContribution /> : <></>}
+                        {selectedCommittee.status == 'Active' ? (
+                            <>
+                                <TableKeyContribution />
+                                <TableKeysUsage />
+                            </>
+                        ) : (
+                            <></>
+                        )}
                     </>
                 ) : (
                     <Box>

@@ -19,7 +19,8 @@ export default function Dashboard() {
                 </Box>
             </Box>
 
-            <Box sx={{ textAlign: 'right' }}>
+            <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'center' }}>
+                <Typography variant="h6">Committees</Typography>
                 <ButtonCreateCommittee />
             </Box>
             <TableCommittee />
