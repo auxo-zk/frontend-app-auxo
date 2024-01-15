@@ -162,23 +162,23 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
             if (!secret) throw Error('Secret key missing!');
             const witnessAll = await Promise.all([getStorageRound2Zkapp(), getCommitteeMemberLv1(), getCommitteeMemberLv2(committeeId), getStorageRound1PubkeyLv1()]);
 
-            console.log({
-                sender: userAddress,
-                keyId: dataKey.keyId,
-                committee: {
-                    committeeId: dataKey.committeeId,
-                    memberId: memberId,
-                    witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
-                },
-                secret: secret,
-                round1Contributions: dataKey.round1.map((item) => item.contribution),
-                memberWitness: {
-                    level1: witnessAll[1][Number(committeeId)],
-                    level2: witnessAll[2][Number(memberId)],
-                },
-                publicKeysWitness: { level1: witnessAll[3][Number(committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(dataKey.keyId)] },
-                round1Witness: witnessAll[0][Constants.ZkAppEnum.ROUND1],
-            });
+            // console.log({
+            //     sender: userAddress,
+            //     keyId: dataKey.keyId,
+            //     committee: {
+            //         committeeId: dataKey.committeeId,
+            //         memberId: memberId,
+            //         witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
+            //     },
+            //     secret: secret,
+            //     round1Contributions: dataKey.round1.map((item) => item.contribution),
+            //     memberWitness: {
+            //         level1: witnessAll[1][Number(committeeId)],
+            //         level2: witnessAll[2][Number(memberId)],
+            //     },
+            //     publicKeysWitness: { level1: witnessAll[3][Number(committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(dataKey.keyId)] },
+            //     round1Witness: witnessAll[0][Constants.ZkAppEnum.ROUND1],
+            // });
             await workerClient.submitContributionRound2({
                 sender: userAddress,
                 keyId: dataKey.keyId,
@@ -231,9 +231,13 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
 
 // TODO: Action Active ================================================================================================================================
 function KeyActiveAction({ dataKey, dataUserInCommittee }: Props) {
+    const { userAddress } = useWalletData();
+    const { workerClient } = useContractData();
+    const [submiting, setSubmiting] = useState<boolean>(false);
+
     return (
-        <Box sx={{ display: dataUserInCommittee?.publicKey ? 'flex' : 'none' }}>
-            <ButtonLoading muiProps={{ size: 'small' }} isLoading={false}>
+        <Box sx={{ display: dataUserInCommittee?.publicKey ? 'flex' : 'none', justifyContent: 'end', placeItems: 'center' }}>
+            <ButtonLoading muiProps={{ variant: 'outlined', size: 'small' }} isLoading={submiting}>
                 Deprecate
             </ButtonLoading>
         </Box>

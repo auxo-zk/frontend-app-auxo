@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from './url';
 import { KeyStatus } from './const';
+import { RequestStatus } from '@auxo-dev/dkg';
 
 export type TDataMemberInCommittee = { publicKey: string; alias: string; lastActive: string; memberId: string };
 export type TCommitteeData = {
@@ -94,6 +95,22 @@ export async function getCommitteeKeys(committeeId: string): Promise<TCommitteeK
     });
 }
 
+export async function getCommitteeKeyDetail(committeeId: string, keyId: string): Promise<TCommitteeKey> {
+    const response = await axios.get(apiUrl.committeeKeyDetail(committeeId, keyId));
+    console.log('get Key', response.data);
+    const item = response.data;
+    return {
+        id: item['_id'] || '---',
+        committeeId: item.committeeId + '',
+        keyId: item.keyId + '' || '',
+        status: item.status as KeyStatus,
+        round1: item.round1s || [],
+        round2: item.round2s || [],
+        requests: item.requests,
+        publicKey: item.publicKey || null,
+    };
+}
+
 //TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 export type TWitness = {
     path: string[];
@@ -131,4 +148,52 @@ export async function getCommitteeMemberLv2(committeeId: string): Promise<TWitne
 export async function getStorageRound1PubkeyLv1(): Promise<TWitness[]> {
     const response = await axios.get(apiUrl.getStorageRound1PubkeyLv1);
     return response.data || [];
+}
+
+export async function getStorageResponseZkapp(): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getStorageResponseZkapp);
+    return response.data || [];
+}
+
+export async function getStorageRound1PubkeyLv2(lv1Index: string): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getStorageRound1PubkeyLv2(lv1Index));
+    return response.data || [];
+}
+
+export async function getStorageRound2EncryptionLv1(): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getStorageRound2EncryptionLv1);
+    return response.data || [];
+}
+export async function getStorageRound2EncryptionLv2(lv1Index: string): Promise<TWitness[]> {
+    const response = await axios.get(apiUrl.getStorageRound2EncryptionLv2(lv1Index));
+    return response.data || [];
+}
+
+//TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+export type TRequest = {
+    requestId: string;
+    committeeId: string;
+    keyId: string;
+    requester: string;
+    R: { x: string; y: string }[];
+    D: { x: string; y: string }[];
+    status: number;
+    responses: any[];
+};
+export async function getCommitteeRequests(committeeId: string): Promise<TRequest[]> {
+    const response = await axios.get(apiUrl.committeeRequests(committeeId));
+    console.log('getCommitteeRequests', response.data);
+    return response.data.map((item: any) => {
+        return {
+            requestId: item.requestId,
+            committeeId: item.committeeId,
+            status: item.status,
+            R: item.R || [],
+            D: item.D || [],
+            responses: item.responses,
+            keyId: item.keyId,
+            requester: item.requester,
+        } as TRequest;
+    });
 }
