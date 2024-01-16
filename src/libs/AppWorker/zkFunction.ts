@@ -387,7 +387,7 @@ export const zkFunctions = {
             args.fReceive == null
                 ? args.round2Datas.map((item, index) => {
                       if (index == Number(args.memberId)) return secret.f[Number(args.memberId)].toJSON();
-                      const decryptData = decrypt(Bit255.fromBigInt(BigInt(item.c)), new Group({ x: item.u.x, y: item.u.y }), Scalar.from(secret.f[Number(args.memberId)]));
+                      const decryptData = decrypt(Bit255.fromBigInt(BigInt(item.c)), new Group({ x: item.u.x, y: item.u.y }), Scalar.from(secret.a[0]));
                       return decryptData.m.toBigInt().toString();
                   })
                 : args.fReceive;
