@@ -89,6 +89,9 @@ export default class ZkAppWorkerClient {
     submitContributionRound2(args: ArgumentZkFuction<'submitContributionRound2'>) {
         return this._call('submitContributionRound2', args);
     }
+    deprecateKey(args: ArgumentZkFuction<'deprecateKey'>) {
+        return this._call('deprecateKey', args);
+    }
     submitContributionRequest(args: ArgumentZkFuction<'submitContributionRequest'>) {
         return this._call('submitContributionRequest', args);
     }
