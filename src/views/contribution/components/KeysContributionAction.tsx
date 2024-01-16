@@ -230,16 +230,70 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
 }
 
 // TODO: Action Active ================================================================================================================================
-function KeyActiveAction({ dataKey, dataUserInCommittee }: Props) {
+function KeyActiveAction({ dataKey, dataUserInCommittee, N, T }: Props) {
     const { userAddress } = useWalletData();
     const { workerClient } = useContractData();
     const [submiting, setSubmiting] = useState<boolean>(false);
 
+    function downloadSecret() {
+        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley');
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley')}.txt`);
+    }
+
+    async function deprecate() {
+        setSubmiting(true);
+        const idtoast = toast.loading('Create transaction and proving...', { position: 'top-center', type: 'info' });
+        try {
+            if (T == 0 || N == 0) throw Error('Threshold or member list invalid!');
+            if (!userAddress) throw Error('Please connect your wallet first!');
+            if (!workerClient) throw Error('Worker client is dead, reload page again!');
+            const committeeId = dataKey.committeeId;
+            const memberId = dataUserInCommittee?.memberId + '' || '-1';
+            if (memberId == '-1') throw Error('You are not a member of this committee');
+
+            const secret = getLocalStorageKeySecretValue(dataKey.committeeId, memberId, dataKey.keyId, 'Berkeley');
+            if (!secret) throw Error('Secret key missing!');
+            const witnessAll = await Promise.all([getStorageRound2Zkapp(), getCommitteeMemberLv1(), getCommitteeMemberLv2(committeeId)]);
+
+            await workerClient.deprecateKey({
+                sender: userAddress,
+                keyId: dataKey.keyId,
+                memberId: memberId,
+                committee: {
+                    committeeId: dataKey.committeeId,
+                    witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
+                },
+                memberWitness: {
+                    level1: witnessAll[1][Number(committeeId)],
+                    level2: witnessAll[2][Number(memberId)],
+                },
+            });
+            await workerClient.proveTransaction();
+
+            toast.update(idtoast, { render: 'Prove successfull! Sending the transaction...' });
+            const transactionJSON = await workerClient.getTransactionJSON();
+            console.log(transactionJSON);
+
+            const { transactionLink } = await workerClient.sendTransaction(transactionJSON);
+            console.log(transactionLink);
+
+            toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
+        } catch (err) {
+            console.log(err);
+            toast.update(idtoast, { render: (err as Error).message, type: 'error', position: 'top-center', isLoading: false, autoClose: 3000, hideProgressBar: false });
+        }
+
+        setSubmiting(false);
+    }
+
     return (
-        <Box sx={{ display: dataUserInCommittee?.publicKey ? 'flex' : 'none', justifyContent: 'end', placeItems: 'center' }}>
-            <ButtonLoading muiProps={{ variant: 'outlined', size: 'small' }} isLoading={submiting}>
+        <Box sx={{ display: dataUserInCommittee?.publicKey ? 'flex' : 'none', justifyContent: 'end', placeItems: 'center', gap: 1 }}>
+            <ButtonLoading muiProps={{ variant: 'outlined', size: 'small', onClick: deprecate }} isLoading={submiting}>
                 Deprecate
             </ButtonLoading>
+            <IconButton color="primary" onClick={downloadSecret}>
+                <FileDownloadOutlined />
+            </IconButton>
         </Box>
     );
 }
