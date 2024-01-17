@@ -104,6 +104,7 @@ export default function ModalCreateCommittee() {
 
     async function createCommitee() {
         if (checkValid()) {
+            const idtoast = toast.loading('Create transaction and proving...', { position: 'top-center', type: 'info' });
             try {
                 if (userAddress == null) throw new Error('You have not connected to your wallet yet!');
                 if (workerClient == null) throw new Error('Worker client failed!');
@@ -132,18 +133,18 @@ export default function ModalCreateCommittee() {
                     },
                 });
 
-                toast('Create transaction and proving...', { type: 'info', position: 'top-center' });
-                await workerClient?.proveTransaction();
+                await workerClient.proveTransaction();
+
+                toast.update(idtoast, { render: 'Prove successfull! Sending the transaction...' });
 
                 const transactionJSON = await workerClient.getTransactionJSON();
                 console.log(transactionJSON);
                 const { transactionLink } = await workerClient.sendTransaction(transactionJSON);
                 console.log(transactionLink);
-
-                toast('Send transaction successful!', { type: 'success', position: 'top-center' });
+                toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
             } catch (error) {
                 console.log(error);
-                toast((error as Error).message, { type: 'error', position: 'top-center' });
+                toast.update(idtoast, { render: (error as Error).message, type: 'error', isLoading: false, autoClose: 3000, hideProgressBar: false });
             }
         }
     }
