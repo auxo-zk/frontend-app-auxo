@@ -75,10 +75,10 @@ export const useContractFunction = () => {
                 await zkapp.workerClient.initZkappInstance({
                     committeeContract: 'B62qjDLMhAw54JMrJLNZsrBRcoSjbQHQwn4ryceizpsQi8rwHQLA6R1',
                     dkgContract: 'B62qogHpAHHNP7PXAiRzHkpKnojERnjZq34GQ1PjjAv5wCLgtbYthAS',
-                    responseContract: 'B62qoGfSCnimss8Cnt56BMDGUFmiBW4oiD28WfgHG5TuEHjkyv8QAdU',
+                    responseContract: 'B62qr5LYkp91sQJ9denJTY5KNg8PuSBHkf5UGKwYn7myJx8UroQ4pZk',
                     round1Contract: 'B62qony53NMnmq49kxhtW1ttrQ8xvr58SNoX5jwgPY17pMChKLrjjWc',
                     round2Contract: 'B62qpvKFv8ey9FhsGAdcXxkg8yg1vZJQGoB2EySqJDZdANwP6Mh8SZ7',
-                    requestContract: 'B62qnDCCc8iHuXu7systFTc2EuipJQQcbA5DwYGXkJgrviv7dkcSnPi',
+                    requestContract: 'B62qjujctknmNAsUHEiRhxttm6vZ9ipSd5nfWP8ijGgHHcRzMDRHDcu',
                 });
                 setContractData({
                     isLoading: false,
