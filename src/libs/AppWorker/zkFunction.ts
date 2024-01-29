@@ -42,8 +42,12 @@ const state = {
 
 export const zkFunctions = {
     setActiveInstanceToBerkeley: async (args: {}) => {
-        // const Berkeley = Mina.Network('https://proxy.berkeley.minaexplorer.com/graphql');
-        const Berkeley = Mina.Network('https://api.minascan.io/node/berkeley/v1/graphql');
+        const MINAURL = 'https://proxy.berkeley.minaexplorer.com/graphql';
+        const ARCHIVEURL = 'https://archive.berkeley.minaexplorer.com';
+        const Berkeley = Mina.Network({
+            mina: MINAURL,
+            archive: ARCHIVEURL,
+        });
         console.log('Berkeley Instance Created');
         Mina.setActiveInstance(Berkeley);
     },
