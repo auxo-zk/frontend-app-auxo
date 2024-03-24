@@ -7,6 +7,7 @@ import { useContractData } from 'src/states/contracts';
 import { useWalletData } from 'src/states/wallet';
 import { v4 as uuidv4 } from 'uuid';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
+import { useModalFunction } from 'src/states/modal';
 export type TDataPost = {
     name: string;
     creator: string;
@@ -20,6 +21,7 @@ export default function ModalCreateCommittee() {
     const { userAddress, userPubKey } = useWalletData();
     const { workerClient } = useContractData();
     const [dataPost, setDataPost] = useState<TDataPost>({ creator: userAddress, network: 'Berkery', t: 1, n: 1, members: [{ id: uuidv4(), address: '', name: '' }], name: '' });
+    const { closeModal } = useModalFunction();
 
     function changeDataPost(dataPost: Partial<TDataPost>) {
         return setDataPost((prev) => {
@@ -142,6 +144,7 @@ export default function ModalCreateCommittee() {
                 const { transactionLink } = await workerClient.sendTransaction(transactionJSON);
                 console.log(transactionLink);
                 toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
+                closeModal();
             } catch (error) {
                 console.log(error);
                 toast.update(idtoast, { render: (error as Error).message, type: 'error', isLoading: false, autoClose: 3000, hideProgressBar: false });
