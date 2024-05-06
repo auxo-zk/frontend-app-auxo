@@ -73,12 +73,12 @@ export const useContractFunction = () => {
                 await zkapp.workerClient.loadContract();
                 await zkapp.workerClient.compileContract(cacheFiles);
                 await zkapp.workerClient.initZkappInstance({
-                    committeeContract: 'B62qjDLMhAw54JMrJLNZsrBRcoSjbQHQwn4ryceizpsQi8rwHQLA6R1',
-                    dkgContract: 'B62qogHpAHHNP7PXAiRzHkpKnojERnjZq34GQ1PjjAv5wCLgtbYthAS',
-                    responseContract: 'B62qr5LYkp91sQJ9denJTY5KNg8PuSBHkf5UGKwYn7myJx8UroQ4pZk',
-                    round1Contract: 'B62qony53NMnmq49kxhtW1ttrQ8xvr58SNoX5jwgPY17pMChKLrjjWc',
-                    round2Contract: 'B62qpvKFv8ey9FhsGAdcXxkg8yg1vZJQGoB2EySqJDZdANwP6Mh8SZ7',
-                    requestContract: 'B62qjujctknmNAsUHEiRhxttm6vZ9ipSd5nfWP8ijGgHHcRzMDRHDcu',
+                    committeeContract: 'B62qqJchAAPpvtoFXb4joAWujSXDxc8Ljj31HM35pr4Dm8dkfoX5Kry',
+                    dkgContract: 'B62qqv5fPwCKAu585VqBSB14w1Y8w5DJHYvwpzSeySmegb9nqjssE1q',
+                    responseContract: 'B62qmBCmk81ZewurLSX8YTSkcNsVvJEmERyHvSAEfDkw5crLbtaUHjk',
+                    round1Contract: 'B62qnLjoK49L1Ab9uPuNMcuU3m9xddFAGsdw57jEDJGfRuK2WP6r8Yj',
+                    round2Contract: 'B62qoQjtkb39tFy6bW82dv3QobZ5TUtDm1dkcHknjTE58J69zMbrtD7',
+                    requestContract: 'B62qrKY6ryYdHxYaGyHRfEbiHHQePXDvK5eUY6r5U8R5B5DuRWc5w9u',
                 });
                 setContractData({
                     isLoading: false,

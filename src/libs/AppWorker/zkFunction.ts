@@ -9,7 +9,9 @@ import {
     BatchDecryptionInput,
     BatchEncryption,
     BatchEncryptionInput,
+    CommitteeAction,
     Libs,
+    MemberArray,
     PlainArray,
     RandomArray,
     Storage,
@@ -21,15 +23,16 @@ import {
 } from '@auxo-dev/dkg';
 import { ArgumentTypes } from 'src/global.config';
 import { FileSystem } from 'src/states/cache';
-import { Bit255, CustomScalar, IPFSHash } from '@auxo-dev/auxo-libs';
+import { Bit255, CustomScalar, IpfsHash } from '@auxo-dev/auxo-libs';
 import { TRound1Data, TWitness } from 'src/services/services';
 import { getLocalStorageKeySecret } from 'src/utils';
 import { decrypt } from '@auxo-dev/dkg/build/esm/src/libs/Elgamal';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
+    RollupContract: null as null | ZkApp.Rollup.RollupContract,
     CommitteeContract: null as null | ZkApp.Committee.CommitteeContract,
-    DKGContract: null as null | ZkApp.DKG.DKGContract,
+    DKGContract: null as null | ZkApp.DKG.DkgContract,
     Round1Contract: null as null | ZkApp.Round1.Round1Contract,
     Round2Contract: null as null | ZkApp.Round2.Round2Contract,
     ResponseContract: null as null | ZkApp.Response.ResponseContract,
@@ -42,8 +45,8 @@ const state = {
 
 export const zkFunctions = {
     setActiveInstanceToBerkeley: async (args: {}) => {
-        const MINAURL = 'https://api.minascan.io/node/berkeley/v1/graphql';
-        const ARCHIVEURL = 'https://api.minascan.io/archive/berkeley/v1/graphql';
+        const MINAURL = 'https://explorer.auxo.fund/graphql';
+        const ARCHIVEURL = 'https://explorer.auxo.fund/archive';
         const Berkeley = Mina.Network({
             mina: MINAURL,
             archive: ARCHIVEURL,
@@ -56,76 +59,68 @@ export const zkFunctions = {
         state.TypeZkApp = ZkApp;
     },
     compileContract: async (args: { fileCache: any }) => {
-        await state.TypeZkApp!.DKG.UpdateKey.compile({ cache: FileSystem(args.fileCache) }); // 1
-        console.log('complie DKG UpdateKey done');
+        await state.TypeZkApp!.Rollup.Rollup.compile({ cache: FileSystem(args.fileCache) }); // 1
+        console.log('1. complie Rollup done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Round1.ReduceRound1.compile({ cache: FileSystem(args.fileCache) }); // 2
-        console.log('complie ReduceRound1 done');
+        await state.TypeZkApp!.Rollup.RollupContract.compile({ cache: FileSystem(args.fileCache) }); // 2
+        console.log('2. complie RollupContract done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Round1.FinalizeRound1.compile({ cache: FileSystem(args.fileCache) }); // 3
-        console.log('complie FinalizeRound1 done');
+        await state.TypeZkApp!.Committee.UpdateCommittee.compile({ cache: FileSystem(args.fileCache) }); // 3
+        console.log('3. complie UpdateCommittee done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Round2.ReduceRound2.compile({ cache: FileSystem(args.fileCache) }); // 4
-        console.log('complie ReduceRound2 done');
+        await state.TypeZkApp!.Committee.CommitteeContract.compile({ cache: FileSystem(args.fileCache) }); // 4
+        console.log('4. complie CommitteeContract done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Encryption.BatchEncryption.compile({ cache: FileSystem(args.fileCache) }); // 5
-        console.log('complie BatchEncryption done');
+        await state.TypeZkApp!.DKG.UpdateKey.compile({ cache: FileSystem(args.fileCache) }); // 5
+        console.log('5. complie UpdateKey done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Round2.FinalizeRound2.compile({ cache: FileSystem(args.fileCache) }); // 6
-        console.log('complie FinalizeRound2 done');
+        await state.TypeZkApp!.DKG.DkgContract.compile({ cache: FileSystem(args.fileCache) }); // 6
+        console.log('6. complie DkgContract done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Response.ReduceResponse.compile({ cache: FileSystem(args.fileCache) }); // 7
-        console.log('complie ReduceResponse done');
+        await state.TypeZkApp!.Round1.FinalizeRound1.compile({ cache: FileSystem(args.fileCache) }); // 7
+        console.log('7. complie FinalizeRound1 done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Encryption.BatchDecryption.compile({ cache: FileSystem(args.fileCache) }); // 8
-        console.log('complie BatchDecryption done');
+        await state.TypeZkApp!.Round1.Round1Contract.compile({ cache: FileSystem(args.fileCache) }); // 8
+        console.log('8. complie Round1Contract done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Response.CompleteResponse.compile({ cache: FileSystem(args.fileCache) }); // 9
-        console.log('complie CompleteResponse done');
+        await state.TypeZkApp!.Encryption.BatchEncryption.compile({ cache: FileSystem(args.fileCache) }); // 9
+        console.log('9. complie BatchEncryption done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Committee.CreateCommittee.compile({ cache: FileSystem(args.fileCache) }); // 10
-        console.log('complie Create Committee done');
+        await state.TypeZkApp!.Round2.FinalizeRound2.compile({ cache: FileSystem(args.fileCache) }); // 10
+        console.log('10. complie FinalizeRound2 done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Request.CreateRequest.compile({ cache: FileSystem(args.fileCache) }); // 11
-        console.log('complie Create Request done');
+        await state.TypeZkApp!.Round2.Round2Contract.compile({ cache: FileSystem(args.fileCache) }); // 11
+        console.log('11. complie Round2Contract done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Committee.CommitteeContract.compile({ cache: FileSystem(args.fileCache) }); // 12
-        console.log('complie Committee Contract done');
+        await state.TypeZkApp!.Encryption.BatchDecryption.compile({ cache: FileSystem(args.fileCache) }); // 12
+        console.log('12. complie BatchDecryption done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.DKG.DKGContract.compile({ cache: FileSystem(args.fileCache) }); // 13
-        console.log('complie DKG Contract done');
+        await state.TypeZkApp!.Response.ComputeResponse.compile({ cache: FileSystem(args.fileCache) }); // 13
+        console.log('13. complie ComputeResponse done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Round1.Round1Contract.compile({ cache: FileSystem(args.fileCache) }); // 14
-        console.log('complie Round1 Contract done');
+        await state.TypeZkApp!.Response.FinalizeResponse.compile({ cache: FileSystem(args.fileCache) }); // 14
+        console.log('14. complie FinalizeResponse done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Round2.Round2Contract.compile({ cache: FileSystem(args.fileCache) }); // 15
-        console.log('complie Round2 Contract done');
-        state.complieDone += 1;
-
-        await state.TypeZkApp!.Response.ResponseContract.compile({ cache: FileSystem(args.fileCache) }); // 16
-        console.log('complie Response Contract done');
-        state.complieDone += 1;
-
-        await state.TypeZkApp!.Request.RequestContract.compile({ cache: FileSystem(args.fileCache) }); // 17
-        console.log('complie Request Contract done');
+        await state.TypeZkApp!.Response.ResponseContract.compile({ cache: FileSystem(args.fileCache) }); // 15
+        console.log('15. complie ResponseContract done');
         state.complieDone += 1;
     },
     getPercentageComplieDone: async (args: {}) => {
-        return ((state.complieDone / 17) * 100).toFixed(0);
+        return ((state.complieDone / 15) * 100).toFixed(0);
     },
     fetchAccount: async (args: { publicKey58: string }) => {
         const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -136,7 +131,7 @@ export const zkFunctions = {
         state.CommitteeContract = new state.TypeZkApp!.Committee.CommitteeContract!(committeeContractPub as any);
 
         const dkgContractPub = PublicKey.fromBase58(args.dkgContract);
-        state.DKGContract = new state.TypeZkApp!.DKG.DKGContract!(dkgContractPub as any);
+        state.DKGContract = new state.TypeZkApp!.DKG.DkgContract!(dkgContractPub as any);
 
         const round1ContractPub = PublicKey.fromBase58(args.round1Contract);
         state.Round1Contract = new state.TypeZkApp!.Round1.Round1Contract!(round1ContractPub as any);
@@ -157,12 +152,14 @@ export const zkFunctions = {
         await fetchAccount({ publicKey: sender });
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
 
-        const transaction = await Mina.transaction(sender, () => {
-            state.CommitteeContract!.createCommittee({
-                addresses: Libs.Committee.MemberArray.from(args.action.addresses.map((member) => PublicKey.fromBase58(member))),
-                threshold: new Field(args.action.threshold),
-                ipfsHash: IPFSHash.fromString(args.action.ipfsHash),
-            });
+        const transaction = await Mina.transaction(sender, async () => {
+            return await state.CommitteeContract!.create(
+                new CommitteeAction({
+                    addresses: MemberArray.from(args.action.addresses.map((member) => PublicKey.fromBase58(member))),
+                    threshold: new Field(args.action.threshold),
+                    ipfsHash: IpfsHash.fromString(args.action.ipfsHash),
+                })
+            );
         });
         state.transaction = transaction;
     },
@@ -174,8 +171,8 @@ export const zkFunctions = {
         await fetchAccount({ publicKey: state.DKGContract!.address });
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
 
-        const transaction = await Mina.transaction(sender, () => {
-            state.DKGContract!.committeeAction(
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.DKGContract!.committeeAction(
                 new Field(args.committee.committeeId),
                 new Field(-1),
                 new Field(args.memberId),

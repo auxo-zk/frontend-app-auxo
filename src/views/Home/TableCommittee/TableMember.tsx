@@ -9,7 +9,7 @@ const tableCellRatio = [2, 4, 3, 3];
 
 export default function TableMember({ data }: { data: TCommitteeData['members'] }) {
     useEffect(() => {
-        console.log(data);
+        // console.log(data);
     }, []);
     return (
         <Box>
