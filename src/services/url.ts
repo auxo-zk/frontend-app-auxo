@@ -16,4 +16,10 @@ export const apiUrl = {
     getCommitteeMemberLv1: `${BACKEND_BASE_URL}/storages/committee/member/level1`,
     getCommitteeMemberLv2: (committeeId: string) => `${BACKEND_BASE_URL}/storages/committee/member/level2/${committeeId}`,
     getStorageResponseZkapp: `${BACKEND_BASE_URL}/storages/response/zkApps`,
+
+    ///////////////////
+    getGenerateNewKeyData: (memberId: string, committeeId: string) => `${BACKEND_BASE_URL}/method-inputs/dkg-contract/generate-key?committeeId=${committeeId}&memberId=${memberId}`,
+    getRound1Contribution: (memberId: string, committeeId: string) => `${BACKEND_BASE_URL}/method-inputs/round1-contract/contribute?committeeId=${committeeId}&memberId=${memberId}`,
+    getRound2Contribution: (memberId: string, committeeId: string, keyId: string) =>
+        `${BACKEND_BASE_URL}/method-inputs/round2-contract/contribute?committeeId=${committeeId}&keyId=${keyId}&memberId=${memberId}`,
 };

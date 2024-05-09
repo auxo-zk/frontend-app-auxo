@@ -6,8 +6,9 @@ import { useContractData } from 'src/states/contracts';
 import { toast } from 'react-toastify';
 import { useWalletData } from 'src/states/wallet';
 import { Constants } from '@auxo-dev/dkg';
+import { getGenerateNewKeyData } from 'src/services/api/generateNewKey';
 
-export default function ButtonGenNewKey({ dataUserInCommittee }: { dataUserInCommittee: TDataMemberInCommittee | null | undefined }) {
+export default function ButtonGenNewKey({ dataUserInCommittee }: { dataUserInCommittee: { memberId: number; userAddress: string } }) {
     const { workerClient } = useContractData();
     const { userAddress } = useWalletData();
     const { selectedCommittee } = useContributionPageData();
@@ -19,19 +20,16 @@ export default function ButtonGenNewKey({ dataUserInCommittee }: { dataUserInCom
         try {
             if (selectedCommittee && workerClient && userAddress) {
                 const committeeId = selectedCommittee.idCommittee;
-                const memberId = dataUserInCommittee?.memberId + '' || '-1';
-                if (memberId == '-1') throw Error('You are not a member of this committee');
+                const _memberId = dataUserInCommittee.memberId + '';
+                console.log(_memberId);
+                if (_memberId == '-1') throw Error('You are not a member of this committee');
 
-                const witnessAll = await Promise.all([getStorageDkgZApps(), getCommitteeMemberLv1(), getCommitteeMemberLv2(committeeId)]);
+                const dataGenerator = await getGenerateNewKeyData(_memberId, committeeId);
 
                 await workerClient.genNewKeyContributions({
-                    committee: { committeeId: committeeId, witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE] },
-                    memberId: memberId,
+                    memberId: _memberId,
                     sender: userAddress,
-                    memberWitness: {
-                        level1: witnessAll[1][Number(committeeId)],
-                        level2: witnessAll[2][Number(memberId)],
-                    },
+                    dataBackend: dataGenerator,
                 });
 
                 await workerClient.proveTransaction();

@@ -10,12 +10,16 @@ import {
     BatchEncryption,
     BatchEncryptionInput,
     CommitteeAction,
+    CommitteeWitness,
+    DkgActionEnum,
+    DkgLevel1Witness,
     Libs,
     MemberArray,
     PlainArray,
     RandomArray,
     Storage,
     ZkApp,
+    ZkAppRef,
     generateRandomPolynomial,
     getResponseContribution,
     getRound1Contribution,
@@ -27,6 +31,9 @@ import { Bit255, CustomScalar, IpfsHash } from '@auxo-dev/auxo-libs';
 import { TRound1Data, TWitness } from 'src/services/services';
 import { getLocalStorageKeySecret } from 'src/utils';
 import { decrypt } from '@auxo-dev/dkg/build/esm/src/libs/Elgamal';
+import { TResponseGetGenNewKey } from 'src/services/api/generateNewKey';
+import { TResponseGetRount1Contribution } from 'src/services/api/getRound1Contribution';
+import { TResponseGetRount2Contribution } from 'src/services/api/getRound2Contribution';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
@@ -126,7 +133,15 @@ export const zkFunctions = {
         const publicKey = PublicKey.fromBase58(args.publicKey58);
         return await fetchAccount({ publicKey });
     },
-    initZkappInstance: async (args: { committeeContract: string; dkgContract: string; round1Contract: string; round2Contract: string; responseContract: string; requestContract: string }) => {
+    initZkappInstance: async (args: {
+        committeeContract: string;
+        dkgContract: string;
+        round1Contract: string;
+        round2Contract: string;
+        responseContract: string;
+        rollUpContract: string;
+        requestContract: string;
+    }) => {
         const committeeContractPub = PublicKey.fromBase58(args.committeeContract);
         state.CommitteeContract = new state.TypeZkApp!.Committee.CommitteeContract!(committeeContractPub as any);
 
@@ -144,6 +159,9 @@ export const zkFunctions = {
 
         const requestContractPub = PublicKey.fromBase58(args.requestContract);
         state.RequestContract = new state.TypeZkApp!.Request.RequestContract!(requestContractPub);
+
+        const rollUpContractPub = PublicKey.fromBase58(args.rollUpContract);
+        state.RollupContract = new state.TypeZkApp!.Rollup.RollupContract!(rollUpContractPub);
     },
 
     createCommittee: async (args: { sender: string; action: { addresses: string[]; threshold: number; ipfsHash: string } }) => {
@@ -164,66 +182,50 @@ export const zkFunctions = {
         state.transaction = transaction;
     },
 
-    genNewKeyContributions: async (args: { sender: string; memberId: string; committee: { committeeId: string; witness: TWitness }; memberWitness: { level1: TWitness; level2: TWitness } }) => {
+    genNewKeyContributions: async (args: { sender: string; memberId: string; dataBackend: TResponseGetGenNewKey }) => {
         const sender = PublicKey.fromBase58(args.sender);
 
         await fetchAccount({ publicKey: sender });
         await fetchAccount({ publicKey: state.DKGContract!.address });
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
+        await fetchAccount({ publicKey: state.RollupContract!.address });
 
         const transaction = await Mina.transaction(sender, async () => {
             await state.DKGContract!.committeeAction(
-                new Field(args.committee.committeeId),
                 new Field(-1),
-                new Field(args.memberId),
                 new Field(0),
-                Storage.SharedStorage.ZkAppRef.fromJSON({
-                    address: state.CommitteeContract!.address.toBase58(),
-                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness),
-                }),
-                Storage.CommitteeStorage.FullMTWitness.fromJSON({
-                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
-                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
-                })
+                CommitteeWitness.fromJSON(args.dataBackend.memberWitness),
+                ZkAppRef.fromJSON(args.dataBackend.committeeRef),
+                ZkAppRef.fromJSON(args.dataBackend.rollupRef),
+                ZkAppRef.fromJSON(args.dataBackend.selfRef)
             );
         });
         state.transaction = transaction;
     },
 
-    submitContributionRound1: async (args: {
-        sender: string;
-        keyId: string;
-        t: number;
-        n: number;
-        committee: { committeeId: string; memberId: string; witness: TWitness };
-        memberWitness: { level1: TWitness; level2: TWitness };
-    }) => {
+    submitContributionRound1: async (args: { sender: string; keyId: string; t: number; n: number; committeeId: string; memberId: string; dataBackend: TResponseGetRount1Contribution }) => {
         const sender = PublicKey.fromBase58(args.sender);
         await fetchAccount({ publicKey: sender });
         await fetchAccount({ publicKey: state.Round1Contract!.address });
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
+        await fetchAccount({ publicKey: state.RollupContract!.address });
 
         const secret = generateRandomPolynomial(args.t, args.n);
         const contribution = getRound1Contribution(secret);
 
-        const transaction = await Mina.transaction(sender, () => {
-            state.Round1Contract!.contribute(
-                new Field(args.committee.committeeId),
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.Round1Contract!.contribute(
                 new Field(args.keyId),
                 contribution.C,
-                Storage.SharedStorage.ZkAppRef.fromJSON({
-                    address: state.CommitteeContract!.address.toBase58(),
-                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness),
-                }),
-                Storage.CommitteeStorage.FullMTWitness.fromJSON({
-                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
-                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
-                })
+                CommitteeWitness.fromJSON(args.dataBackend.memberWitness),
+                ZkAppRef.fromJSON(args.dataBackend.committeeRef),
+                ZkAppRef.fromJSON(args.dataBackend.rollupRef),
+                ZkAppRef.fromJSON(args.dataBackend.selfRef)
             );
         });
         state.transaction = transaction;
         return {
-            key: getLocalStorageKeySecret(args.committee.committeeId, args.committee.memberId, args.keyId, 'Berkeley'),
+            key: getLocalStorageKeySecret(args.committeeId, args.memberId, args.keyId, 'Berkeley'),
             value: JSON.stringify(secret),
         };
     },
@@ -232,17 +234,16 @@ export const zkFunctions = {
         sender: string;
         keyId: string;
         secret: string;
+        memberId: string;
         round1Contributions: TRound1Data['contribution'][];
-        committee: { committeeId: string; memberId: string; witness: TWitness };
-        round1Witness: TWitness;
-        memberWitness: { level1: TWitness; level2: TWitness };
-        publicKeysWitness: { level1: TWitness };
+        dataBackend: TResponseGetRount2Contribution;
     }) => {
         const sender = PublicKey.fromBase58(args.sender);
         await fetchAccount({ publicKey: sender });
         await fetchAccount({ publicKey: state.Round1Contract!.address });
         await fetchAccount({ publicKey: state.Round2Contract!.address });
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
+        await fetchAccount({ publicKey: state.RollupContract!.address });
 
         const secretObj = JSON.parse(args.secret) as { C: { x: string; y: string }[]; a: string[]; f: string[] };
         const secret: Libs.Committee.SecretPolynomial = {
@@ -255,7 +256,7 @@ export const zkFunctions = {
         });
         const round2Contribution = getRound2Contribution(
             secret,
-            Number(args.committee.memberId),
+            Number(args.memberId),
             args.round1Contributions.map((member) => {
                 return new Libs.Committee.Round1Contribution({
                     C: new Libs.Committee.CArray(
@@ -270,7 +271,7 @@ export const zkFunctions = {
 
         const proof = await BatchEncryption.encrypt(
             new BatchEncryptionInput({
-                memberId: new Field(args.committee.memberId),
+                memberId: new Field(args.memberId),
                 publicKeys: new Libs.Committee.CArray(
                     args.round1Contributions.map((member) => {
                         return new Group(member[0]);
@@ -291,50 +292,36 @@ export const zkFunctions = {
             )
         );
 
-        const transaction = await Mina.transaction(sender, () => {
-            state.Round2Contract!.contribute(
-                new Field(args.committee.committeeId),
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.Round2Contract!.contribute(
                 new Field(args.keyId),
                 proof,
-                new Storage.SharedStorage.ZkAppRef({
-                    address: state.CommitteeContract!.address,
-                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness),
-                }),
-                new Storage.SharedStorage.ZkAppRef({
-                    address: state.Round1Contract!.address,
-                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.round1Witness),
-                }),
-                Storage.CommitteeStorage.FullMTWitness.fromJSON({
-                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
-                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
-                }),
-
-                Storage.DKGStorage.Level1Witness.fromJSON(args.publicKeysWitness.level1)
+                CommitteeWitness.fromJSON(args.dataBackend.memberWitness),
+                DkgLevel1Witness.fromJSON(args.dataBackend.publicKeysWitness),
+                ZkAppRef.fromJSON(args.dataBackend.committeeRef),
+                ZkAppRef.fromJSON(args.dataBackend.round1Ref),
+                ZkAppRef.fromJSON(args.dataBackend.rollupRef),
+                ZkAppRef.fromJSON(args.dataBackend.selfRef)
             );
         });
         state.transaction = transaction;
     },
 
-    deprecateKey: async (args: { sender: string; keyId: string; memberId: string; committee: { committeeId: string; witness: TWitness }; memberWitness: { level1: TWitness; level2: TWitness } }) => {
+    deprecateKey: async (args: { sender: string; keyId: string; dataBackend: TResponseGetGenNewKey }) => {
         const sender = PublicKey.fromBase58(args.sender);
         await fetchAccount({ publicKey: sender });
         await fetchAccount({ publicKey: state.DKGContract!.address });
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
+        await fetchAccount({ publicKey: state.RollupContract!.address });
 
-        const transaction = await Mina.transaction(sender, () => {
-            state.DKGContract?.committeeAction(
-                new Field(args.committee.committeeId),
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.DKGContract?.committeeAction(
                 new Field(args.keyId),
-                new Field(args.memberId),
-                new Field(1),
-                Storage.SharedStorage.ZkAppRef.fromJSON({
-                    address: state.CommitteeContract!.address.toBase58(),
-                    witness: Storage.SharedStorage.AddressWitness.fromJSON(args.committee.witness),
-                }),
-                Storage.CommitteeStorage.FullMTWitness.fromJSON({
-                    level1: Storage.CommitteeStorage.Level1Witness.fromJSON(args.memberWitness.level1),
-                    level2: Storage.CommitteeStorage.Level2Witness.fromJSON(args.memberWitness.level2),
-                })
+                new Field(3),
+                CommitteeWitness.fromJSON(args.dataBackend.memberWitness),
+                ZkAppRef.fromJSON(args.dataBackend.committeeRef),
+                ZkAppRef.fromJSON(args.dataBackend.rollupRef),
+                ZkAppRef.fromJSON(args.dataBackend.selfRef)
             );
         });
         state.transaction = transaction;
@@ -405,8 +392,8 @@ export const zkFunctions = {
             secret.a[0]
         );
 
-        const transaction = await Mina.transaction(sender, () => {
-            state.ResponseContract!.contribute(
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.ResponseContract!.contribute(
                 new Field(args.committee.committeeId),
                 new Field(args.keyId),
                 new Field(args.requestId),

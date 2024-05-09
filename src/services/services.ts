@@ -25,7 +25,7 @@ export async function getListCommittees(userAddress?: string): Promise<TCommitte
             id: item['_id'],
             idCommittee: item.committeeId + '',
             name: item.ipfsData?.name || 'Unknown',
-            status: item.active ? 'Active' : 'Pending',
+            status: 'Active',
             threshold: item.threshold || 0,
             numberOfMembers: item.numberOfMembers || 0,
             creator: item.ipfsData?.creator || 'Unknown',

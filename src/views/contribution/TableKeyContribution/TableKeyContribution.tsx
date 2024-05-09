@@ -25,9 +25,11 @@ export default function TableKeyContribution() {
     const [loading, setLoading] = useState<boolean>(true);
 
     const dataUserInCommittee = useMemo(() => {
-        if (selectedCommittee == null) return null;
-        if (!userAddress) return null;
-        return selectedCommittee.members.find((member) => member.publicKey == userAddress);
+        if (selectedCommittee == null) return { memberId: -1, userAddress: '' };
+        if (!userAddress) return { memberId: -1, userAddress: '' };
+        const memberId = selectedCommittee.publicKeys.findIndex((pubkey) => pubkey == userAddress);
+
+        return { memberId: memberId, userAddress: userAddress };
     }, [selectedCommittee?.id, userAddress]);
 
     async function getCommitteeKeysData() {
@@ -126,7 +128,7 @@ export default function TableKeyContribution() {
                                         <KeyContributionStatus status={item.status} />
                                     </TableCell>
                                     <TableCell xs={tableCellRatio[3]}>
-                                        <Typography color={'text.secondary'}>{item.requests.length}</Typography>
+                                        <Typography color={'text.secondary'}>{item?.requests?.length || 0}</Typography>
                                     </TableCell>
                                     <TableCell xs={tableCellRatio[4]}>{/* <Typography color={'text.secondary'}>{item.}</Typography> */}</TableCell>
                                     <TableCell xs={tableCellRatio[5]}>
