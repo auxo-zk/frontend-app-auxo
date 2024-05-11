@@ -19,7 +19,7 @@ import { useContractData } from 'src/states/contracts';
 import { useWalletData } from 'src/states/wallet';
 import { getLocalStorageKeySecret, getLocalStorageKeySecretValue } from 'src/utils';
 
-type Props = { dataUserInCommittee: TDataMemberInCommittee | null | undefined; status: number; resquestData: TRequest };
+type Props = { dataUserInCommittee: { memberId: number; userAddress: string }; status: number; resquestData: TRequest };
 
 export default function RequestAction(props: Props) {
     if (props.status != 1) return <></>;
@@ -54,30 +54,6 @@ function SubmitContribution({ dataUserInCommittee, resquestData }: Props) {
                 getStorageRound2EncryptionLv1(),
                 getStorageRound2EncryptionLv2((Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)).toString()),
             ]);
-            // console.log({
-            //     keyId: resquestData.keyId,
-            //     memberId: memberId,
-            //     committee: { committeeId: resquestData.committeeId, witness: storageResponseZkapp[Constants.ZkAppEnum.COMMITTEE] },
-            //     memberWitness: { level1: memLv1[Number(resquestData.committeeId)], level2: memLv2[Number(memberId)] },
-            //     requestId: resquestData.requestId,
-            //     secret: secret,
-            //     fReceive: JSON.parse(secret)?.fReceive || null,
-            //     R: resquestData.R,
-            //     publicKeysWitness: {
-            //         level1: round1PubkeyLv1[Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)],
-            //         level2: round1PubkeyLv2[Number(memberId)],
-            //     },
-            //     encryptionWitness: {
-            //         level1: round2EncryptionLv1[Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)],
-            //         level2: round2EncryptionLv2[Number(memberId)],
-            //     },
-            //     round1Witness: storageResponseZkapp[Constants.ZkAppEnum.ROUND1],
-            //     round2Witness: storageResponseZkapp[Constants.ZkAppEnum.ROUND2],
-            //     round2Datas: committeDetail.round2.map((item, index) => {
-            //         if (index == Number(memberId)) return { c: '0', u: { x: '0', y: '0' } };
-            //         return { c: item.contribution.c[Number(memberId)], u: item.contribution.u[Number(memberId)] };
-            //     }),
-            // });
 
             const fReceive = await workerClient.submitContributionRequest({
                 sender: userAddress,
@@ -97,8 +73,8 @@ function SubmitContribution({ dataUserInCommittee, resquestData }: Props) {
                     level1: round2EncryptionLv1[Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)],
                     level2: round2EncryptionLv2[Number(memberId)],
                 },
-                round1Witness: storageResponseZkapp[Constants.ZkAppEnum.ROUND1],
-                round2Witness: storageResponseZkapp[Constants.ZkAppEnum.ROUND2],
+                round1Witness: storageResponseZkapp[0],
+                round2Witness: storageResponseZkapp[1],
                 round2Datas: committeDetail.round2.map((item, index) => {
                     if (index == Number(memberId)) return { c: '0', u: { x: '0', y: '0' } };
                     return { c: item.contribution.c[Number(memberId)], u: item.contribution.u[Number(memberId)] };

@@ -29,10 +29,13 @@ export async function getListCommittees(userAddress?: string): Promise<TCommitte
             threshold: item.threshold || 0,
             numberOfMembers: item.numberOfMembers || 0,
             creator: item.ipfsData?.creator || 'Unknown',
-            members: item.ipfsData?.members || [],
+            members:
+                item.publicKeys?.map((pubK: string, index: number) => {
+                    return { alias: item.ipfsData?.members?.[index]?.alias ?? 'Unknow', lastActive: '', memberId: index + '', publicKey: pubK } as TDataMemberInCommittee;
+                }) || [],
             publicKeys: item.publicKeys || [],
             numOfkeys: item?.keys?.length || 0,
-        };
+        } as TCommitteeData;
     });
 }
 

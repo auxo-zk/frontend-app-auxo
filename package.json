@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@auxo-dev/auxo-libs": "^0.5.7",
-    "@auxo-dev/dkg": "^0.4.5",
+    "@auxo-dev/dkg": "^0.4.7",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.18",

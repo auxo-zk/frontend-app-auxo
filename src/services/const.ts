@@ -5,3 +5,9 @@ export const enum KeyStatus {
     ACTIVE,
     DEPRECATED,
 }
+
+export const enum RequestStatus {
+    INTIALIZED,
+    RESOLVED,
+    EXPIRED,
+}

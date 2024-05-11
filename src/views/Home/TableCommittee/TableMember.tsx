@@ -5,7 +5,7 @@ import TableRow from 'src/components/Table/TableRow';
 import { TCommitteeData } from 'src/services/services';
 import { formatAddress } from 'src/utils/format';
 
-const tableCellRatio = [2, 4, 3, 3];
+const tableCellRatio = [3, 4, 1, 4];
 
 export default function TableMember({ data }: { data: TCommitteeData['members'] }) {
     useEffect(() => {
@@ -56,7 +56,7 @@ export default function TableMember({ data }: { data: TCommitteeData['members'] 
                                 </TableCell>
                                 <TableCell xs={tableCellRatio[2]}>{/* <Typography>{new Date(mem.lastActive).toLocaleDateString()}</Typography> */}</TableCell>
                                 <TableCell xs={tableCellRatio[3]}>
-                                    <Typography>{formatAddress(mem.publicKey)}</Typography>
+                                    <Typography>{formatAddress(mem.publicKey, 6, 6)}</Typography>
                                 </TableCell>
                             </TableRow>
                         );
