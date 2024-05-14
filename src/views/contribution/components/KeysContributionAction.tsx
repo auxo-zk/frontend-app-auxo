@@ -4,6 +4,9 @@ import { Box, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
+import { getGenerateNewKeyData } from 'src/services/api/generateNewKey';
+import { getRound1Contribution } from 'src/services/api/getRound1Contribution';
+import { getRound2Contribution } from 'src/services/api/getRound2Contribution';
 import { KeyStatus } from 'src/services/const';
 import {
     TCommitteeKey,
@@ -20,7 +23,7 @@ import { useContractData } from 'src/states/contracts';
 import { useWalletData } from 'src/states/wallet';
 import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageKeySecretValue } from 'src/utils';
 
-type Props = { dataKey: TCommitteeKey; dataUserInCommittee: TDataMemberInCommittee | null | undefined; T: number; N: number };
+type Props = { dataKey: TCommitteeKey; dataUserInCommittee: { memberId: number; userAddress: string }; T: number; N: number };
 export default function KeysContributionAction(props: Props) {
     // console.log('status', props.dataKey.status == KeyStatus.ACTIVE);
     if (props.dataKey.status == KeyStatus.ROUND_1_CONTRIBUTION) {
@@ -49,33 +52,19 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
             if (!userAddress) throw Error('Please connect your wallet first!');
             if (!workerClient) throw Error('Worker client is dead, reload page again!');
             const committeeId = dataKey.committeeId;
-            const memberId = dataUserInCommittee?.memberId + '' || '-1';
-            if (memberId == '-1') throw Error('You are not a member of this committee');
+            const _memberId = dataUserInCommittee.memberId + '';
+            if (_memberId == '-1') throw Error('You are not a member of this committee');
 
-            const witnessAll = await Promise.all([getStorageRound1Zkapp(), getCommitteeMemberLv1(), getCommitteeMemberLv2(committeeId)]);
-            // console.log({
-            //     N,
-            //     T,
-            //     keyId: dataKey.keyId,
-            //     committeeId: dataKey.committeeId,
-            //     witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
-            //     level1: witnessAll[1][Number(committeeId)],
-            //     level2: witnessAll[2][Number(memberId)],
-            // });
+            const dataBackend = await getRound1Contribution(_memberId, committeeId);
+
             const secret = await workerClient.submitContributionRound1({
                 n: N,
                 t: T,
                 sender: userAddress,
                 keyId: dataKey.keyId,
-                committee: {
-                    committeeId: dataKey.committeeId,
-                    memberId: memberId,
-                    witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
-                },
-                memberWitness: {
-                    level1: witnessAll[1][Number(committeeId)],
-                    level2: witnessAll[2][Number(memberId)],
-                },
+                committeeId: dataKey.committeeId,
+                memberId: _memberId,
+                dataBackend: dataBackend,
             });
             await workerClient.proveTransaction();
 
@@ -97,8 +86,8 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
     }
 
     function downloadSecret() {
-        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley');
-        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley')}.txt`);
+        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley');
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley')}.txt`);
     }
 
     function checkMemberIdInRound1(round1: TRound1Data[], memberId: string) {
@@ -112,7 +101,7 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
     }
     return (
         <Box sx={{ display: 'flex', justifyContent: 'end', placeItems: 'center', gap: 1 }}>
-            {checkMemberIdInRound1(dataKey.round1, dataUserInCommittee?.memberId + '' || '') ? (
+            {checkMemberIdInRound1(dataKey.round1, dataUserInCommittee.memberId + '') ? (
                 <></>
             ) : (
                 <ButtonLoading muiProps={{ variant: 'outlined', size: 'small', onClick: () => generateContribution() }} isLoading={submiting}>
@@ -143,8 +132,8 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
         return false;
     }
     function downloadSecret() {
-        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley');
-        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley')}.txt`);
+        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley');
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley')}.txt`);
     }
 
     async function generateContribution() {
@@ -155,46 +144,21 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
             if (!userAddress) throw Error('Please connect your wallet first!');
             if (!workerClient) throw Error('Worker client is dead, reload page again!');
             const committeeId = dataKey.committeeId;
-            const memberId = dataUserInCommittee?.memberId + '' || '-1';
-            if (memberId == '-1') throw Error('You are not a member of this committee');
+            const _memberId = dataUserInCommittee.memberId + '';
+            if (_memberId == '-1') throw Error('You are not a member of this committee');
 
-            const secret = getLocalStorageKeySecretValue(dataKey.committeeId, memberId, dataKey.keyId, 'Berkeley');
+            const secret = getLocalStorageKeySecretValue(dataKey.committeeId, _memberId, dataKey.keyId, 'Berkeley');
             if (!secret) throw Error('Secret key missing!');
-            const witnessAll = await Promise.all([getStorageRound2Zkapp(), getCommitteeMemberLv1(), getCommitteeMemberLv2(committeeId), getStorageRound1PubkeyLv1()]);
 
-            // console.log({
-            //     sender: userAddress,
-            //     keyId: dataKey.keyId,
-            //     committee: {
-            //         committeeId: dataKey.committeeId,
-            //         memberId: memberId,
-            //         witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
-            //     },
-            //     secret: secret,
-            //     round1Contributions: dataKey.round1.map((item) => item.contribution),
-            //     memberWitness: {
-            //         level1: witnessAll[1][Number(committeeId)],
-            //         level2: witnessAll[2][Number(memberId)],
-            //     },
-            //     publicKeysWitness: { level1: witnessAll[3][Number(committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(dataKey.keyId)] },
-            //     round1Witness: witnessAll[0][Constants.ZkAppEnum.ROUND1],
-            // });
+            const dataBackend = await getRound2Contribution(_memberId, committeeId, dataKey.keyId);
+
             await workerClient.submitContributionRound2({
                 sender: userAddress,
                 keyId: dataKey.keyId,
-                committee: {
-                    committeeId: dataKey.committeeId,
-                    memberId: memberId,
-                    witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
-                },
+                memberId: _memberId,
                 secret: secret,
                 round1Contributions: dataKey.round1.map((item) => item.contribution),
-                memberWitness: {
-                    level1: witnessAll[1][Number(committeeId)],
-                    level2: witnessAll[2][Number(memberId)],
-                },
-                publicKeysWitness: { level1: witnessAll[3][Number(committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(dataKey.keyId)] },
-                round1Witness: witnessAll[0][Constants.ZkAppEnum.ROUND1],
+                dataBackend: dataBackend,
             });
             await workerClient.proveTransaction();
 
@@ -215,7 +179,7 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
     }
     return (
         <Box sx={{ display: 'flex', justifyContent: 'end', placeItems: 'center', gap: 1 }}>
-            {checkMemberIdInRound2(dataKey.round2, dataUserInCommittee?.memberId || '') ? (
+            {checkMemberIdInRound2(dataKey.round2, dataUserInCommittee.memberId + '' || '') ? (
                 <></>
             ) : (
                 <ButtonLoading muiProps={{ variant: 'outlined', size: 'small', onClick: generateContribution }} isLoading={submiting}>
@@ -236,8 +200,8 @@ function KeyActiveAction({ dataKey, dataUserInCommittee, N, T }: Props) {
     const [submiting, setSubmiting] = useState<boolean>(false);
 
     function downloadSecret() {
-        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley');
-        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee?.memberId + '' || '-1', dataKey.keyId, 'Berkeley')}.txt`);
+        const secret = getLocalStorageKeySecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley');
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley')}.txt`);
     }
 
     async function deprecate() {
@@ -248,25 +212,17 @@ function KeyActiveAction({ dataKey, dataUserInCommittee, N, T }: Props) {
             if (!userAddress) throw Error('Please connect your wallet first!');
             if (!workerClient) throw Error('Worker client is dead, reload page again!');
             const committeeId = dataKey.committeeId;
-            const memberId = dataUserInCommittee?.memberId + '' || '-1';
-            if (memberId == '-1') throw Error('You are not a member of this committee');
+            const _memberId = dataUserInCommittee.memberId + '';
+            if (_memberId == '-1') throw Error('You are not a member of this committee');
 
-            const secret = getLocalStorageKeySecretValue(dataKey.committeeId, memberId, dataKey.keyId, 'Berkeley');
+            const secret = getLocalStorageKeySecretValue(dataKey.committeeId, _memberId, dataKey.keyId, 'Berkeley');
             if (!secret) throw Error('Secret key missing!');
-            const witnessAll = await Promise.all([getStorageRound2Zkapp(), getCommitteeMemberLv1(), getCommitteeMemberLv2(committeeId)]);
+            const dataBackend = await getGenerateNewKeyData(_memberId, committeeId);
 
             await workerClient.deprecateKey({
                 sender: userAddress,
                 keyId: dataKey.keyId,
-                memberId: memberId,
-                committee: {
-                    committeeId: dataKey.committeeId,
-                    witness: witnessAll[0][Constants.ZkAppEnum.COMMITTEE],
-                },
-                memberWitness: {
-                    level1: witnessAll[1][Number(committeeId)],
-                    level2: witnessAll[2][Number(memberId)],
-                },
+                dataBackend: dataBackend,
             });
             await workerClient.proveTransaction();
 
@@ -287,7 +243,7 @@ function KeyActiveAction({ dataKey, dataUserInCommittee, N, T }: Props) {
     }
 
     return (
-        <Box sx={{ display: dataUserInCommittee?.publicKey ? 'flex' : 'none', justifyContent: 'end', placeItems: 'center', gap: 1 }}>
+        <Box sx={{ display: dataUserInCommittee.userAddress ? 'flex' : 'none', justifyContent: 'end', placeItems: 'center', gap: 1 }}>
             <ButtonLoading muiProps={{ variant: 'outlined', size: 'small', onClick: deprecate }} isLoading={submiting}>
                 Deprecate
             </ButtonLoading>

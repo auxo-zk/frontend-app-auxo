@@ -10,10 +10,16 @@ import { format as fd } from 'date-fns';
  * @returns
  */
 export function formatAddress(address: string, first = 6, last = 4): string {
-    if (first < 0 || last <= 0) {
-        throw new Error('Invalid parameter(s)');
+    try {
+        if (!address) return '---';
+        if (first < 0 || last <= 0) {
+            throw new Error('Invalid parameter(s)');
+        }
+        return address.slice(0, first) + '...' + address.slice(-last);
+    } catch (e) {
+        console.log(e, address);
+        return 'Error-format-string';
     }
-    return address.slice(0, first) + '...' + address.slice(-last);
 }
 
 /**

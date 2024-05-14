@@ -23,7 +23,7 @@ export default function AutocompleteSearchCommittee() {
             }}
             options={listCommittee.sort((a, b) => -b.name.localeCompare(a.name))}
             // groupBy={(option) => option.firstLetter}
-            getOptionLabel={(option) => option.name}
+            getOptionLabel={(option) => `ID ${option.idCommittee}: ${option.name}`}
             popupIcon={<ExpandMoreRounded sx={{ color: 'secondary.main' }} />}
             sx={{ width: 300, mt: 2.5 }}
             renderInput={(params) => <TextField type="text" name="auto_complete_search_committe" {...params} label="Search committee" color="secondary" />}

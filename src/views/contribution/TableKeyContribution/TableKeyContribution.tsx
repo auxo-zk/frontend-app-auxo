@@ -1,5 +1,5 @@
 import { Box, IconButton, Typography } from '@mui/material';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { IconDownload, IconFolder, IconSpinLoading } from 'src/assets/svg/icon';
 
 import TableCell from 'src/components/Table/TableCell';
@@ -14,7 +14,9 @@ import KeysContributionAction from '../components/KeysContributionAction';
 import { useWalletData } from 'src/states/wallet';
 import Test from './Test';
 import ButtonGenNewKey from '../GenerateNewKey/ButtonGenNewKey';
-import { RefreshRounded } from '@mui/icons-material';
+import { Download, FileDownload, FileUpload, RefreshRounded, UploadFile } from '@mui/icons-material';
+import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageKeySecretValue } from 'src/utils';
+import { toast } from 'react-toastify';
 
 const tableCellRatio = [1, 3, 1.25, 1.25, 2.5, 3];
 
@@ -23,11 +25,14 @@ export default function TableKeyContribution() {
     const { selectedCommittee } = useContributionPageData();
     const [data, setData] = useState<TCommitteeKey[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const refUploadFileBtn = useRef<HTMLInputElement>(null);
 
     const dataUserInCommittee = useMemo(() => {
-        if (selectedCommittee == null) return null;
-        if (!userAddress) return null;
-        return selectedCommittee.members.find((member) => member.publicKey == userAddress);
+        if (selectedCommittee == null) return { memberId: -1, userAddress: '' };
+        if (!userAddress) return { memberId: -1, userAddress: '' };
+        const memberId = selectedCommittee.publicKeys.findIndex((pubkey) => pubkey == userAddress);
+
+        return { memberId: memberId, userAddress: userAddress };
     }, [selectedCommittee?.id, userAddress]);
 
     async function getCommitteeKeysData() {
@@ -43,6 +48,46 @@ export default function TableKeyContribution() {
             setLoading(false);
         }
     }
+
+    async function uploadFileSecrets(event: ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target) {
+                    const result = e.target.result;
+                    console.log(result);
+                    try {
+                        const listSecrets: { key: string; value: string }[] = JSON.parse(result as string) as { key: string; value: string }[];
+                        for (let item of listSecrets) {
+                            if (item.key === undefined || item.value === undefined) {
+                                console.log(item.key, item.value);
+                                throw Error('Invalid File!');
+                            }
+                            localStorage.setItem(item.key, item.value);
+                        }
+                        toast.success('Upload and Save data done!');
+                    } catch (e) {
+                        toast.error('Data file is invalid!', { autoClose: 4000 });
+                    }
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
+
+    async function downloadAllSecret() {
+        const listData = data.map((committee) => {
+            const k = getLocalStorageKeySecret(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, 'Berkeley');
+            return {
+                key: k,
+                value: getLocalStorageKeySecretValue(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, 'Berkeley'),
+            };
+        });
+
+        downloadTextFile(JSON.stringify(listData) || '', `all-key-contribution-secret-memberid${dataUserInCommittee.memberId}-Berkeley.txt`);
+    }
+
     useEffect(() => {
         getCommitteeKeysData();
     }, [selectedCommittee?.id]);
@@ -95,12 +140,21 @@ export default function TableKeyContribution() {
 
                     <TableCell xs={tableCellRatio[5]}>
                         <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', gap: 1 }}>
-                            <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
+                            {/* <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
                                 <Typography variant="body3" color={'primary.main'} mr={1}>
                                     Download All
                                 </Typography>
                                 <IconFolder fontSize="small" color={'primary'} />
-                            </Box>
+                            </Box> */}
+                            <input ref={refUploadFileBtn} type="file" onChange={uploadFileSecrets} style={{ display: 'none' }} />
+
+                            <IconButton color="primary" title="Upload Secrets" onClick={() => refUploadFileBtn.current?.click()}>
+                                <FileUpload />
+                            </IconButton>
+
+                            <IconButton color="primary" onClick={downloadAllSecret} title="DownLoad All Secrets">
+                                <FileDownload />
+                            </IconButton>
                             <IconButton color="primary" onClick={getCommitteeKeysData} title="Refresh Data">
                                 <RefreshRounded />
                             </IconButton>
@@ -126,7 +180,7 @@ export default function TableKeyContribution() {
                                         <KeyContributionStatus status={item.status} />
                                     </TableCell>
                                     <TableCell xs={tableCellRatio[3]}>
-                                        <Typography color={'text.secondary'}>{item.requests.length}</Typography>
+                                        <Typography color={'text.secondary'}>{item?.numRequest || 0}</Typography>
                                     </TableCell>
                                     <TableCell xs={tableCellRatio[4]}>{/* <Typography color={'text.secondary'}>{item.}</Typography> */}</TableCell>
                                     <TableCell xs={tableCellRatio[5]}>

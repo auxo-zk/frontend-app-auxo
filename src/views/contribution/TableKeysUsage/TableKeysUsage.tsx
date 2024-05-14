@@ -21,9 +21,11 @@ export default function TableKeysUsage() {
     const [loading, setLoading] = useState<boolean>(true);
 
     const dataUserInCommittee = useMemo(() => {
-        if (selectedCommittee == null) return null;
-        if (!userAddress) return null;
-        return selectedCommittee.members.find((member) => member.publicKey == userAddress);
+        if (selectedCommittee == null) return { memberId: -1, userAddress: '' };
+        if (!userAddress) return { memberId: -1, userAddress: '' };
+        const memberId = selectedCommittee.publicKeys.findIndex((pubkey) => pubkey == userAddress);
+
+        return { memberId: memberId, userAddress: userAddress };
     }, [selectedCommittee?.id, userAddress]);
 
     async function getCommitteeRequestsData() {
@@ -72,12 +74,12 @@ export default function TableKeysUsage() {
                     </TableCell>
                     <TableCell xs={tableCellRatio[4]}>
                         <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', gap: 1 }}>
-                            <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
+                            {/* <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
                                 <Typography variant="body3" color={'primary.main'} mr={1}>
                                     Download All
                                 </Typography>
                                 <IconFolder fontSize="small" color={'primary'} />
-                            </Box>
+                            </Box> */}
                             <IconButton color="primary" onClick={getCommitteeRequestsData} title="Refresh Data">
                                 <RefreshRounded />
                             </IconButton>
@@ -94,7 +96,7 @@ export default function TableKeysUsage() {
                             return (
                                 <TableRow key={'requestkey' + index + item.requestId}>
                                     <TableCell xs={tableCellRatio[0]}>
-                                        <Typography color={'text.secondary'}>{formatAddress(item.requestId, 4, 4)}</Typography>
+                                        <Typography color={'text.secondary'}>{item.requestId}</Typography>
                                     </TableCell>
                                     <TableCell xs={tableCellRatio[1]}>
                                         <Typography color={'text.secondary'}>{item.keyId}</Typography>
