@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
+import { getResponseContribution } from 'src/services/api/getResponseContribution';
 import {
     TDataMemberInCommittee,
     TRequest,
@@ -44,41 +45,22 @@ function SubmitContribution({ dataUserInCommittee, resquestData }: Props) {
             const secret = getLocalStorageKeySecretValue(resquestData.committeeId, memberId, resquestData.keyId, 'Berkeley');
             if (!secret) throw Error('Secret key missing!');
 
-            const [committeDetail, storageResponseZkapp, memLv1, memLv2, round1PubkeyLv1, round1PubkeyLv2, round2EncryptionLv1, round2EncryptionLv2] = await Promise.all([
+            const [keyDetail, responseContribution] = await Promise.all([
                 getCommitteeKeyDetail(resquestData.committeeId, resquestData.keyId),
-                getStorageResponseZkapp(),
-                getCommitteeMemberLv1(),
-                getCommitteeMemberLv2(resquestData.committeeId),
-                getStorageRound1PubkeyLv1(),
-                getStorageRound1PubkeyLv2((Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)).toString()),
-                getStorageRound2EncryptionLv1(),
-                getStorageRound2EncryptionLv2((Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)).toString()),
+                getResponseContribution(resquestData.committeeId, resquestData.keyId, dataUserInCommittee.memberId + '', resquestData.requestId),
             ]);
 
             const fReceive = await workerClient.submitContributionRequest({
                 sender: userAddress,
                 keyId: resquestData.keyId,
                 memberId: memberId,
-                committee: { committeeId: resquestData.committeeId, witness: storageResponseZkapp[Constants.ZkAppEnum.COMMITTEE] },
-                memberWitness: { level1: memLv1[Number(resquestData.committeeId)], level2: memLv2[Number(memberId)] },
+                committeeId: resquestData.committeeId,
                 requestId: resquestData.requestId,
                 secret: secret,
                 fReceive: JSON.parse(secret)?.fReceive || null,
-                R: resquestData.R,
-                publicKeysWitness: {
-                    level1: round1PubkeyLv1[Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)],
-                    level2: round1PubkeyLv2[Number(memberId)],
-                },
-                encryptionWitness: {
-                    level1: round2EncryptionLv1[Number(resquestData.committeeId) * Constants.INSTANCE_LIMITS.KEY + Number(resquestData.keyId)],
-                    level2: round2EncryptionLv2[Number(memberId)],
-                },
-                round1Witness: storageResponseZkapp[0],
-                round2Witness: storageResponseZkapp[1],
-                round2Datas: committeDetail.round2.map((item, index) => {
-                    if (index == Number(memberId)) return { c: '0', u: { x: '0', y: '0' } };
-                    return { c: item.contribution.c[Number(memberId)], u: item.contribution.u[Number(memberId)] };
-                }),
+                keyDetail: keyDetail,
+                requestDetail: resquestData,
+                responseContribution: responseContribution,
             });
 
             await workerClient.proveTransaction();

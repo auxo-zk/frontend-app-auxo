@@ -2,6 +2,7 @@ import axios from 'axios';
 import { apiUrl } from './url';
 import { KeyStatus } from './const';
 import { RequestStatus } from '@auxo-dev/dkg';
+import { TWitness } from './types';
 
 export type TDataMemberInCommittee = { publicKey: string; alias: string; lastActive: string; memberId: string };
 export type TCommitteeData = {
@@ -79,6 +80,7 @@ export type TCommitteeKey = {
     round1: TRound1Data[];
     round2: TRound2Data[];
     requests: any[];
+    numRequest: number;
 };
 export async function getCommitteeKeys(committeeId: string): Promise<TCommitteeKey[]> {
     const response = await axios.get(apiUrl.committeeKeys(committeeId));
@@ -92,8 +94,9 @@ export async function getCommitteeKeys(committeeId: string): Promise<TCommitteeK
             status: item.status as KeyStatus,
             round1: item.round1s || [],
             round2: item.round2s || [],
-            requests: item.requests,
-            publicKey: item.publicKey || null,
+            numRequest: item.numRequest,
+            publicKey: item.key || null,
+            requests: [],
         };
     });
 }
@@ -109,16 +112,13 @@ export async function getCommitteeKeyDetail(committeeId: string, keyId: string):
         status: item.status as KeyStatus,
         round1: item.round1s || [],
         round2: item.round2s || [],
-        requests: item.requests,
+        numRequest: item.numRequest,
         publicKey: item.publicKey || null,
+        requests: [],
     };
 }
 
 //TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-export type TWitness = {
-    path: string[];
-    isLeft: boolean[];
-};
 
 export async function getStorageDkgZApps(): Promise<TWitness[]> {
     const response = await axios.get(apiUrl.getStorageDkgZkapp);
@@ -195,8 +195,8 @@ export async function getCommitteeRequests(committeeId: string): Promise<TReques
             R: item.R || [],
             D: item.D || [],
             responses: item.responses,
-            keyId: item.keyId,
-            requester: item.requester,
+            keyId: item.key.keyId,
+            requester: item.task.requester,
         } as TRequest;
     });
 }

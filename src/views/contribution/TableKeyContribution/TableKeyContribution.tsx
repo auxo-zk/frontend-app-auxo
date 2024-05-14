@@ -180,7 +180,7 @@ export default function TableKeyContribution() {
                                         <KeyContributionStatus status={item.status} />
                                     </TableCell>
                                     <TableCell xs={tableCellRatio[3]}>
-                                        <Typography color={'text.secondary'}>{item?.requests?.length || 0}</Typography>
+                                        <Typography color={'text.secondary'}>{item?.numRequest || 0}</Typography>
                                     </TableCell>
                                     <TableCell xs={tableCellRatio[4]}>{/* <Typography color={'text.secondary'}>{item.}</Typography> */}</TableCell>
                                     <TableCell xs={tableCellRatio[5]}>

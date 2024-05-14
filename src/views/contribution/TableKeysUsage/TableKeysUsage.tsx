@@ -74,12 +74,12 @@ export default function TableKeysUsage() {
                     </TableCell>
                     <TableCell xs={tableCellRatio[4]}>
                         <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', gap: 1 }}>
-                            <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
+                            {/* <Box sx={{ display: 'flex', placeItems: 'center', justifyContent: 'end', cursor: 'pointer' }}>
                                 <Typography variant="body3" color={'primary.main'} mr={1}>
                                     Download All
                                 </Typography>
                                 <IconFolder fontSize="small" color={'primary'} />
-                            </Box>
+                            </Box> */}
                             <IconButton color="primary" onClick={getCommitteeRequestsData} title="Refresh Data">
                                 <RefreshRounded />
                             </IconButton>

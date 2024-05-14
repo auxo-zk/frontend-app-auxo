@@ -1,49 +1,14 @@
 import axios from 'axios';
 import { apiUrl } from '../url';
+import { TRef, TWitness, TWitnessLevel } from '../types';
 
 export type TResponseGetRount2Contribution = {
-    memberWitness: {
-        level1: {
-            path: string[];
-            isLeft: boolean[];
-        };
-        level2: {
-            path: string[];
-            isLeft: boolean[];
-        };
-    };
-    committeeRef: {
-        address: string;
-        witness: {
-            path: string[];
-            isLeft: boolean[];
-        };
-    };
-    round1Ref: {
-        address: string;
-        witness: {
-            path: string[];
-            isLeft: boolean[];
-        };
-    };
-    rollupRef: {
-        address: string;
-        witness: {
-            path: string[];
-            isLeft: boolean[];
-        };
-    };
-    selfRef: {
-        address: string;
-        witness: {
-            path: string[];
-            isLeft: boolean[];
-        };
-    };
-    publicKeysWitness: {
-        path: string[];
-        isLeft: boolean[];
-    };
+    memberWitness: TWitnessLevel;
+    committeeRef: TRef;
+    round1Ref: TRef;
+    rollupRef: TRef;
+    selfRef: TRef;
+    publicKeysWitness: TWitness;
 };
 
 export async function getRound2Contribution(memberId: string, committeeId: string, keyId: string) {
