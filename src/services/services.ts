@@ -81,6 +81,7 @@ export type TCommitteeKey = {
     round2: TRound2Data[];
     requests: any[];
     numRequest: number;
+    keyIndex: string;
 };
 export async function getCommitteeKeys(committeeId: string): Promise<TCommitteeKey[]> {
     const response = await axios.get(apiUrl.committeeKeys(committeeId));
@@ -97,6 +98,7 @@ export async function getCommitteeKeys(committeeId: string): Promise<TCommitteeK
             numRequest: item.numRequest,
             publicKey: item.key || null,
             requests: [],
+            keyIndex: item.keyIndex + '' || '',
         };
     });
 }
@@ -115,6 +117,7 @@ export async function getCommitteeKeyDetail(committeeId: string, keyId: string):
         numRequest: item.numRequest,
         publicKey: item.publicKey || null,
         requests: [],
+        keyIndex: item.keyIndex + '' || '',
     };
 }
 
@@ -174,6 +177,7 @@ export async function getStorageRound2EncryptionLv2(lv1Index: string): Promise<T
 
 //TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+export type TEncrytion = { M: { x: string; y: string }[]; R: { x: string; y: string }[]; commitments: string[]; indices: string; timestamp: string }[];
 export type TRequest = {
     requestId: string;
     committeeId: string;
@@ -183,7 +187,10 @@ export type TRequest = {
     D: { x: string; y: string }[];
     status: number;
     responses: any[];
+    expirationTimestamp: number;
+    encryptions: TEncrytion;
 };
+
 export async function getCommitteeRequests(committeeId: string): Promise<TRequest[]> {
     const response = await axios.get(apiUrl.committeeRequests(committeeId));
     console.log('getCommitteeRequests', response.data);
@@ -192,11 +199,64 @@ export async function getCommitteeRequests(committeeId: string): Promise<TReques
             requestId: item.requestId,
             committeeId: item.committeeId,
             status: item.status,
-            R: item.R || [],
-            D: item.D || [],
+            R: item.totalR || [],
+            D: item.finalizedD || [],
             responses: item.responses,
             keyId: item.key.keyId,
             requester: item.task.requester,
+            expirationTimestamp: item.expirationTimestamp || 0,
+            encryptions: item.encryptions || [],
         } as TRequest;
+    });
+}
+
+export async function getRequestByKeyIndex(keyIndex: string): Promise<TRequest[]> {
+    const response = await axios.get(apiUrl.getRequestByKeyIndex(keyIndex));
+    console.log('getRequestByKeyIndex', response.data);
+    return response.data.map((item: any) => {
+        return {
+            requestId: item.requestId,
+            committeeId: item.committeeId,
+            status: item.status,
+            R: item.totalR || [],
+            D: item.finalizedD || [],
+            responses: item.responses,
+            keyId: item.key.keyId,
+            requester: item.task.requester,
+            expirationTimestamp: item.expirationTimestamp || 0,
+            encryptions: item.encryptions || [],
+        } as TRequest;
+    });
+}
+
+export type TTask = {
+    requestId: string;
+    taskId: string;
+    committeeId: string;
+    requester: string;
+    R: { x: string; y: string }[];
+    D: { x: string; y: string }[];
+    status: number;
+    responses: any[];
+    submissionTimestamp: number;
+    encryptions: TEncrytion;
+};
+
+export async function getTasksByKeyIndex(keyIndex: string): Promise<TTask[]> {
+    const response = await axios.get(apiUrl.getTasksByKeyIndex(keyIndex));
+    console.log('getTasksByKeyIndex', response.data);
+    return response.data.map((item: any) => {
+        return {
+            requestId: '---',
+            taskId: item.taskId,
+            committeeId: item.committeeId,
+            status: item.status,
+            R: item.totalR || [],
+            D: item.finalizedD || [],
+            responses: item.responses,
+            requester: item.requester || '000000000000000000000000000',
+            submissionTimestamp: item.timestamp || 0,
+            encryptions: item.encryptions || [],
+        } as TTask;
     });
 }

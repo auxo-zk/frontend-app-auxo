@@ -1,4 +1,4 @@
-import { Field, Group, Mina, PublicKey, Scalar, fetchAccount } from 'o1js';
+import { Field, Group, Mina, PublicKey, Scalar, UInt64, fetchAccount } from 'o1js';
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
@@ -43,6 +43,7 @@ import { TResponseGetGenNewKey } from 'src/services/api/generateNewKey';
 import { TResponseGetRount1Contribution } from 'src/services/api/getRound1Contribution';
 import { TResponseGetRount2Contribution } from 'src/services/api/getRound2Contribution';
 import { TResponseGetResponseContribution } from 'src/services/api/getResponseContribution';
+import { TResponseGetDataCreateTask } from 'src/services/api/getDataCreateTask';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
@@ -53,6 +54,9 @@ const state = {
     Round2Contract: null as null | ZkApp.Round2.Round2Contract,
     ResponseContract: null as null | ZkApp.Response.ResponseContract,
     RequestContract: null as null | ZkApp.Request.RequestContract,
+    TaskManagerContract: null as null | ZkApp.Requester.TaskManagerContract,
+    SubmissionContract: null as null | ZkApp.Requester.SubmissionContract,
+    RequesterContract: null as null | ZkApp.Requester.RequesterContract,
     transaction: null as null | Transaction,
     complieDone: 0 as number,
 };
@@ -134,9 +138,25 @@ export const zkFunctions = {
         await state.TypeZkApp!.Response.ResponseContract.compile({ cache: FileSystem(args.fileCache) }); // 15
         console.log('15. complie ResponseContract done');
         state.complieDone += 1;
+
+        await state.TypeZkApp!.Requester.UpdateTask.compile({ cache: FileSystem(args.fileCache) }); // 16
+        console.log('16. complie UpdateTask done');
+        state.complieDone += 1;
+
+        await state.TypeZkApp!.Requester.RequesterContract.compile({ cache: FileSystem(args.fileCache) }); // 17
+        console.log('17. complie RequesterContract done');
+        state.complieDone += 1;
+
+        await state.TypeZkApp!.Requester.TaskManagerContract.compile({ cache: FileSystem(args.fileCache) }); // 18
+        console.log('18. complie TaskManagerContract done');
+        state.complieDone += 1;
+
+        await state.TypeZkApp!.Requester.SubmissionContract.compile({ cache: FileSystem(args.fileCache) }); // 19
+        console.log('19. complie SubmissionContract done');
+        state.complieDone += 1;
     },
     getPercentageComplieDone: async (args: {}) => {
-        return ((state.complieDone / 15) * 100).toFixed(0);
+        return ((state.complieDone / 19) * 100).toFixed(0);
     },
     fetchAccount: async (args: { publicKey58: string }) => {
         const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -150,6 +170,9 @@ export const zkFunctions = {
         responseContract: string;
         rollUpContract: string;
         requestContract: string;
+        taskManagerContract: string;
+        submissionContract: string;
+        requesterContract: string;
     }) => {
         const committeeContractPub = PublicKey.fromBase58(args.committeeContract);
         state.CommitteeContract = new state.TypeZkApp!.Committee.CommitteeContract!(committeeContractPub as any);
@@ -171,6 +194,15 @@ export const zkFunctions = {
 
         const rollUpContractPub = PublicKey.fromBase58(args.rollUpContract);
         state.RollupContract = new state.TypeZkApp!.Rollup.RollupContract!(rollUpContractPub);
+
+        const taskManagerContractPub = PublicKey.fromBase58(args.taskManagerContract);
+        state.TaskManagerContract = new state.TypeZkApp!.Requester.TaskManagerContract!(taskManagerContractPub);
+
+        const submissionContractPub = PublicKey.fromBase58(args.submissionContract);
+        state.SubmissionContract = new state.TypeZkApp!.Requester.SubmissionContract!(submissionContractPub);
+
+        const requesterContractPub = PublicKey.fromBase58(args.requesterContract);
+        state.RequesterContract = new state.TypeZkApp!.Requester.RequesterContract!(requesterContractPub);
     },
 
     createCommittee: async (args: { sender: string; action: { addresses: string[]; threshold: number; ipfsHash: string } }) => {
@@ -193,8 +225,8 @@ export const zkFunctions = {
 
     genNewKeyContributions: async (args: { sender: string; memberId: string; dataBackend: TResponseGetGenNewKey }) => {
         const sender = PublicKey.fromBase58(args.sender);
-
         await fetchAccount({ publicKey: sender });
+
         await fetchAccount({ publicKey: state.DKGContract!.address });
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
         await fetchAccount({ publicKey: state.RollupContract!.address });
@@ -436,6 +468,18 @@ export const zkFunctions = {
         });
         state.transaction = transaction;
         return fReceive;
+    },
+
+    createTask: async (args: { sender: string; dataBackend: TResponseGetDataCreateTask; keyIndex: string; timestamp: number }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+        await fetchAccount({ publicKey: sender });
+        await fetchAccount({ publicKey: state.TaskManagerContract!.address });
+        await fetchAccount({ publicKey: state.RequesterContract!.address });
+
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.TaskManagerContract!.createTask(new Field(args.keyIndex), UInt64.from(args.timestamp), ZkAppRef.fromJSON(args.dataBackend.taskManagerRef));
+        });
+        state.transaction = transaction;
     },
 
     proveTransaction: async (args: {}) => {

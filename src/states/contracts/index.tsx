@@ -79,6 +79,9 @@ export const useContractFunction = () => {
                     round1Contract: 'B62qpX4CwcA8vNvbJj4gv3uZPtsEbtfW3uWZL2h1Ew8GHDJqraKaBuX',
                     round2Contract: 'B62qrAvDSuSYgrysqENcFHRnocQ32mmtnCK4UrXBNt1i2ZjLM7KUJ5h',
                     rollUpContract: 'B62qiXmjKmziQPYWnaNQtq5hTbFoVdhG4nAMAtK3o8B8spQ6fAmzxBY',
+                    submissionContract: 'B62qk4y3YGNT6sT23BeQihK7CwnKBLBe4NQ6mgUTaBZEBWgFjWEpxxi',
+                    taskManagerContract: 'B62qqcL3Uk8aTLj2Sr2ZWLnG9uUZLaAJ46EnLAhiXqYkDXtwsLJnwsx',
+                    requesterContract: 'B62qovNcjV7L6BQEZu8tHBocUZetcnuzKWLyjp2ZEMpkQeHMSUF5MWL',
                 });
                 setContractData({
                     isLoading: false,

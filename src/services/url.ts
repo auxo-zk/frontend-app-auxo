@@ -1,3 +1,4 @@
+import { addressDefault } from 'src/constants/address';
 import { BACKEND_BASE_URL } from './baseUrl';
 
 export const apiUrl = {
@@ -25,4 +26,9 @@ export const apiUrl = {
     committeeRequestsDetail: (committeeId: string, requestId: string) => `${BACKEND_BASE_URL}/committees/${committeeId}/requests/${requestId}`,
     getResponseContribution: (committeeId: string, keyId: string, memberId: string, requestId: string) =>
         `${BACKEND_BASE_URL}/method-inputs/response-contract/contribute?committeeId=${committeeId}&keyId=${keyId}&memberId=${memberId}&requestId=${requestId}`,
+
+    getRequestByKeyIndex: (keyIndex: string) => `${BACKEND_BASE_URL}/requests?keyIndex=${keyIndex}`,
+    getTasksByKeyIndex: (keyIndex: string) => `${BACKEND_BASE_URL}/tasks?requester=${addressDefault.requester}&keyIndex=${keyIndex}`,
+
+    getDataCreateTask: `${BACKEND_BASE_URL}/method-inputs/requester-contract/create-task?requesterAddress=${addressDefault.requester}`,
 };
