@@ -7,20 +7,21 @@ import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
 import TableRow from 'src/components/Table/TableRow';
 import TableWrapper from 'src/components/Table/TableWrapper';
+import { TTask } from 'src/services/services';
 import { useModalFunction } from 'src/states/modal';
 import { convertToScientificNotation, isNaturalNumber } from 'src/utils';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function ButtonSubmission() {
+export default function ButtonSubmission({ dataTask }: { dataTask: TTask }) {
     const { openModal } = useModalFunction();
     return (
-        <Button variant="outlined" size="small" onClick={() => openModal({ title: 'Submit Encryption', content: <ModalSubitEncryption /> })}>
+        <Button variant="outlined" size="small" onClick={() => openModal({ title: 'Submit Encryption', content: <ModalSubitEncryption dataTask={dataTask} /> })}>
             Submit Encryption
         </Button>
     );
 }
 
-function ModalSubitEncryption() {
+function ModalSubitEncryption({ dataTask }: { dataTask: TTask }) {
     const [listDataVector, setListDataVector] = useState<{ index: string; id: string; value: string }[]>([{ id: uuidv4(), value: '', index: '' }]);
 
     const updateItem = (itemIndex: number, key: 'value' | 'index', newValue: string) => {
@@ -90,7 +91,7 @@ function ModalSubitEncryption() {
                                             }}
                                         />
                                         {listDataVector.length > 1 ? (
-                                            <IconButton onClick={() => removeItem(index)} color="error">
+                                            <IconButton onClick={() => removeItem(index)} color="default" title="Remove">
                                                 <RemoveCircleOutlineRounded />
                                             </IconButton>
                                         ) : (

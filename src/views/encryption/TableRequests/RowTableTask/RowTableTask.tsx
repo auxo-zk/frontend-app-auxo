@@ -24,8 +24,8 @@ export default function RowTableTask({ data, tableCellRatio }: { data: TTask; ta
                 <Typography color={'text.secondary'}>{formatDate(data.submissionTimestamp, 'MMM dd yyyy, h:mm a')}</Typography>
             </TableCell>
             <TableCell xs={tableCellRatio[4]} sx={{ textAlign: 'right' }}>
-                {data.submissionTimestamp > Date.now() ? <ButtonSubmission /> : <ButtonFinalization />}
-                <ButtonSubmission />
+                {data.submissionTimestamp > Date.now() ? <ButtonSubmission dataTask={data} /> : <ButtonFinalization dataTask={data} />}
+                {/* <ButtonSubmission dataTask={data} /> */}
             </TableCell>
         </TableRow>
     );

@@ -189,6 +189,7 @@ export type TRequest = {
     responses: any[];
     expirationTimestamp: number;
     encryptions: TEncrytion;
+    results: string[];
 };
 
 export async function getCommitteeRequests(committeeId: string): Promise<TRequest[]> {
@@ -206,6 +207,7 @@ export async function getCommitteeRequests(committeeId: string): Promise<TReques
             requester: item.task.requester,
             expirationTimestamp: item.expirationTimestamp || 0,
             encryptions: item.encryptions || [],
+            results: item.result || [],
         } as TRequest;
     });
 }
@@ -225,9 +227,30 @@ export async function getRequestByKeyIndex(keyIndex: string): Promise<TRequest[]
             requester: item.task.requester,
             expirationTimestamp: item.expirationTimestamp || 0,
             encryptions: item.encryptions || [],
+            results: item.result || [],
         } as TRequest;
     });
 }
+export async function getRequestByRequestId(requestId: string): Promise<TRequest> {
+    const response = await axios.get(apiUrl.getRequestByRequestId(requestId));
+    console.log('getRequestByRequestId', response.data);
+    const item = response.data;
+    return {
+        requestId: item.requestId,
+        committeeId: item.committeeId,
+        status: item.status,
+        R: item.totalR || [],
+        D: item.finalizedD || [],
+        responses: item.responses,
+        keyId: item.key.keyId,
+        requester: item.task.requester,
+        expirationTimestamp: item.expirationTimestamp || 0,
+        encryptions: item.encryptions || [],
+        results: item.result || [],
+    } as TRequest;
+}
+
+//TODO ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 export type TTask = {
     requestId: string;
@@ -240,6 +263,7 @@ export type TTask = {
     responses: any[];
     submissionTimestamp: number;
     encryptions: TEncrytion;
+    keyIndex: string;
 };
 
 export async function getTasksByKeyIndex(keyIndex: string): Promise<TTask[]> {
@@ -257,6 +281,7 @@ export async function getTasksByKeyIndex(keyIndex: string): Promise<TTask[]> {
             requester: item.requester || '000000000000000000000000000',
             submissionTimestamp: item.timestamp || 0,
             encryptions: item.encryptions || [],
+            keyIndex: item.keyIndex,
         } as TTask;
     });
 }

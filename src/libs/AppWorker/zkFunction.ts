@@ -1,4 +1,4 @@
-import { Field, Group, Mina, PublicKey, Scalar, UInt64, fetchAccount } from 'o1js';
+import { Field, Group, Mina, PublicKey, Scalar, UInt32, UInt64, UInt8, fetchAccount } from 'o1js';
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
@@ -32,6 +32,8 @@ import {
     RequestLevel2Witness,
     DKGWitness,
     RequestLevel1Witness,
+    RequesterLevel1Witness,
+    generateEncryption,
 } from '@auxo-dev/dkg';
 import { ArgumentTypes } from 'src/global.config';
 import { FileSystem } from 'src/states/cache';
@@ -44,6 +46,9 @@ import { TResponseGetRount1Contribution } from 'src/services/api/getRound1Contri
 import { TResponseGetRount2Contribution } from 'src/services/api/getRound2Contribution';
 import { TResponseGetResponseContribution } from 'src/services/api/getResponseContribution';
 import { TResponseGetDataCreateTask } from 'src/services/api/getDataCreateTask';
+import { TResponseDataFinalizeTask } from 'src/services/api/getDataFinalizeTask';
+import { TResponseDataSubmitEncryptionTask } from 'src/services/api/getDataSubmitEncryptionTask';
+import { sleep } from 'src/utils/format';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
@@ -478,6 +483,64 @@ export const zkFunctions = {
 
         const transaction = await Mina.transaction(sender, async () => {
             await state.TaskManagerContract!.createTask(new Field(args.keyIndex), UInt64.from(args.timestamp), ZkAppRef.fromJSON(args.dataBackend.taskManagerRef));
+        });
+        state.transaction = transaction;
+    },
+
+    finalizeTask: async (args: { sender: string; dataBackend: TResponseDataFinalizeTask; taskId: string; keyIndex: string }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+        await fetchAccount({ publicKey: sender });
+
+        await fetchAccount({ publicKey: state.RequesterContract!.address });
+        await fetchAccount({ publicKey: state.RequestContract!.address });
+
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.RequesterContract!.finalizeTask(
+                UInt32.from(args.taskId),
+                UInt8.from(Constants.ENCRYPTION_LIMITS.FULL_DIMENSION),
+                new Field(args.keyIndex),
+                new Field(args.dataBackend.accumulationRootR),
+                new Field(args.dataBackend.accumulationRootM),
+                RequesterLevel1Witness.fromJSON(args.dataBackend.keyIndexWitness),
+                RequesterLevel1Witness.fromJSON(args.dataBackend.accumulationWitness),
+                ZkAppRef.fromJSON(args.dataBackend.requestRef)
+            );
+        });
+        state.transaction = transaction;
+    },
+
+    submitEncryption: async (args: { sender: string; dataBackend: TResponseDataSubmitEncryptionTask; taskId: string; keyIndex: string; submitData: { index: string; value: string }[] }) => {
+        const sender = PublicKey.fromBase58(args.sender);
+        await fetchAccount({ publicKey: sender });
+
+        await fetchAccount({ publicKey: state.SubmissionContract!.address });
+        await fetchAccount({ publicKey: state.RequesterContract!.address });
+
+        const vector: { [k: string]: bigint } = {};
+
+        for (let item of args.submitData) {
+            vector[item.index] = BigInt(Constants.SECRET_UNIT) * BigInt(item.value);
+        }
+
+        await sleep(100);
+
+        const publicKey = PublicKey.fromBase58('ffsdf').toGroup();
+        const encryption = generateEncryption(Number(args.taskId), publicKey, vector);
+
+        const transaction = await Mina.transaction(sender, async () => {
+            await state.SubmissionContract!.submitEncryption(
+                UInt32.from(args.taskId),
+                new Field(args.keyIndex),
+                encryption.secrets,
+                encryption.randoms,
+                encryption.packedIndices,
+                encryption.nullifiers,
+                publicKey,
+                DkgLevel1Witness.fromJSON(args.dataBackend.keyWitness),
+                RequesterLevel1Witness.fromJSON(args.dataBackend.keyIndexWitness),
+                ZkAppRef.fromJSON(args.dataBackend.submissionRef),
+                ZkAppRef.fromJSON(args.dataBackend.dkgRef)
+            );
         });
         state.transaction = transaction;
     },

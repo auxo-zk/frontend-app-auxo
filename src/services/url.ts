@@ -28,7 +28,10 @@ export const apiUrl = {
         `${BACKEND_BASE_URL}/method-inputs/response-contract/contribute?committeeId=${committeeId}&keyId=${keyId}&memberId=${memberId}&requestId=${requestId}`,
 
     getRequestByKeyIndex: (keyIndex: string) => `${BACKEND_BASE_URL}/requests?keyIndex=${keyIndex}`,
+    getRequestByRequestId: (requestId: string) => `${BACKEND_BASE_URL}/requests/${requestId}`,
     getTasksByKeyIndex: (keyIndex: string) => `${BACKEND_BASE_URL}/tasks?requester=${addressDefault.requester}&keyIndex=${keyIndex}`,
 
     getDataCreateTask: `${BACKEND_BASE_URL}/method-inputs/requester-contract/create-task?requesterAddress=${addressDefault.requester}`,
+    getDataFinalizeTask: (taskId: string) => `${BACKEND_BASE_URL}/method-inputs/requester-contract/finalize?requesterAddress=${addressDefault.requester}&taskId=${taskId}`,
+    getDataSubmitEncryptionTask: (taskId: string) => `${BACKEND_BASE_URL}/method-inputs/requester-contract/submit-encryption?requesterAddress=${addressDefault.requester}&taskId=${taskId}`,
 };

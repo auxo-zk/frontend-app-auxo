@@ -98,4 +98,7 @@ export default class ZkAppWorkerClient {
     createTask(args: ArgumentZkFuction<'createTask'>) {
         return this._call('createTask', args);
     }
+    finalizeTask(args: ArgumentZkFuction<'finalizeTask'>) {
+        return this._call('finalizeTask', args);
+    }
 }

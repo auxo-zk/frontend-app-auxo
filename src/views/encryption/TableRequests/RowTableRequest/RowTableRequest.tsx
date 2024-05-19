@@ -24,7 +24,7 @@ export default function RowTableRequest({ data, tableCellRatio }: { data: TReque
                 <Typography color={'text.secondary'}>{formatDate(data.expirationTimestamp, 'MMM dd yyyy, h:mm a')}</Typography>
             </TableCell>
             <TableCell xs={tableCellRatio[4]} sx={{ textAlign: 'right' }}>
-                {data.status === EnumRequestStatus.RESOLVED ? <ButtonViewResult /> : <></>}
+                {data.status === EnumRequestStatus.RESOLVED ? <ButtonViewResult dataRequest={data} /> : <></>}
             </TableCell>
         </TableRow>
     );
