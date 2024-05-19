@@ -5,7 +5,7 @@ import { atom, useAtomValue, useSetAtom } from 'jotai';
 export type TModalData = {
     open: boolean;
     title: string | ReactNode;
-    modalProps?: DialogProps;
+    modalProps?: Omit<DialogProps, 'open'>;
     conditionOpen?: boolean | (() => boolean);
     content?: ReactNode;
 };

@@ -30,7 +30,7 @@ if (typeof window !== 'undefined') {
             const message: ZkappWorkerReponse = {
                 id: event.data.id,
                 data: null,
-                error: (error as Error).message,
+                error: error,
                 status: 'failed',
             };
             postMessage(message);
