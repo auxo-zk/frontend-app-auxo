@@ -2,26 +2,30 @@ import { ENCRYPTION_LIMITS, SECRET_UNIT } from '@auxo-dev/dkg/build/esm/src/cons
 import { Add, PlusOneRounded, Remove, RemoveCircleOutlineRounded, RemoveCircleRounded } from '@mui/icons-material';
 import { Box, Button, Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
 import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
 import TableRow from 'src/components/Table/TableRow';
 import TableWrapper from 'src/components/Table/TableWrapper';
+import { getDataSubmitEncryptionTask } from 'src/services/api/getDataSubmitEncryptionTask';
 import { TTask } from 'src/services/services';
+import { useContractData } from 'src/states/contracts';
 import { useModalFunction } from 'src/states/modal';
-import { convertToScientificNotation, isNaturalNumber } from 'src/utils';
+import { useWalletData } from 'src/states/wallet';
+import { convertToScientificNotation, getLocalStorageKeyNote, isNaturalNumber } from 'src/utils';
 import { v4 as uuidv4 } from 'uuid';
 
-export default function ButtonSubmission({ dataTask }: { dataTask: TTask }) {
+export default function ButtonSubmission({ dataTask, keyPub }: { dataTask: TTask; keyPub: string }) {
     const { openModal } = useModalFunction();
     return (
-        <Button variant="outlined" size="small" onClick={() => openModal({ title: 'Submit Encryption', content: <ModalSubitEncryption dataTask={dataTask} /> })}>
+        <Button variant="outlined" size="small" onClick={() => openModal({ title: 'Submit Encryption', content: <ModalSubitEncryption dataTask={dataTask} keyPub={keyPub} /> })}>
             Submit Encryption
         </Button>
     );
 }
 
-function ModalSubitEncryption({ dataTask }: { dataTask: TTask }) {
+function ModalSubitEncryption({ dataTask, keyPub }: { dataTask: TTask; keyPub: string }) {
     const [listDataVector, setListDataVector] = useState<{ index: string; id: string; value: string }[]>([{ id: uuidv4(), value: '', index: '' }]);
 
     const updateItem = (itemIndex: number, key: 'value' | 'index', newValue: string) => {
@@ -109,16 +113,54 @@ function ModalSubitEncryption({ dataTask }: { dataTask: TTask }) {
                     Add Value
                 </Button>
             </Box>
-            <ButtonSubmit />
+            <ButtonSubmit dataTask={dataTask} keyPub={keyPub} listDataVector={listDataVector} />
         </Box>
     );
 }
 
-function ButtonSubmit() {
-    async function submit() {}
+function ButtonSubmit({ dataTask, keyPub, listDataVector }: { dataTask: TTask; keyPub: string; listDataVector: { index: string; id: string; value: string }[] }) {
+    const [loading, setLoading] = useState<boolean>(false);
+    const { userAddress } = useWalletData();
+    const { workerClient } = useContractData();
+    async function submit() {
+        setLoading(true);
+        const idtoast = toast.loading('Create transaction and proving...', { position: 'top-center', type: 'info' });
+        try {
+            if (!userAddress) throw Error('Please connect your wallet first!');
+            if (!workerClient) throw Error('Worker client is dead, reload page again!');
+
+            const dataBackend = await getDataSubmitEncryptionTask(dataTask.taskId);
+            const notes = await workerClient.submitEncryption({
+                sender: userAddress,
+                dataBackend: dataBackend,
+                keyIndex: dataTask.keyIndex,
+                taskId: dataTask.taskId,
+                submitData: listDataVector.map((item) => ({ index: item.index, value: item.value })),
+                committeePubLickey: keyPub,
+            });
+            await workerClient.proveTransaction();
+
+            toast.update(idtoast, { render: 'Prove successfull! Sending the transaction...' });
+            const transactionJSON = await workerClient.getTransactionJSON();
+            console.log(transactionJSON);
+
+            const { transactionLink } = await workerClient.sendTransaction(transactionJSON);
+            console.log(transactionLink);
+
+            for (let note of notes) {
+                localStorage.setItem(getLocalStorageKeyNote(dataTask.keyIndex, dataTask.taskId, note.nullifier.toString(), 'AuxoNetwork'), note.commitment.toString());
+            }
+
+            toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
+        } catch (err) {
+            console.log(err);
+            toast.update(idtoast, { render: (err as Error).message, type: 'error', position: 'top-center', isLoading: false, autoClose: 3000, hideProgressBar: false });
+        }
+        setLoading(false);
+    }
     return (
         <Box textAlign={'right'}>
-            <ButtonLoading isLoading={false} muiProps={{ onClick: submit, variant: 'contained', sx: { mt: 3 } }}>
+            <ButtonLoading isLoading={loading} muiProps={{ onClick: submit, variant: 'contained', sx: { mt: 3 } }}>
                 Submit Encryption
             </ButtonLoading>
         </Box>

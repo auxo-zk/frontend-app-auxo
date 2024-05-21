@@ -6,8 +6,16 @@ export function getLocalStorageKeySecret(committeeId: string, memberId: string, 
     return `secret-${committeeId}-${keyId}-${memberId}-${network}`;
 }
 
-export function getLocalStorageKeySecretValue(committeeId: string, memberId: string, keyId: string, network: string) {
+export function getLocalStorageSecretValue(committeeId: string, memberId: string, keyId: string, network: string) {
     return localStorage.getItem(getLocalStorageKeySecret(committeeId, memberId, keyId, network));
+}
+
+export function getLocalStorageKeyNote(keyIndex: string, taskId: string, noteNullifier: string, network: string) {
+    return `note-${keyIndex}-${taskId}-${noteNullifier}-${network}`;
+}
+
+export function getLocalStorageNoteValue(keyIndex: string, taskId: string, noteNullifier: string, network: string) {
+    return localStorage.getItem(getLocalStorageKeyNote(keyIndex, taskId, noteNullifier, network));
 }
 
 export function downloadTextFile(content: string, filename: string) {

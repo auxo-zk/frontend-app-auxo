@@ -15,7 +15,7 @@ import { useWalletData } from 'src/states/wallet';
 import Test from './Test';
 import ButtonGenNewKey from '../GenerateNewKey/ButtonGenNewKey';
 import { Download, FileDownload, FileUpload, RefreshRounded, UploadFile } from '@mui/icons-material';
-import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageKeySecretValue } from 'src/utils';
+import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageSecretValue } from 'src/utils';
 import { toast } from 'react-toastify';
 
 const tableCellRatio = [1, 3, 1.25, 1.25, 2.5, 3];
@@ -81,7 +81,7 @@ export default function TableKeyContribution() {
             const k = getLocalStorageKeySecret(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, 'Berkeley');
             return {
                 key: k,
-                value: getLocalStorageKeySecretValue(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, 'Berkeley'),
+                value: getLocalStorageSecretValue(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, 'Berkeley'),
             };
         });
 

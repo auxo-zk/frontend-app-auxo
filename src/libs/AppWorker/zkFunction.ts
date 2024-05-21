@@ -509,11 +509,19 @@ export const zkFunctions = {
         state.transaction = transaction;
     },
 
-    submitEncryption: async (args: { sender: string; dataBackend: TResponseDataSubmitEncryptionTask; taskId: string; keyIndex: string; submitData: { index: string; value: string }[] }) => {
+    submitEncryption: async (args: {
+        sender: string;
+        dataBackend: TResponseDataSubmitEncryptionTask;
+        taskId: string;
+        keyIndex: string;
+        submitData: { index: string; value: string }[];
+        committeePubLickey: string;
+    }) => {
         const sender = PublicKey.fromBase58(args.sender);
         await fetchAccount({ publicKey: sender });
 
         await fetchAccount({ publicKey: state.SubmissionContract!.address });
+        await fetchAccount({ publicKey: state.DKGContract!.address });
         await fetchAccount({ publicKey: state.RequesterContract!.address });
 
         const vector: { [k: string]: bigint } = {};
@@ -524,7 +532,7 @@ export const zkFunctions = {
 
         await sleep(100);
 
-        const publicKey = PublicKey.fromBase58('ffsdf').toGroup();
+        const publicKey = PublicKey.fromBase58(args.committeePubLickey).toGroup();
         const encryption = generateEncryption(Number(args.taskId), publicKey, vector);
 
         const transaction = await Mina.transaction(sender, async () => {
@@ -543,6 +551,7 @@ export const zkFunctions = {
             );
         });
         state.transaction = transaction;
+        return encryption.notes;
     },
 
     proveTransaction: async (args: {}) => {

@@ -101,4 +101,7 @@ export default class ZkAppWorkerClient {
     finalizeTask(args: ArgumentZkFuction<'finalizeTask'>) {
         return this._call('finalizeTask', args);
     }
+    submitEncryption(args: ArgumentZkFuction<'submitEncryption'>) {
+        return this._call('submitEncryption', args);
+    }
 }

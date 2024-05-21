@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
@@ -10,6 +10,7 @@ import { TCommitteeKey, TRequest, TTask, getRequestByKeyIndex, getTasksByKeyInde
 import RowTableRequest from './RowTableRequest/RowTableRequest';
 import TableRow from 'src/components/Table/TableRow';
 import RowTableTask from './RowTableTask/RowTableTask';
+import { RefreshRounded } from '@mui/icons-material';
 
 const tableCellRatio = [1.5, 3, 2, 3.5, 2];
 
@@ -67,10 +68,15 @@ export default function TableRequests({ keyData }: { keyData: TCommitteeKey }) {
                         Deadline
                     </Typography>
                 </TableCell>
-                <TableCell xs={tableCellRatio[4]}>
-                    <Typography variant="body2" color={'text.secondary'} textAlign={'right'}>
-                        #
-                    </Typography>
+                <TableCell xs={tableCellRatio[4]} sx={{ textAlign: 'right' }}>
+                    <IconButton
+                        onClick={() => {
+                            getListRequestByKeyIndex();
+                            getListTasksByKeyIndex();
+                        }}
+                    >
+                        <RefreshRounded />
+                    </IconButton>
                 </TableCell>
             </TableRow>
             {loading ? (
@@ -92,7 +98,7 @@ export default function TableRequests({ keyData }: { keyData: TCommitteeKey }) {
                     )}
 
                     {dataTasks.map((item, index) => {
-                        return <RowTableTask key={'keyTask' + index + item.taskId} data={item} tableCellRatio={tableCellRatio} />;
+                        return <RowTableTask key={'keyTask' + index + item.taskId} data={item} tableCellRatio={tableCellRatio} keyPub={keyData.publicKey || ''} />;
                     })}
                 </>
             )}

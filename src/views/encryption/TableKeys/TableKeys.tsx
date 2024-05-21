@@ -125,7 +125,10 @@ export default function TableKeys() {
                 ) : (
                     <>
                         {data.map((item, index) => {
-                            return <RowTableKey key={'key' + index + item.id} data={item} tableCellRatio={tableCellRatio} />;
+                            if (item.status >= 3) {
+                                return <RowTableKey key={'key' + index + item.id} data={item} tableCellRatio={tableCellRatio} />;
+                            }
+                            return <Box key={'key' + index + item.id}></Box>;
                         })}
                     </>
                 )}

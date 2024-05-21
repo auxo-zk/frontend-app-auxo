@@ -33,7 +33,7 @@ function ModalCreateRequest({ dataKey }: { dataKey: TCommitteeKey }) {
             if (!(Number(timestamp) > 0)) throw Error('Invalid timestamp!');
 
             const dataBackend = await getDataCreateTask();
-            await workerClient.createTask({ sender: userAddress, dataBackend: dataBackend, keyIndex: dataKey.keyIndex, timestamp: Number(timestamp) });
+            await workerClient.createTask({ sender: userAddress, dataBackend: dataBackend, keyIndex: dataKey.keyIndex, timestamp: Date.now() + Number(timestamp) * 1000 });
             await workerClient.proveTransaction();
 
             toast.update(idtoast, { render: 'Prove successfull! Sending the transaction...' });

@@ -8,7 +8,7 @@ import TaskStatus from './components/TaskStatus/TaskStatus';
 import ButtonSubmission from './components/Button/ButtonSubmission';
 import ButtonFinalization from './components/Button/ButtonFinalization';
 
-export default function RowTableTask({ data, tableCellRatio }: { data: TTask; tableCellRatio: number[] }) {
+export default function RowTableTask({ data, tableCellRatio, keyPub }: { data: TTask; tableCellRatio: number[]; keyPub: string }) {
     return (
         <TableRow>
             <TableCell xs={tableCellRatio[0]}>
@@ -24,7 +24,7 @@ export default function RowTableTask({ data, tableCellRatio }: { data: TTask; ta
                 <Typography color={'text.secondary'}>{formatDate(data.submissionTimestamp, 'MMM dd yyyy, h:mm a')}</Typography>
             </TableCell>
             <TableCell xs={tableCellRatio[4]} sx={{ textAlign: 'right' }}>
-                {data.submissionTimestamp > Date.now() ? <ButtonSubmission dataTask={data} /> : <ButtonFinalization dataTask={data} />}
+                {data.submissionTimestamp > Date.now() ? <ButtonSubmission dataTask={data} keyPub={keyPub} /> : <ButtonFinalization dataTask={data} />}
                 {/* <ButtonSubmission dataTask={data} /> */}
             </TableCell>
         </TableRow>
