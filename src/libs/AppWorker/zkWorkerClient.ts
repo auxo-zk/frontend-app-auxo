@@ -95,4 +95,13 @@ export default class ZkAppWorkerClient {
     submitContributionRequest(args: ArgumentZkFuction<'submitContributionRequest'>) {
         return this._call('submitContributionRequest', args);
     }
+    createTask(args: ArgumentZkFuction<'createTask'>) {
+        return this._call('createTask', args);
+    }
+    finalizeTask(args: ArgumentZkFuction<'finalizeTask'>) {
+        return this._call('finalizeTask', args);
+    }
+    submitEncryption(args: ArgumentZkFuction<'submitEncryption'>) {
+        return this._call('submitEncryption', args);
+    }
 }

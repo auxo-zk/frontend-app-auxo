@@ -116,6 +116,10 @@ const cacheContractFile = [
     { name: 'wrap-vk-updatekey', type: 'string' },
     { name: 'wrap-vk-updaterequest', type: 'string' },
     { name: 'wrap-vk-updatetask', type: 'string' },
+    { name: 'wrap-vk-taskmanagercontract', type: 'string' },
+    { name: 'wrap-vk-submissioncontract', type: 'string' },
+    { name: 'step-vk-taskmanagercontract-createtask', type: 'string' },
+    { name: 'step-vk-submissioncontract-submitencryption', type: 'string' },
 ];
 
 function fetchFiles(files: { name: string; type: string }[]) {

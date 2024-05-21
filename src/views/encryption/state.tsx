@@ -4,26 +4,26 @@ import { FetchStatus } from 'src/constants';
 import { TCommitteeData, getListCommittees } from 'src/services/services';
 import { useWalletData } from 'src/states/wallet';
 
-export type TContributionPageData = {
+export type TEncrytionPageData = {
     status: FetchStatus;
     listCommittee: TCommitteeData[];
     selectedCommittee: TCommitteeData | null;
 };
 
-const initData: TContributionPageData = {
+const initData: TEncrytionPageData = {
     status: FetchStatus.IDLE,
     listCommittee: [],
     selectedCommittee: null,
 };
 
-const state = atom<TContributionPageData>(initData);
+const state = atom<TEncrytionPageData>(initData);
 
-export const useContributionPageData = () => useAtomValue(state);
+export const useEncrytionPageData = () => useAtomValue(state);
 
-export const useContributionPageFunction = () => {
+export const useEncrytionPageFunction = () => {
     const _setData = useSetAtom(state);
 
-    function setContributionPageData(data: Partial<TContributionPageData>) {
+    function setEncrytionPageData(data: Partial<TEncrytionPageData>) {
         _setData((prev) => {
             return { ...prev, ...data };
         });
@@ -31,26 +31,26 @@ export const useContributionPageFunction = () => {
 
     async function getListCommitteeOptions(address: string, setStatus?: FetchStatus) {
         if (setStatus) {
-            setContributionPageData({ status: setStatus });
+            setEncrytionPageData({ status: setStatus });
         }
         try {
             const response = await getListCommittees(address);
-            setContributionPageData({ status: FetchStatus.SUCCESS, listCommittee: response, selectedCommittee: null });
+            setEncrytionPageData({ status: FetchStatus.SUCCESS, listCommittee: response, selectedCommittee: null });
         } catch (error) {
-            setContributionPageData({ status: FetchStatus.FAILED, listCommittee: [], selectedCommittee: null });
+            setEncrytionPageData({ status: FetchStatus.FAILED, listCommittee: [], selectedCommittee: null });
             console.log(error);
         }
     }
 
     return {
-        setContributionPageData,
+        setEncrytionPageData,
         getListCommitteeOptions,
     };
 };
 
-export default function InitStateDistributionPage() {
+export default function InitStateEncrytionPage() {
     const { isConnecting, userAddress } = useWalletData();
-    const { getListCommitteeOptions } = useContributionPageFunction();
+    const { getListCommitteeOptions } = useEncrytionPageFunction();
 
     useEffect(() => {
         if (userAddress) {

@@ -18,7 +18,7 @@ import {
 } from 'src/services/services';
 import { useContractData } from 'src/states/contracts';
 import { useWalletData } from 'src/states/wallet';
-import { getLocalStorageKeySecret, getLocalStorageKeySecretValue } from 'src/utils';
+import { getLocalStorageKeySecret, getLocalStorageSecretValue } from 'src/utils';
 
 type Props = { dataUserInCommittee: { memberId: number; userAddress: string }; status: number; resquestData: TRequest };
 
@@ -42,7 +42,7 @@ function SubmitContribution({ dataUserInCommittee, resquestData }: Props) {
             const memberId = dataUserInCommittee?.memberId + '' || '-1';
             if (memberId == '-1') throw Error('You are not a member of this committee');
 
-            const secret = getLocalStorageKeySecretValue(resquestData.committeeId, memberId, resquestData.keyId, 'Berkeley');
+            const secret = getLocalStorageSecretValue(resquestData.committeeId, memberId, resquestData.keyId, 'Berkeley');
             if (!secret) throw Error('Secret key missing!');
 
             const [keyDetail, responseContribution] = await Promise.all([

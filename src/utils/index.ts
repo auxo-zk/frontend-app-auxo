@@ -6,8 +6,16 @@ export function getLocalStorageKeySecret(committeeId: string, memberId: string, 
     return `secret-${committeeId}-${keyId}-${memberId}-${network}`;
 }
 
-export function getLocalStorageKeySecretValue(committeeId: string, memberId: string, keyId: string, network: string) {
+export function getLocalStorageSecretValue(committeeId: string, memberId: string, keyId: string, network: string) {
     return localStorage.getItem(getLocalStorageKeySecret(committeeId, memberId, keyId, network));
+}
+
+export function getLocalStorageKeyNote(keyIndex: string, taskId: string, noteNullifier: string, network: string) {
+    return `note-${keyIndex}-${taskId}-${noteNullifier}-${network}`;
+}
+
+export function getLocalStorageNoteValue(keyIndex: string, taskId: string, noteNullifier: string, network: string) {
+    return localStorage.getItem(getLocalStorageKeyNote(keyIndex, taskId, noteNullifier, network));
 }
 
 export function downloadTextFile(content: string, filename: string) {
@@ -25,4 +33,26 @@ export function downloadTextFile(content: string, filename: string) {
     // Cleanup
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
+}
+
+export function isNaturalNumber(str: string) {
+    const regex = /^[0-9]+$/;
+    return regex.test(str);
+}
+
+export function convertToScientificNotation(num: number) {
+    if (num === 0) return '0';
+
+    // Get the exponent in scientific notation
+    const exponent = Math.floor(Math.log10(num));
+    // Calculate the base number
+    const base = num / Math.pow(10, exponent);
+
+    // Adjust to match the desired format if needed
+    // For example, you want 10000000 to be 10e6 instead of 1e7
+    if (base === 1) {
+        return `${10}e${exponent - 1}`;
+    } else {
+        return `${base}e${exponent}`;
+    }
 }
