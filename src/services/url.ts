@@ -29,7 +29,7 @@ export const apiUrl = {
 
     getRequestByKeyIndex: (keyIndex: string) => `${BACKEND_BASE_URL}/requests?keyIndex=${keyIndex}`,
     getRequestByRequestId: (requestId: string) => `${BACKEND_BASE_URL}/requests/${requestId}`,
-    getTasksByKeyIndex: (keyIndex: string) => `${BACKEND_BASE_URL}/tasks?requester=${addressDefault.requester}&keyIndex=${keyIndex}`,
+    getTasksByKeyIndex: (keyIndex: string) => `${BACKEND_BASE_URL}/tasks?requester=${addressDefault.requester}&keyIndex=${keyIndex}&hasRequest=false`,
 
     getDataCreateTask: `${BACKEND_BASE_URL}/method-inputs/requester-contract/create-task?requesterAddress=${addressDefault.requester}`,
     getDataFinalizeTask: (taskId: string) => `${BACKEND_BASE_URL}/method-inputs/requester-contract/finalize?requesterAddress=${addressDefault.requester}&taskId=${taskId}`,
