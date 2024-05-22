@@ -10,7 +10,7 @@ import InitStateEncrytionPage, { useEncrytionPageData } from 'src/views/encrypti
 export default function Encryption() {
     const { selectedCommittee } = useEncrytionPageData();
     return (
-        <Container sx={{ pt: 5 }}>
+        <Container sx={{ py: 5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mb: 3 }}>
                 <Box sx={{ width: '100%' }}>
                     <Typography variant="h1" textTransform={'uppercase'} maxWidth={'614px'}>

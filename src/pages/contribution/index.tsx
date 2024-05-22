@@ -13,7 +13,7 @@ import InitStateDistributionPage, { useContributionPageData } from 'src/views/co
 export default function Contribution() {
     const { selectedCommittee } = useContributionPageData();
     return (
-        <Container sx={{ pt: 5 }}>
+        <Container sx={{ py: 5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
                 <Box sx={{ width: '100%' }}>
                     <Typography variant="h1" textTransform={'uppercase'} maxWidth={'614px'}>
