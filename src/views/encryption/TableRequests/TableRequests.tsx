@@ -11,6 +11,7 @@ import RowTableRequest from './RowTableRequest/RowTableRequest';
 import TableRow from 'src/components/Table/TableRow';
 import RowTableTask from './RowTableTask/RowTableTask';
 import { RefreshRounded } from '@mui/icons-material';
+import { Field } from 'o1js';
 
 const tableCellRatio = [1.5, 3, 2, 3.5, 2];
 
@@ -85,17 +86,17 @@ export default function TableRequests({ keyData }: { keyData: TCommitteeKey }) {
                 </Box>
             ) : (
                 <>
-                    {dataRequests.length == 0 ? (
+                    {dataRequests.length == 0 && dataTasks.length == 0 ? (
                         <Typography textAlign={'center'} py={2}>
                             No requests!
                         </Typography>
                     ) : (
-                        <>
-                            {dataRequests.map((item, index) => {
-                                return <RowTableRequest key={'keyrequest' + index + item.requestId} data={item} tableCellRatio={tableCellRatio} />;
-                            })}
-                        </>
+                        <></>
                     )}
+
+                    {dataRequests.map((item, index) => {
+                        return <RowTableRequest key={'keyrequest' + index + item.requestId} data={item} tableCellRatio={tableCellRatio} />;
+                    })}
 
                     {dataTasks.map((item, index) => {
                         return <RowTableTask key={'keyTask' + index + item.taskId} data={item} tableCellRatio={tableCellRatio} keyPub={keyData.publicKey || ''} />;

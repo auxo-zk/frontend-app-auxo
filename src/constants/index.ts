@@ -15,3 +15,9 @@ export enum FetchStatus {
     SUCCESS = 'success',
     FAILED = 'failed',
 }
+
+export enum NetworkName {
+    'Berkeley' = 'Berkeley',
+    'AuxoNetwork' = 'AuxoNetwork',
+    'Mainnet' = 'Mainnet',
+}

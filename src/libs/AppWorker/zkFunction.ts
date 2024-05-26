@@ -49,6 +49,7 @@ import { TResponseGetDataCreateTask } from 'src/services/api/getDataCreateTask';
 import { TResponseDataFinalizeTask } from 'src/services/api/getDataFinalizeTask';
 import { TResponseDataSubmitEncryptionTask } from 'src/services/api/getDataSubmitEncryptionTask';
 import { sleep } from 'src/utils/format';
+import { NetworkName } from 'src/constants';
 
 const state = {
     TypeZkApp: null as null | typeof ZkApp,
@@ -144,24 +145,36 @@ export const zkFunctions = {
         console.log('15. complie ResponseContract done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Requester.UpdateTask.compile({ cache: FileSystem(args.fileCache) }); // 16
-        console.log('16. complie UpdateTask done');
+        await state.TypeZkApp!.Request.ComputeResult.compile({ cache: FileSystem(args.fileCache) }); // 16
+        console.log('16. complie ComputeResult done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Requester.RequesterContract.compile({ cache: FileSystem(args.fileCache) }); // 17
-        console.log('17. complie RequesterContract done');
+        await state.TypeZkApp!.Request.UpdateRequest.compile({ cache: FileSystem(args.fileCache) }); // 17
+        console.log('17. complie UpdateRequest done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Requester.TaskManagerContract.compile({ cache: FileSystem(args.fileCache) }); // 18
-        console.log('18. complie TaskManagerContract done');
+        await state.TypeZkApp!.Request.RequestContract.compile({ cache: FileSystem(args.fileCache) }); // 18
+        console.log('18. complie RequestContract done');
         state.complieDone += 1;
 
-        await state.TypeZkApp!.Requester.SubmissionContract.compile({ cache: FileSystem(args.fileCache) }); // 19
-        console.log('19. complie SubmissionContract done');
+        await state.TypeZkApp!.Requester.UpdateTask.compile({ cache: FileSystem(args.fileCache) }); // 19
+        console.log('19. complie UpdateTask done');
+        state.complieDone += 1;
+
+        await state.TypeZkApp!.Requester.RequesterContract.compile({ cache: FileSystem(args.fileCache) }); // 20
+        console.log('20. complie RequesterContract done');
+        state.complieDone += 1;
+
+        await state.TypeZkApp!.Requester.TaskManagerContract.compile({ cache: FileSystem(args.fileCache) }); // 21
+        console.log('21. complie TaskManagerContract done');
+        state.complieDone += 1;
+
+        await state.TypeZkApp!.Requester.SubmissionContract.compile({ cache: FileSystem(args.fileCache) }); // 22
+        console.log('22. complie SubmissionContract done');
         state.complieDone += 1;
     },
     getPercentageComplieDone: async (args: {}) => {
-        return ((state.complieDone / 19) * 100).toFixed(0);
+        return ((state.complieDone / 22) * 100).toFixed(0);
     },
     fetchAccount: async (args: { publicKey58: string }) => {
         const publicKey = PublicKey.fromBase58(args.publicKey58);
@@ -249,7 +262,16 @@ export const zkFunctions = {
         state.transaction = transaction;
     },
 
-    submitContributionRound1: async (args: { sender: string; keyId: string; t: number; n: number; committeeId: string; memberId: string; dataBackend: TResponseGetRount1Contribution }) => {
+    submitContributionRound1: async (args: {
+        sender: string;
+        keyId: string;
+        t: number;
+        n: number;
+        committeeId: string;
+        memberId: string;
+        dataBackend: TResponseGetRount1Contribution;
+        networkName: NetworkName;
+    }) => {
         const sender = PublicKey.fromBase58(args.sender);
         await fetchAccount({ publicKey: sender });
         await fetchAccount({ publicKey: state.Round1Contract!.address });
@@ -271,7 +293,7 @@ export const zkFunctions = {
         });
         state.transaction = transaction;
         return {
-            key: getLocalStorageKeySecret(args.committeeId, args.memberId, args.keyId, 'Berkeley'),
+            key: getLocalStorageKeySecret(args.committeeId, args.memberId, args.keyId, args.networkName),
             value: JSON.stringify(secret),
         };
     },
