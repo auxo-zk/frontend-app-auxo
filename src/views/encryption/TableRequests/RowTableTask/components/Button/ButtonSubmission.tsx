@@ -8,6 +8,7 @@ import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
 import TableRow from 'src/components/Table/TableRow';
 import TableWrapper from 'src/components/Table/TableWrapper';
+import { NetworkName } from 'src/constants';
 import { getDataSubmitEncryptionTask } from 'src/services/api/getDataSubmitEncryptionTask';
 import { TTask } from 'src/services/services';
 import { useContractData } from 'src/states/contracts';
@@ -121,7 +122,7 @@ function ModalSubitEncryption({ dataTask, keyPub }: { dataTask: TTask; keyPub: s
 function ButtonSubmit({ dataTask, keyPub, listDataVector }: { dataTask: TTask; keyPub: string; listDataVector: { index: string; id: string; value: string }[] }) {
     const [loading, setLoading] = useState<boolean>(false);
     const { userAddress } = useWalletData();
-    const { workerClient } = useContractData();
+    const { workerClient, networkName } = useContractData();
     async function submit() {
         setLoading(true);
         const idtoast = toast.loading('Create transaction and proving...', { position: 'top-center', type: 'info' });
@@ -148,7 +149,7 @@ function ButtonSubmit({ dataTask, keyPub, listDataVector }: { dataTask: TTask; k
             console.log(transactionLink);
 
             for (let note of notes) {
-                localStorage.setItem(getLocalStorageKeyNote(dataTask.keyIndex, dataTask.taskId, note.nullifier.toString(), 'AuxoNetwork'), note.commitment.toString());
+                localStorage.setItem(getLocalStorageKeyNote(dataTask.keyIndex, dataTask.taskId, note.nullifier.toJSON(), networkName), note.commitment.toJSON());
             }
 
             toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });

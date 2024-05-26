@@ -29,7 +29,7 @@ export default function RequestAction(props: Props) {
 
 function SubmitContribution({ dataUserInCommittee, resquestData }: Props) {
     const { userAddress } = useWalletData();
-    const { workerClient } = useContractData();
+    const { workerClient, networkName } = useContractData();
     const [submiting, setSubmiting] = useState<boolean>(false);
 
     async function generateContribution() {
@@ -42,7 +42,7 @@ function SubmitContribution({ dataUserInCommittee, resquestData }: Props) {
             const memberId = dataUserInCommittee?.memberId + '' || '-1';
             if (memberId == '-1') throw Error('You are not a member of this committee');
 
-            const secret = getLocalStorageSecretValue(resquestData.committeeId, memberId, resquestData.keyId, 'Berkeley');
+            const secret = getLocalStorageSecretValue(resquestData.committeeId, memberId, resquestData.keyId, networkName);
             if (!secret) throw Error('Secret key missing!');
 
             const [keyDetail, responseContribution] = await Promise.all([
@@ -79,7 +79,7 @@ function SubmitContribution({ dataUserInCommittee, resquestData }: Props) {
                 ...JSON.parse(secret),
                 fReceive: fReceive,
             };
-            localStorage.setItem(getLocalStorageKeySecret(resquestData.committeeId, memberId, resquestData.keyId, 'Berkeley'), JSON.stringify(newSecret));
+            localStorage.setItem(getLocalStorageKeySecret(resquestData.committeeId, memberId, resquestData.keyId, networkName), JSON.stringify(newSecret));
         } catch (err) {
             console.log(err);
             toast.update(idtoast, { render: (err as Error).message, type: 'error', position: 'top-center', isLoading: false, autoClose: 3000, hideProgressBar: false });

@@ -1,26 +1,27 @@
 import { Box, IconButton, Typography } from '@mui/material';
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { IconDownload, IconFolder, IconSpinLoading } from 'src/assets/svg/icon';
+import { IconSpinLoading } from 'src/assets/svg/icon';
 
 import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
 import TableWrapper from 'src/components/Table/TableWrapper';
 import { useContributionPageData } from '../state';
-import { TCommitteeKey, TRound1Data, getCommitteeKeys } from 'src/services/services';
+import { TCommitteeKey, getCommitteeKeys } from 'src/services/services';
 import TableRow from 'src/components/Table/TableRow';
 import KeyContributionPubkey from '../components/KeyContributionPubkey';
 import KeyContributionStatus from '../components/KeyContributionStatus';
 import KeysContributionAction from '../components/KeysContributionAction';
 import { useWalletData } from 'src/states/wallet';
-import Test from './Test';
 import ButtonGenNewKey from '../GenerateNewKey/ButtonGenNewKey';
-import { Download, FileDownload, FileUpload, RefreshRounded, UploadFile } from '@mui/icons-material';
+import { FileDownload, FileUpload, RefreshRounded } from '@mui/icons-material';
 import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageSecretValue } from 'src/utils';
 import { toast } from 'react-toastify';
+import { useContractData } from 'src/states/contracts';
 
 const tableCellRatio = [1, 3, 1.25, 1.25, 2.5, 3];
 
 export default function TableKeyContribution() {
+    const { networkName } = useContractData();
     const { userAddress } = useWalletData();
     const { selectedCommittee } = useContributionPageData();
     const [data, setData] = useState<TCommitteeKey[]>([]);
@@ -78,14 +79,14 @@ export default function TableKeyContribution() {
 
     async function downloadAllSecret() {
         const listData = data.map((committee) => {
-            const k = getLocalStorageKeySecret(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, 'Berkeley');
+            const k = getLocalStorageKeySecret(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, networkName);
             return {
                 key: k,
-                value: getLocalStorageSecretValue(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, 'Berkeley'),
+                value: getLocalStorageSecretValue(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, networkName),
             };
         });
 
-        downloadTextFile(JSON.stringify(listData) || '', `all-key-contribution-secret-memberid${dataUserInCommittee.memberId}-Berkeley.txt`);
+        downloadTextFile(JSON.stringify(listData) || '', `all-key-contribution-secret-memberid${dataUserInCommittee.memberId}-${networkName}.txt`);
     }
 
     useEffect(() => {

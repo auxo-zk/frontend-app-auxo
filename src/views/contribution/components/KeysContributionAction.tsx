@@ -41,7 +41,7 @@ export default function KeysContributionAction(props: Props) {
 // TODO: Action Round1 ================================================================================================================================
 function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
     const { userAddress } = useWalletData();
-    const { workerClient } = useContractData();
+    const { workerClient, networkName } = useContractData();
     const [submiting, setSubmiting] = useState<boolean>(false);
 
     async function generateContribution() {
@@ -65,6 +65,7 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
                 committeeId: dataKey.committeeId,
                 memberId: _memberId,
                 dataBackend: dataBackend,
+                networkName: networkName,
             });
             await workerClient.proveTransaction();
 
@@ -86,8 +87,8 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
     }
 
     function downloadSecret() {
-        const secret = getLocalStorageSecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley');
-        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley')}.txt`);
+        const secret = getLocalStorageSecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, networkName);
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, networkName)}.txt`);
     }
 
     function checkMemberIdInRound1(round1: TRound1Data[], memberId: string) {
@@ -119,7 +120,7 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
 // TODO: Action Round2 ================================================================================================================================
 function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
     const { userAddress } = useWalletData();
-    const { workerClient } = useContractData();
+    const { workerClient, networkName } = useContractData();
     const [submiting, setSubmiting] = useState<boolean>(false);
 
     function checkMemberIdInRound2(round1: TRound2Data[], memberId: string) {
@@ -132,8 +133,8 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
         return false;
     }
     function downloadSecret() {
-        const secret = getLocalStorageSecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley');
-        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley')}.txt`);
+        const secret = getLocalStorageSecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, networkName);
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, networkName)}.txt`);
     }
 
     async function generateContribution() {
@@ -147,7 +148,7 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
             const _memberId = dataUserInCommittee.memberId + '';
             if (_memberId == '-1') throw Error('You are not a member of this committee');
 
-            const secret = getLocalStorageSecretValue(dataKey.committeeId, _memberId, dataKey.keyId, 'Berkeley');
+            const secret = getLocalStorageSecretValue(dataKey.committeeId, _memberId, dataKey.keyId, networkName);
             if (!secret) throw Error('Secret key missing!');
 
             const dataBackend = await getRound2Contribution(_memberId, committeeId, dataKey.keyId);
@@ -196,12 +197,12 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
 // TODO: Action Active ================================================================================================================================
 function KeyActiveAction({ dataKey, dataUserInCommittee, N, T }: Props) {
     const { userAddress } = useWalletData();
-    const { workerClient } = useContractData();
+    const { workerClient, networkName } = useContractData();
     const [submiting, setSubmiting] = useState<boolean>(false);
 
     function downloadSecret() {
-        const secret = getLocalStorageSecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley');
-        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, 'Berkeley')}.txt`);
+        const secret = getLocalStorageSecretValue(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, networkName);
+        downloadTextFile(secret || '', `${getLocalStorageKeySecret(dataKey.committeeId, dataUserInCommittee.memberId + '', dataKey.keyId, networkName)}.txt`);
     }
 
     async function deprecate() {
@@ -215,7 +216,7 @@ function KeyActiveAction({ dataKey, dataUserInCommittee, N, T }: Props) {
             const _memberId = dataUserInCommittee.memberId + '';
             if (_memberId == '-1') throw Error('You are not a member of this committee');
 
-            const secret = getLocalStorageSecretValue(dataKey.committeeId, _memberId, dataKey.keyId, 'Berkeley');
+            const secret = getLocalStorageSecretValue(dataKey.committeeId, _memberId, dataKey.keyId, networkName);
             if (!secret) throw Error('Secret key missing!');
             const dataBackend = await getGenerateNewKeyData(_memberId, committeeId);
 

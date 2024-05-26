@@ -1,20 +1,22 @@
+import { NetworkName } from 'src/constants';
+
 export function isNumeric(num: any) {
     return !isNaN(num) && !isNaN(parseFloat(num));
 }
 
-export function getLocalStorageKeySecret(committeeId: string, memberId: string, keyId: string, network: string) {
+export function getLocalStorageKeySecret(committeeId: string, memberId: string, keyId: string, network: NetworkName) {
     return `secret-${committeeId}-${keyId}-${memberId}-${network}`;
 }
 
-export function getLocalStorageSecretValue(committeeId: string, memberId: string, keyId: string, network: string) {
+export function getLocalStorageSecretValue(committeeId: string, memberId: string, keyId: string, network: NetworkName) {
     return localStorage.getItem(getLocalStorageKeySecret(committeeId, memberId, keyId, network));
 }
 
-export function getLocalStorageKeyNote(keyIndex: string, taskId: string, noteNullifier: string, network: string) {
+export function getLocalStorageKeyNote(keyIndex: string, taskId: string, noteNullifier: string, network: NetworkName) {
     return `note-${keyIndex}-${taskId}-${noteNullifier}-${network}`;
 }
 
-export function getLocalStorageNoteValue(keyIndex: string, taskId: string, noteNullifier: string, network: string) {
+export function getLocalStorageNoteValue(keyIndex: string, taskId: string, noteNullifier: string, network: NetworkName) {
     return localStorage.getItem(getLocalStorageKeyNote(keyIndex, taskId, noteNullifier, network));
 }
 
