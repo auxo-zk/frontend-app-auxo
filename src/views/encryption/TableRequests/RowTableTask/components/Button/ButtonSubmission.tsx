@@ -1,6 +1,6 @@
 import { ENCRYPTION_LIMITS, SECRET_UNIT } from '@auxo-dev/dkg/build/esm/src/constants';
-import { Add, PlusOneRounded, Remove, RemoveCircleOutlineRounded, RemoveCircleRounded } from '@mui/icons-material';
-import { Box, Button, Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, RemoveCircleOutlineRounded } from '@mui/icons-material';
+import { Box, Button, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
@@ -8,7 +8,6 @@ import TableCell from 'src/components/Table/TableCell';
 import TableHeader from 'src/components/Table/TableHeader';
 import TableRow from 'src/components/Table/TableRow';
 import TableWrapper from 'src/components/Table/TableWrapper';
-import { NetworkName } from 'src/constants';
 import { getDataSubmitEncryptionTask } from 'src/services/api/getDataSubmitEncryptionTask';
 import { TTask } from 'src/services/services';
 import { useContractData } from 'src/states/contracts';
@@ -149,7 +148,7 @@ function ButtonSubmit({ dataTask, keyPub, listDataVector }: { dataTask: TTask; k
             console.log(transactionLink);
 
             for (let note of notes) {
-                localStorage.setItem(getLocalStorageKeyNote(dataTask.keyIndex, dataTask.taskId, note.nullifier.toJSON(), networkName), note.commitment.toJSON());
+                localStorage.setItem(getLocalStorageKeyNote(dataTask.keyIndex, dataTask.taskId, note.nullifier, networkName), note.commitment);
             }
 
             toast.update(idtoast, { render: 'Send transaction successfull!', isLoading: false, type: 'success', autoClose: 3000, hideProgressBar: false });
@@ -159,6 +158,7 @@ function ButtonSubmit({ dataTask, keyPub, listDataVector }: { dataTask: TTask; k
         }
         setLoading(false);
     }
+
     return (
         <Box textAlign={'right'}>
             <ButtonLoading isLoading={loading} muiProps={{ onClick: submit, variant: 'contained', sx: { mt: 3 } }}>

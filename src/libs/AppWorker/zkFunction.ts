@@ -573,7 +573,7 @@ export const zkFunctions = {
             );
         });
         state.transaction = transaction;
-        return encryption.notes;
+        return encryption.notes.map((item) => ({ nullifier: item.nullifier.toJSON(), commitment: item.commitment.toJSON() }));
     },
 
     proveTransaction: async (args: {}) => {
