@@ -1,9 +1,10 @@
 import { Constants } from '@auxo-dev/dkg';
-import { FileDownloadOutlined } from '@mui/icons-material';
+import { FileDownloadOutlined, FileUploadOutlined } from '@mui/icons-material';
 import { Box, IconButton } from '@mui/material';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import ButtonLoading from 'src/components/ButtonLoading/ButtonLoading';
+import { NetworkName } from 'src/constants';
 import { getGenerateNewKeyData } from 'src/services/api/generateNewKey';
 import { getRound1Contribution } from 'src/services/api/getRound1Contribution';
 import { getRound2Contribution } from 'src/services/api/getRound2Contribution';
@@ -109,6 +110,7 @@ function KeysRound1Action({ dataKey, dataUserInCommittee, T, N }: Props) {
                     Submit Contribution
                 </ButtonLoading>
             )}
+            <ButtonUploadSecret committeeId={dataKey.committeeId} keyId={dataKey.keyId} memberId={dataUserInCommittee.memberId + ''} networkName={networkName} />
 
             <IconButton color="primary" onClick={downloadSecret}>
                 <FileDownloadOutlined />
@@ -187,6 +189,7 @@ function KeysRound2Action({ dataKey, dataUserInCommittee, N, T }: Props) {
                     Submit Contribution
                 </ButtonLoading>
             )}
+            <ButtonUploadSecret committeeId={dataKey.committeeId} keyId={dataKey.keyId} memberId={dataUserInCommittee.memberId + ''} networkName={networkName} />
             <IconButton color="primary" onClick={downloadSecret}>
                 <FileDownloadOutlined />
             </IconButton>
@@ -248,9 +251,44 @@ function KeyActiveAction({ dataKey, dataUserInCommittee, N, T }: Props) {
             <ButtonLoading muiProps={{ variant: 'outlined', size: 'small', onClick: deprecate }} isLoading={submiting}>
                 Deprecate
             </ButtonLoading>
+            <ButtonUploadSecret committeeId={dataKey.committeeId} keyId={dataKey.keyId} memberId={dataUserInCommittee.memberId + ''} networkName={networkName} />
             <IconButton color="primary" onClick={downloadSecret}>
                 <FileDownloadOutlined />
             </IconButton>
         </Box>
+    );
+}
+
+function ButtonUploadSecret(props: { committeeId: string; memberId: string; keyId: string; networkName: NetworkName }) {
+    const refUploadFileBtn = useRef<HTMLInputElement>(null);
+
+    function upload(event: ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target) {
+                    const result = e.target.result;
+                    console.log(result);
+                    try {
+                        const key = getLocalStorageKeySecret(props.committeeId, props.memberId, props.keyId, props.networkName);
+                        localStorage.setItem(key, result?.toString() || '');
+                        toast.success('Upload and Save data done!');
+                    } catch (e) {
+                        toast.error('Data file is invalid!', { autoClose: 4000 });
+                    }
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
+    return (
+        <>
+            <input ref={refUploadFileBtn} type="file" onChange={upload} style={{ display: 'none' }} />
+
+            <IconButton color="primary" title="Upload secret" onClick={() => refUploadFileBtn.current?.click()}>
+                <FileUploadOutlined />
+            </IconButton>
+        </>
     );
 }
