@@ -18,7 +18,7 @@ import { downloadTextFile, getLocalStorageKeySecret, getLocalStorageSecretValue 
 import { toast } from 'react-toastify';
 import { useContractData } from 'src/states/contracts';
 
-const tableCellRatio = [1, 3, 1.25, 1.25, 2.5, 3];
+const tableCellRatio = [1, 3, 1.25, 1.25, 2, 3.5];
 
 export default function TableKeyContribution() {
     const { networkName } = useContractData();
@@ -78,15 +78,21 @@ export default function TableKeyContribution() {
     }
 
     async function downloadAllSecret() {
-        const listData = data.map((committee) => {
-            const k = getLocalStorageKeySecret(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, networkName);
-            return {
-                key: k,
-                value: getLocalStorageSecretValue(committee.committeeId, dataUserInCommittee.memberId + '', committee.keyId, networkName),
-            };
-        });
+        try {
+            const committeeId = selectedCommittee?.idCommittee;
+            if (!committeeId) throw Error('Null committee id!');
+            const listData = data.map((key) => {
+                const k = getLocalStorageKeySecret(key.committeeId, dataUserInCommittee.memberId + '', key.keyId, networkName);
+                return {
+                    key: k,
+                    value: getLocalStorageSecretValue(key.committeeId, dataUserInCommittee.memberId + '', key.keyId, networkName),
+                };
+            });
 
-        downloadTextFile(JSON.stringify(listData) || '', `all-key-contribution-secret-memberid${dataUserInCommittee.memberId}-${networkName}.txt`);
+            downloadTextFile(JSON.stringify(listData) || '', `all-secret-${committeeId}-${dataUserInCommittee.memberId}-${networkName}.txt`);
+        } catch (err) {
+            toast.error((err as Error).message, { autoClose: 4000 });
+        }
     }
 
     useEffect(() => {
