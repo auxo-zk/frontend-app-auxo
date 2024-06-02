@@ -23,7 +23,7 @@ import { getLocalStorageKeySecret, getLocalStorageSecretValue } from 'src/utils'
 type Props = { dataUserInCommittee: { memberId: number; userAddress: string }; status: number; resquestData: TRequest };
 
 export default function RequestAction(props: Props) {
-    if (props.status != 1) return <></>;
+    if (props.status > 0) return <></>;
     return <SubmitContribution {...props} />;
 }
 

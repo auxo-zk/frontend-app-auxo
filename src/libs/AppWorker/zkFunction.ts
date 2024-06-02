@@ -64,7 +64,7 @@ const state = {
     SubmissionContract: null as null | ZkApp.Requester.SubmissionContract,
     RequesterContract: null as null | ZkApp.Requester.RequesterContract,
     transaction: null as null | Transaction,
-    complieDone: 0 as number,
+    compileDone: 0 as number,
 };
 
 // ---------------------------------------------------------------------------------------
@@ -86,95 +86,95 @@ export const zkFunctions = {
     },
     compileContract: async (args: { fileCache: any }) => {
         await state.TypeZkApp!.Rollup.Rollup.compile({ cache: FileSystem(args.fileCache) }); // 1
-        console.log('1. complie Rollup done');
-        state.complieDone += 1;
+        console.log('1. compile Rollup done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Rollup.RollupContract.compile({ cache: FileSystem(args.fileCache) }); // 2
-        console.log('2. complie RollupContract done');
-        state.complieDone += 1;
+        console.log('2. compile RollupContract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Committee.UpdateCommittee.compile({ cache: FileSystem(args.fileCache) }); // 3
-        console.log('3. complie UpdateCommittee done');
-        state.complieDone += 1;
+        console.log('3. compile UpdateCommittee done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Committee.CommitteeContract.compile({ cache: FileSystem(args.fileCache) }); // 4
-        console.log('4. complie CommitteeContract done');
-        state.complieDone += 1;
+        console.log('4. compile CommitteeContract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.DKG.UpdateKey.compile({ cache: FileSystem(args.fileCache) }); // 5
-        console.log('5. complie UpdateKey done');
-        state.complieDone += 1;
+        console.log('5. compile UpdateKey done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.DKG.DkgContract.compile({ cache: FileSystem(args.fileCache) }); // 6
-        console.log('6. complie DkgContract done');
-        state.complieDone += 1;
+        console.log('6. compile DkgContract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Round1.FinalizeRound1.compile({ cache: FileSystem(args.fileCache) }); // 7
-        console.log('7. complie FinalizeRound1 done');
-        state.complieDone += 1;
+        console.log('7. compile FinalizeRound1 done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Round1.Round1Contract.compile({ cache: FileSystem(args.fileCache) }); // 8
-        console.log('8. complie Round1Contract done');
-        state.complieDone += 1;
+        console.log('8. compile Round1Contract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Encryption.BatchEncryption.compile({ cache: FileSystem(args.fileCache) }); // 9
-        console.log('9. complie BatchEncryption done');
-        state.complieDone += 1;
+        console.log('9. compile BatchEncryption done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Round2.FinalizeRound2.compile({ cache: FileSystem(args.fileCache) }); // 10
-        console.log('10. complie FinalizeRound2 done');
-        state.complieDone += 1;
+        console.log('10. compile FinalizeRound2 done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Round2.Round2Contract.compile({ cache: FileSystem(args.fileCache) }); // 11
-        console.log('11. complie Round2Contract done');
-        state.complieDone += 1;
+        console.log('11. compile Round2Contract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Encryption.BatchDecryption.compile({ cache: FileSystem(args.fileCache) }); // 12
-        console.log('12. complie BatchDecryption done');
-        state.complieDone += 1;
+        console.log('12. compile BatchDecryption done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Response.ComputeResponse.compile({ cache: FileSystem(args.fileCache) }); // 13
-        console.log('13. complie ComputeResponse done');
-        state.complieDone += 1;
+        console.log('13. compile ComputeResponse done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Response.FinalizeResponse.compile({ cache: FileSystem(args.fileCache) }); // 14
-        console.log('14. complie FinalizeResponse done');
-        state.complieDone += 1;
+        console.log('14. compile FinalizeResponse done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Response.ResponseContract.compile({ cache: FileSystem(args.fileCache) }); // 15
-        console.log('15. complie ResponseContract done');
-        state.complieDone += 1;
+        console.log('15. compile ResponseContract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Request.ComputeResult.compile({ cache: FileSystem(args.fileCache) }); // 16
-        console.log('16. complie ComputeResult done');
-        state.complieDone += 1;
+        console.log('16. compile ComputeResult done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Request.UpdateRequest.compile({ cache: FileSystem(args.fileCache) }); // 17
-        console.log('17. complie UpdateRequest done');
-        state.complieDone += 1;
+        console.log('17. compile UpdateRequest done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Request.RequestContract.compile({ cache: FileSystem(args.fileCache) }); // 18
-        console.log('18. complie RequestContract done');
-        state.complieDone += 1;
+        console.log('18. compile RequestContract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Requester.UpdateTask.compile({ cache: FileSystem(args.fileCache) }); // 19
-        console.log('19. complie UpdateTask done');
-        state.complieDone += 1;
+        console.log('19. compile UpdateTask done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Requester.RequesterContract.compile({ cache: FileSystem(args.fileCache) }); // 20
-        console.log('20. complie RequesterContract done');
-        state.complieDone += 1;
+        console.log('20. compile RequesterContract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Requester.TaskManagerContract.compile({ cache: FileSystem(args.fileCache) }); // 21
-        console.log('21. complie TaskManagerContract done');
-        state.complieDone += 1;
+        console.log('21. compile TaskManagerContract done');
+        state.compileDone += 1;
 
         await state.TypeZkApp!.Requester.SubmissionContract.compile({ cache: FileSystem(args.fileCache) }); // 22
-        console.log('22. complie SubmissionContract done');
-        state.complieDone += 1;
+        console.log('22. compile SubmissionContract done');
+        state.compileDone += 1;
     },
     getPercentageComplieDone: async (args: {}) => {
-        return ((state.complieDone / 22) * 100).toFixed(0);
+        return ((state.compileDone / 22) * 100).toFixed(0);
     },
     fetchAccount: async (args: { publicKey58: string }) => {
         const publicKey = PublicKey.fromBase58(args.publicKey58);

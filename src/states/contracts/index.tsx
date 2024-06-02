@@ -61,7 +61,7 @@ export const useContractFunction = () => {
         }
         return false;
     }
-    async function complie(cacheFiles: any) {
+    async function compile(cacheFiles: any) {
         setContractData({ isLoading: true });
 
         try {
@@ -100,7 +100,7 @@ export const useContractFunction = () => {
 
     return {
         setContractData,
-        complie,
+        compile,
         initClient,
     };
 };
