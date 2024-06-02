@@ -475,6 +475,7 @@ export const zkFunctions = {
         }
 
         const transaction = await Mina.transaction(sender, async () => {
+            console.log('accumulationWitness', args.responseContribution.accumulationWitness);
             await state.ResponseContract!.contribute(
                 decryptionProof,
                 responseProof,

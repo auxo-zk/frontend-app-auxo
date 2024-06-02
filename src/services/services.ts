@@ -198,7 +198,7 @@ export async function getCommitteeRequests(committeeId: string): Promise<TReques
     return response.data.map((item: any) => {
         return {
             requestId: item.requestId,
-            committeeId: item.key?.committeeId || '',
+            committeeId: item.key.committeeId + '',
             status: item.status,
             R: item.task?.totalR || [],
             D: item.finalizedD || [],
@@ -218,7 +218,7 @@ export async function getRequestByKeyIndex(keyIndex: string): Promise<TRequest[]
     return response.data.map((item: any) => {
         return {
             requestId: item.requestId,
-            committeeId: item.committeeId,
+            committeeId: item.key.committeeId,
             status: item.status,
             R: item.task?.totalR || [],
             D: item.finalizedD || [],
@@ -237,7 +237,7 @@ export async function getRequestByRequestId(requestId: string): Promise<TRequest
     const item = response.data;
     return {
         requestId: item.requestId,
-        committeeId: item.committeeId,
+        committeeId: item.key.committeeId,
         status: item.status,
         R: item.task?.totalR || [],
         D: item.finalizedD || [],
