@@ -7,7 +7,7 @@ import { IconSpinLoading } from 'src/assets/svg/icon';
 export default function InitContracts() {
     const { isFetching, filesCache } = useCacheContractData();
     const { isInitWorker, workerClient } = useContractData();
-    const { complie, initClient } = useContractFunction();
+    const { compile, initClient } = useContractFunction();
     const [isCanCallComplie, setCanCallComplie] = useState<boolean>(false);
     useEffect(() => {
         initClient();
@@ -28,7 +28,7 @@ export default function InitContracts() {
 
     useEffect(() => {
         if (!isFetching && filesCache && isCanCallComplie) {
-            complie(filesCache);
+            compile(filesCache);
         }
     }, [isFetching, filesCache, isCanCallComplie]);
 
