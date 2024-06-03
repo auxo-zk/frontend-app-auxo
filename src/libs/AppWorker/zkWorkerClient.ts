@@ -38,7 +38,7 @@ export default class ZkAppWorkerClient {
                 memo: memo || '',
             },
         });
-        const transactionLink = `https://berkeley.minaexplorer.com/transaction/${hash}`;
+        const transactionLink = `https://explorer.auxo.fund/index.html?target=transaction&hash=${hash}`;
         return { hash, transactionLink };
     }
 

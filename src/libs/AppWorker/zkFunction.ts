@@ -414,6 +414,7 @@ export const zkFunctions = {
         await fetchAccount({ publicKey: state.CommitteeContract!.address });
         await fetchAccount({ publicKey: state.ResponseContract!.address });
         await fetchAccount({ publicKey: state.DKGContract!.address });
+        await fetchAccount({ publicKey: state.RollupContract!.address });
 
         const secretObj = JSON.parse(args.secret) as { C: { x: string; y: string }[]; a: string[]; f: string[] };
         const secret: Libs.Committee.SecretPolynomial = {
@@ -462,7 +463,7 @@ export const zkFunctions = {
 
         let responseStorageD = new GroupVectorStorage();
         let responseProof = await ComputeResponse.init(Field.from(args.responseContribution.accumulationRootR), CustomScalar.fromScalar(responseContribution[1]));
-        for (let i = 0; i < Constants.ENCRYPTION_LIMITS.FULL_DIMENSION - 1; i++) {
+        for (let i = 0; i < Constants.ENCRYPTION_LIMITS.FULL_DIMENSION; i++) {
             const RGroup = new Group(args.requestDetail.R[i]);
             responseProof = await ComputeResponse.compute(
                 responseProof,
@@ -475,7 +476,6 @@ export const zkFunctions = {
         }
 
         const transaction = await Mina.transaction(sender, async () => {
-            console.log('accumulationWitness', args.responseContribution.accumulationWitness);
             await state.ResponseContract!.contribute(
                 decryptionProof,
                 responseProof,
