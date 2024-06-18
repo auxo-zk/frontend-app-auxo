@@ -6,15 +6,11 @@ import { LocalStorageKey, LocalStorageValue } from 'src/constants';
 
 export type TWalletData = {
     userAddress: string;
-    userPubKey: null | PublicKey;
-    accountExists: boolean;
     isConnecting: boolean;
     loadingZkClient: boolean;
 };
 const initData: TWalletData = {
     userAddress: '',
-    userPubKey: null,
-    accountExists: false,
     isConnecting: true,
     loadingZkClient: true,
 };
@@ -40,12 +36,8 @@ export const useWalletFunction = () => {
             }
 
             const address: string = (await mina.requestAccounts())[0];
-            const publicKey = PublicKey.fromBase58(address);
 
-            const res = await fetchAccount({ publicKey });
-            const accountExists = res.error == null;
-
-            setWalletData({ userAddress: address, userPubKey: publicKey, accountExists: accountExists, isConnecting: false });
+            setWalletData({ userAddress: address, isConnecting: false });
             localStorage.setItem(LocalStorageKey.IsConnected, LocalStorageValue.IsConnectedYes);
         } catch (err) {
             console.log(err);
@@ -53,8 +45,6 @@ export const useWalletFunction = () => {
 
             setWalletData({
                 userAddress: '',
-                userPubKey: null,
-                accountExists: false,
                 isConnecting: false,
             });
             localStorage.setItem(LocalStorageKey.IsConnected, LocalStorageValue.IsConnectedNo);
