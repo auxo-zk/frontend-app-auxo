@@ -1,8 +1,6 @@
 import { sleep } from 'src/utils/format';
 import { ZkappWorkerReponse, ZkappWorkerRequest } from './worker';
 import { ArgumentZkFuction, ReturenValueZkFunction, TZkFuction } from './zkFunction';
-import { CommitteeAction } from '@auxo-dev/dkg/build/types/src/contracts/Committee';
-import { PublicKey } from 'o1js';
 
 export default class ZkAppWorkerClient {
     worker: Worker;
