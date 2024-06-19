@@ -1,4 +1,3 @@
-import '../reactCOIServiceWorker';
 import type { AppProps } from 'next/app';
 import Layout from 'src/layout/Layout';
 import NextNProgress from 'nextjs-progressbar';

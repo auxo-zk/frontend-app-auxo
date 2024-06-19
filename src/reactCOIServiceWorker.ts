@@ -1,11 +1,11 @@
-export {};
+// export {};
 
-function loadCOIServiceWorker() {
-    if (typeof window !== 'undefined' && window.location.hostname != 'localhost') {
-        const coi = window.document.createElement('script');
-        coi.setAttribute('src', '/coi-serviceworker.js');
-        window.document.head.appendChild(coi);
-    }
-}
+// function loadCOIServiceWorker() {
+//     if (typeof window !== 'undefined' && window.location.hostname != 'localhost') {
+//         const coi = window.document.createElement('script');
+//         coi.setAttribute('src', '/coi-serviceworker.js');
+//         window.document.head.appendChild(coi);
+//     }
+// }
 
-loadCOIServiceWorker();
+// loadCOIServiceWorker();
